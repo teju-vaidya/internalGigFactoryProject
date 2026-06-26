@@ -11,7 +11,7 @@ import AuthStatusModal from './AuthStatusModal';
 import RegisterModal from '../Register/RegisterModal';
 
 const Login = () => {
-  const [authMethod, setAuthMethod] = useState('password'); // 'password' or 'otp'
+  const [authMethod, setAuthMethod] = useState('otp'); // 'password' or 'otp'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
@@ -270,63 +270,12 @@ const Login = () => {
 
         {/* Header */}
         <h1 className="login-title">LOGIN TO PORTAL</h1> 
-        <p className="login-subtitle">GET BEST GIG OUT THERE</p> 
+        <p className="login-subtitle">Building Intelligence,Growing Together</p> 
 
         <hr className="divider-line" />
 
         {/* Form Container */}
-        {authMethod === 'password' ? (
-          // PASSWORD LOGIN FORM
-          <form onSubmit={handlePasswordLoginSubmit} className="login-form">
-            
-            <div className="input-group">
-              <label htmlFor="email">Email Address</label> 
-              <div className="input-wrapper">
-                <span className="input-icon">
-                  <Mail size={18} strokeWidth={2} />
-                </span>
-                <input 
-                  type="email" 
-                  id="email" 
-                  value={email}
-                  placeholder="Enter Email"
-                  onChange={(e) => setEmail(e.target.value)}
-                  required 
-                />
-              </div>
-            </div>
-
-            <div className="input-group">
-              <div className="label-row">
-                <label htmlFor="password">Password</label> 
-                <span onClick={() => navigate('/forgot-password')} className="forgot-link cursor-pointer">Forgot Password?</span> 
-              </div>
-              <div className="input-wrapper">
-                <span className="input-icon">
-                  <Lock size={18} strokeWidth={2} />
-                </span>
-                <input 
-                  type="password" 
-                  id="password" 
-                  placeholder="Enter Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required 
-                />
-              </div>
-            </div>
-
-            <button 
-              type="submit" 
-              className="login-submit-btn" 
-              disabled={loginQuery.isFetching}
-            >
-              {loginQuery.isFetching ? 'Logging in...' : 'Login'}
-              {!loginQuery.isFetching && <ArrowRight className="arrow" size={18} strokeWidth={2.5} />}
-            </button>
-
-          </form>
-        ) : (
+        {authMethod !== 'password' ?(
           // OTP LOGIN FLOW
           <form onSubmit={isOtpSent ? handleOtpLoginSubmit : handleSendOtp} className="login-form">
             
@@ -414,7 +363,59 @@ const Login = () => {
             )}
 
           </form>
-        )}
+        ) : (
+          // PASSWORD LOGIN FORM
+          <form onSubmit={handlePasswordLoginSubmit} className="login-form">
+            
+            <div className="input-group">
+              <label htmlFor="email">Email Address</label> 
+              <div className="input-wrapper">
+                <span className="input-icon">
+                  <Mail size={18} strokeWidth={2} />
+                </span>
+                <input 
+                  type="email" 
+                  id="email" 
+                  value={email}
+                  placeholder="Enter Email"
+                  onChange={(e) => setEmail(e.target.value)}
+                  required 
+                />
+              </div>
+            </div>
+
+            <div className="input-group">
+              <div className="label-row">
+                <label htmlFor="password">Password</label> 
+                <span onClick={() => navigate('/forgot-password')} className="forgot-link cursor-pointer">Forgot Password?</span> 
+              </div>
+              <div className="input-wrapper">
+                <span className="input-icon">
+                  <Lock size={18} strokeWidth={2} />
+                </span>
+                <input 
+                  type="password" 
+                  id="password" 
+                  placeholder="Enter Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required 
+                />
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
+              className="login-submit-btn" 
+              disabled={loginQuery.isFetching}
+            >
+              {loginQuery.isFetching ? 'Logging in...' : 'Login'}
+              {!loginQuery.isFetching && <ArrowRight className="arrow" size={18} strokeWidth={2.5} />}
+            </button>
+
+          </form>
+        ) 
+        }
 
         {/* Dynamic Auth Method Toggle Button */}
         <div className="mt-5">

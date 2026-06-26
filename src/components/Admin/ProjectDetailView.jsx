@@ -100,7 +100,7 @@ export default function ProjectDetailView() {
   const handleApprove = (appId) => {
     showConfirm({
       title: 'Approve Bid & Assign Project',
-      message: 'Are you sure you want to approve this application and assign the project? All other bids will be auto-rejected.',
+      message: 'Are you sure you want to approve this application and assign the project? All other bids will be auto-not selected.',
       onConfirm: async () => {
         try {
           await api.post(`/projects/applications/${appId}/approve`, { remarks: 'Approved from details portal' });
@@ -116,17 +116,17 @@ export default function ProjectDetailView() {
 
   const handleReject = (appId) => {
     showConfirm({
-      title: 'Reject Bid',
-      message: 'Are you sure you want to reject this bid?',
+      title: 'Not Select Bid',
+      message: 'Are you sure you want to not select this bid?',
       variant: 'danger',
       onConfirm: async () => {
         try {
-          await api.put(`/projects/applications/${appId}/status`, { status: 'rejected', remarks: 'Rejected from details portal' });
-          toast.success('Bid rejected successfully.');
+          await api.put(`/projects/applications/${appId}/status`, { status: 'rejected', remarks: 'Not selected from details portal' });
+          toast.success('Bid not selected successfully.');
           queryClient.invalidateQueries({ queryKey: ['admin-project-detail', id] });
           queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
         } catch (err) {
-          toast.error(err.message || 'Rejection failed');
+          toast.error(err.message || 'Not selecting failed');
         }
       }
     });
@@ -324,7 +324,7 @@ export default function ProjectDetailView() {
   const handleReviewDeliverable = (milestoneId, status) => {
     showConfirm({
       title: `Submit Review Remarks`,
-      message: `Please enter review remarks for this milestone ${status === 'approved' ? 'approval' : 'rejection'}:`,
+      message: `Please enter review remarks for this milestone ${status === 'approved' ? 'approval' : 'not selected'}:`,
       type: 'prompt',
       promptPlaceholder: 'Enter review remarks...',
       variant: status === 'approved' ? 'success' : 'warning',

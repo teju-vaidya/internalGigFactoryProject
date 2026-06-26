@@ -221,7 +221,7 @@ const fmtDate = (d) =>
                         }}
                         className="bg-[#ef444433] text-[#ef4444] border-none font-bold rounded-[6px] px-[14px] py-[8px] text-[0.75rem] cursor-pointer hover:bg-[#ef444455] transition-colors"
                       >
-                        Reject
+                        Not Select
                       </button>
                       <button
                         onClick={() => {

@@ -142,7 +142,7 @@ export default function RegistrationRequests() {
           { label: 'Total Requests', value: stats.total,    Icon: FileText,  accent: false },
           { label: 'Pending Review', value: stats.pending,  Icon: Clock,     accent: true  },
           { label: 'Approved',       value: stats.approved, Icon: Users,     accent: false },
-          { label: 'Rejected',       value: stats.rejected, Icon: Building2, accent: false },
+          { label: 'Not Selected',       value: stats.rejected, Icon: Building2, accent: false },
         ].map(({ label, value, Icon, accent }) => (
           <div 
             key={label} 
@@ -184,7 +184,7 @@ export default function RegistrationRequests() {
             {/* Status filter pills */}
             <div className="flex gap-[5px] items-center">
               <Filter size={12} color="#6b7280" />
-              {['all', 'pending', 'approved', 'rejected'].map(s => (
+              {['all', 'pending', 'approved', 'not selected'].map(s => (
                 <button 
                   key={s} 
                   onClick={() => setStatusFilter(s)} 

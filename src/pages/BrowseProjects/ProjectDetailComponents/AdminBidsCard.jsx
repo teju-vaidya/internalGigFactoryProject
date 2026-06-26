@@ -170,7 +170,7 @@ export default function AdminBidsCard({
                             onClick={() => onReject(app.id)}
                             className="bg-[#ef444433] text-[#ef4444] border-none font-bold rounded-[6px] px-[12px] py-[6px] text-[0.72rem] cursor-pointer hover:bg-[#ef444455] transition-colors"
                           >
-                            Reject
+                            Not Select
                           </button>
                         </>
                       )}
@@ -220,7 +220,7 @@ export default function AdminBidsCard({
                             onClick={() => onReject(app.id)}
                             className="bg-[#ef444433] text-[#ef4444] border-none font-bold rounded-[6px] px-[12px] py-[6px] text-[0.72rem] cursor-pointer hover:bg-[#ef444455] transition-colors"
                           >
-                            Reject
+                            Not Select
                           </button>
                           <button
                             onClick={() =>

@@ -26,7 +26,7 @@ export const RegistrationRequestRejectModal = ({ request, onClose, onConfirm, is
             <AlertCircle size={20} color="#ef4444" />
           </div>
           <div className="flex-1">
-            <h3 className="text-white text-[1rem] font-extrabold m-0">Reject Application</h3>
+            <h3 className="text-white text-[1rem] font-extrabold m-0">Not Selected Application</h3>
             <p className="text-gray-500 text-[0.78rem] m-0 mt-[2px]">{request?.full_name} — {request?.role}</p>
           </div>
           <button 
@@ -39,7 +39,7 @@ export const RegistrationRequestRejectModal = ({ request, onClose, onConfirm, is
         <form onSubmit={handleSubmit} className="p-[24px] pt-[20px]">
           <label className="flex items-center gap-[8px] text-white text-[0.82rem] cursor-pointer mb-[12px]">
             <input type="checkbox" checked={noReason} onChange={e => setNoReason(e.target.checked)} className="accent-[#70d64d]" />
-            Do not provide a rejection reason
+            Do not provide a not selected reason
           </label>
           {!noReason && (
             <textarea 
@@ -57,7 +57,7 @@ export const RegistrationRequestRejectModal = ({ request, onClose, onConfirm, is
               className={`${btnBaseClass} bg-[rgba(239,68,68,0.12)] text-[#ef4444] border border-[rgba(239,68,68,0.3)] px-[18px] py-[9px] flex-1`} 
               disabled={isPending}
             >
-              <X size={14} /> {isPending ? 'Rejecting…' : 'Confirm Rejection'}
+              <X size={14} /> {isPending ? 'Not Selecting…' : 'Confirm Not Selected'}
             </button>
             <button 
               type="button" 

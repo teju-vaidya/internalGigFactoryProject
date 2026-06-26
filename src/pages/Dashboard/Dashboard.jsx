@@ -21,7 +21,7 @@ import { ActivityTimeline } from '../../components/Dashboard/ActivityTimeline';
 export const Dashboard = () => {
   const loggedInUser = useAuthStore((state) => state.user) || {};
   const profile = useAuthStore((state) => state.profile);
-  const role = loggedInUser.role || 'freelancer';
+  const role = loggedInUser.role || 'Gig Expert';
   
   const [activeAdminTab, setActiveAdminTab] = useState('applications');
   const [rejectTarget, setRejectTarget] = useState(null); // drives reject modal
@@ -106,7 +106,7 @@ export const Dashboard = () => {
 
   useEffect(() => {
     if (rejectQuery.data) {
-      toast.success('Registration request rejected.');
+      toast.success('Registration request not selected.');
       queryClient.invalidateQueries({ queryKey: ['registrationRequests'] });
       setRejectTarget(null);
       setRejectParams(null);
@@ -115,7 +115,7 @@ export const Dashboard = () => {
 
   useEffect(() => {
     if (rejectQuery.error) {
-      toast.error(rejectQuery.error.message || 'Rejection failed.');
+      toast.error(rejectQuery.error.message || 'Not selecting failed.');
       setRejectParams(null);
     }
   }, [rejectQuery.error]);
@@ -174,7 +174,7 @@ export const Dashboard = () => {
             {item.status === 'PENDING' ? (
               <>
                 <button className="btn-act accept" onClick={() => handleAdminAction(item.id, 'SELECTED')}><Check size={12} /> ACCEPT</button>
-                <button className="btn-act reject" onClick={() => handleAdminAction(item.id, 'REJECT')}><X size={12} /> REJECT</button>
+                <button className="btn-act reject" onClick={() => handleAdminAction(item.id, 'REJECT')}><X size={12} /> NOT SELECT</button>
               </>
             ) : (
               <button className="btn-act reset" onClick={() => handleAdminAction(item.id, 'PENDING')}><RotateCcw size={12} /> RESET</button>

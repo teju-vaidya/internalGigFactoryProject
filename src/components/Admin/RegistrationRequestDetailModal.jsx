@@ -161,7 +161,7 @@ export const RegistrationRequestDetailModal = ({ request, historyData, isLoading
                     <div className="grid grid-cols-2 gap-[10px] mb-[12px]">
                       {[
                         ['Total Attempts', historyData.tracker?.total_attempts || 0, '#fff'],
-                        ['Rejections', historyData.tracker?.rejection_count || 0, '#ef4444']
+                        ['Not Selected', historyData.tracker?.rejection_count || 0, '#ef4444']
                       ].map(([l, v, c]) => (
                         <div key={l} className="bg-[#121215] border border-[#2c2c2c] p-[8px] rounded-[6px] text-center">
                           <p className="text-[0.65rem] text-gray-500 uppercase font-bold m-0">{l}</p>
@@ -191,7 +191,7 @@ export const RegistrationRequestDetailModal = ({ request, historyData, isLoading
                 <div className="bg-[#1c1c20] border border-[#2c2c2c] rounded-[8px] p-[16px] border-dashed bg-[#17171a]">
                   <p className="text-[0.75rem] font-bold uppercase tracking-[0.5px] text-[#70d64d] m-0 mb-[12px] pb-[8px] border-b border-[#2c2c2c]">Status & Reviews</p>
                   <div className="flex justify-between text-[0.82rem] border-b border-[#1e1e1e] py-[5px]"><strong>Current State:</strong> <span>{request.status?.toUpperCase()}</span></div>
-                  {request.status === 'rejected' && <div className="mt-[8px] text-[0.8rem] text-[#ef4444]"><strong>Rejection Reason:</strong> {request.rejection_reason || 'None.'}</div>}
+                  {request.status === 'rejected' && <div className="mt-[8px] text-[0.8rem] text-[#ef4444]"><strong>Not Selected Reason:</strong> {request.rejection_reason || 'None.'}</div>}
                   <div className="mt-[16px] flex justify-end">
                     <button 
                       onClick={handleOpenEditDecision} 
@@ -207,7 +207,7 @@ export const RegistrationRequestDetailModal = ({ request, historyData, isLoading
             <form onSubmit={handleSaveDecisionUpdate} className="flex flex-col gap-[16px]">
               <h3 className="text-white text-[1rem] font-extrabold m-0 mb-[10px]">Change Decision & Cooldown</h3>
               <div className="flex gap-[20px]">
-                {['approved', 'rejected'].map(v => (
+                {['approved', 'not Selected'].map(v => (
                   <label key={v} className="flex items-center gap-[8px] text-white cursor-pointer">
                     <input type="radio" name="newStatus" value={v} checked={newStatus === v} onChange={() => setNewStatus(v)} className="accent-[#70d64d]" />
                     {v.charAt(0).toUpperCase() + v.slice(1)} Request
@@ -230,11 +230,11 @@ export const RegistrationRequestDetailModal = ({ request, historyData, isLoading
                   )}
                   <label className="flex items-center gap-[8px] text-white text-[0.8rem] cursor-pointer">
                     <input type="checkbox" checked={noReason} onChange={e => setNoReason(e.target.checked)} className="accent-[#70d64d]" />
-                    Do not provide a rejection reason
+                    Do not provide a not selected reason
                   </label>
                   {!noReason && (
                     <div>
-                      <label className="text-gray-500 text-[0.75rem] font-semibold uppercase block mb-[6px]">Reason for Rejection</label>
+                      <label className="text-gray-500 text-[0.75rem] font-semibold uppercase block mb-[6px]">Reason For Not Selected</label>
                       <textarea rows={3} value={rejectReason} onChange={e => setRejectReason(e.target.value)} placeholder="Describe why..." className={textareaClass} />
                     </div>
                   )}
@@ -258,7 +258,7 @@ export const RegistrationRequestDetailModal = ({ request, historyData, isLoading
               <Check size={14} /> Approve
             </button>
             <button className={`${btnBaseClass} bg-[rgba(239,68,68,0.12)] text-[#ef4444] border border-[rgba(239,68,68,0.3)] px-[18px] py-[9px]`} onClick={() => onReject(request)} disabled={isPending}>
-              <X size={14} /> Reject
+              <X size={14} /> Not Select
             </button>
           </div>
         )}

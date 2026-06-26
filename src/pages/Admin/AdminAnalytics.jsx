@@ -136,6 +136,7 @@ function ChartCard({ title, subtitle, children, icon: Icon, iconColor = '#70d64d
 }
 
 export default function AdminAnalytics() {
+  
   const { data: analyticsResponse, isLoading, refetch, isFetching } = useQuery({
     queryKey: ['admin-analytics'],
     queryFn: () => api.get('/profiles/admin/analytics'),
@@ -417,7 +418,7 @@ export default function AdminAnalytics() {
                 <Area 
                   type="monotone" 
                   stackId="1"
-                  dataKey="Rejected" 
+                  dataKey="Not Selected" 
                   stroke={COLORS.red} 
                   fill={COLORS.red}
                   fillOpacity={0.15}

@@ -4,10 +4,10 @@ import { Award, Wallet, Edit, Trash2 } from "lucide-react";
 const fmtDate = (d) =>
   d
     ? new Date(d).toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      })
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    })
     : "—";
 
 export default function AdminProjectMilestones({
@@ -147,13 +147,12 @@ export default function AdminProjectMilestones({
                               Status:{" "}
                             </span>
                             <span
-                              className={`text-[0.7rem] uppercase font-bold ${
-                                del.status === "approved"
+                              className={`text-[0.7rem] uppercase font-bold ${del.status === "approved"
                                   ? "text-[#70d64d]"
                                   : del.status === "rejected"
                                     ? "text-red-400"
                                     : "text-amber-400"
-                              }`}
+                                }`}
                             >
                               {del.status}
                             </span>
@@ -175,7 +174,7 @@ export default function AdminProjectMilestones({
                                 }
                                 className="bg-red-500/20 text-red-400 border border-red-500/30 font-bold rounded-[4px] px-[8px] py-[3px] text-[0.68rem] cursor-pointer hover:bg-red-500/30"
                               >
-                                Reject
+                                Not Select
                               </button>
                             </div>
                           )}
@@ -190,11 +189,10 @@ export default function AdminProjectMilestones({
                     <div className="text-[0.72rem]">
                       <span className="text-gray-500">Status: </span>
                       <span
-                        className={`font-semibold uppercase ${
-                          ms.status === "completed"
+                        className={`font-semibold uppercase ${ms.status === "completed"
                             ? "text-[#70d64d]"
                             : "text-amber-500"
-                        }`}
+                          }`}
                       >
                         {ms.status}
                       </span>
@@ -202,11 +200,10 @@ export default function AdminProjectMilestones({
                     <div className="text-[0.72rem] flex items-center gap-1.5">
                       <span className="text-gray-500">Payment: </span>
                       <span
-                        className={`font-semibold uppercase ${
-                          ms.payment_status === "paid"
+                        className={`font-semibold uppercase ${ms.payment_status === "paid"
                             ? "text-[#70d64d]"
                             : "text-gray-400"
-                        }`}
+                          }`}
                       >
                         {ms.payment_status}
                       </span>

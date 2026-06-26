@@ -89,7 +89,7 @@ export const RegistrationRequestsTable = ({ pageItems, isLoading, onSelectReq, o
                       disabled={reviewQueryFetching} 
                       className={`${btnBaseClass} bg-[rgba(239,68,68,0.08)] text-[#ef4444] border border-[rgba(239,68,68,0.25)] px-[9px] py-[5px]`}
                     >
-                      <X size={12} /> Reject
+                      <X size={12} /> Not Select
                     </button>
                   </>)}
                   {req.status !== 'pending' && (
