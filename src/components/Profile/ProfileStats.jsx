@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const ProfileStats = ({ isFreelancer, totalProjects, hourlyRate, commercialBasis, employeeCount }) => {
+export const ProfileStats = ({ isGigExpert, totalProjects, hourlyRate, commercialBasis, employeeCount }) => {
   return (
     <section className="profile-quick-stats-row">
       <div className="stat-metric-box">
@@ -8,7 +8,7 @@ export const ProfileStats = ({ isFreelancer, totalProjects, hourlyRate, commerci
         <span className="stat-value">{totalProjects || 0}</span>
       </div>
 
-      {isFreelancer ? (
+      {isGigExpert ? (
         <div className="stat-metric-box">
           <span className="stat-label">Commercial Rate</span>
           <span className="stat-value">

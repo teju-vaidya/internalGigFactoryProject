@@ -24,14 +24,14 @@ function Avatar({ name, photo, size = 40 }) {
   );
 }
 
-export const FreelancerTable = ({ freelancers, isLoading, onSelectFreelancer, status }) => {
+export const GigExpertTable = ({ gigExperts, isLoading, onSelectGigExpert, status }) => {
   return (
     <div className="bg-[#121215] border border-[#23232a] rounded-[10px] overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="bg-[#0c0c0e]">
-              {['Freelancer', 'Contact', 'Title & Skills', 'Location', 'Rate', 'Profile', 'Status', 'Registered'].map(h => (
+              {['Gig Expert', 'Contact', 'Title & Skills', 'Location', 'Rate', 'Profile', 'Status', 'Registered'].map(h => (
                 <th key={h} className="text-gray-500 text-[0.65rem] font-bold px-[16px] py-[14px] border-b border-[#23232a] tracking-[0.6px] whitespace-nowrap">
                   {h.toUpperCase()}
                 </th>
@@ -49,22 +49,22 @@ export const FreelancerTable = ({ freelancers, isLoading, onSelectFreelancer, st
                   ))}
                 </tr>
               ))
-            ) : freelancers.length === 0 ? (
+            ) : gigExperts.length === 0 ? (
               <tr>
                 <td colSpan={8} className="text-center p-[48px] text-gray-500">
-                  No freelancers found.
+                  No gigExperts found.
                 </td>
               </tr>
-            ) : freelancers.map(f => {
-              const fp = f.freelancer_profile;
-              const skills = fp?.freelancer_skills?.slice(0, 3).map(s => s.skill_name) || [];
+            ) : gigExperts.map(f => {
+              const fp = f.gig_expert_profile;
+              const skills = fp?.gig_expert_skills?.slice(0, 3).map(s => s.skill_name) || [];
               return (
                 <tr 
                   key={f.id}
-                  onClick={() => onSelectFreelancer(f)}
+                  onClick={() => onSelectGigExpert(f)}
                   className="transition-colors duration-100 cursor-pointer hover:bg-[#181820]"
                 >
-                  {/* Freelancer info */}
+                  {/* Gig Expert info */}
                   <td className="p-[16px] border-b border-[#1a1a22] align-middle">
                     <div className="flex items-center gap-[10px]">
                       <Avatar name={f.full_name} photo={f.profile_photo} />
@@ -94,8 +94,8 @@ export const FreelancerTable = ({ freelancers, isLoading, onSelectFreelancer, st
                       {skills.map(s => (
                         <span key={s} className="bg-[#1e293b] text-[#38bdf8] text-[0.62rem] font-semibold px-[6px] py-[2px] rounded-[4px]">{s}</span>
                       ))}
-                      {(fp?.freelancer_skills?.length || 0) > 3 && (
-                        <span className="text-gray-500 text-[0.62rem] px-[4px] py-[2px]">+{fp.freelancer_skills.length - 3}</span>
+                      {(fp?.gig_expert_skills?.length || 0) > 3 && (
+                        <span className="text-gray-500 text-[0.62rem] px-[4px] py-[2px]">+{fp.gig_expert_skills.length - 3}</span>
                       )}
                     </div>
                   </td>

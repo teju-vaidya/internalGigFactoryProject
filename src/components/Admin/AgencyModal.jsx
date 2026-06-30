@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, Globe, Users, Briefcase, Mail, Phone, MapPin, ExternalLink } from 'lucide-react';
+import { X, Globe, Users, Briefcase, Mail, Phone, MapPin, ExternalLink, FileText } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { api } from '../../utils/api';
@@ -346,6 +346,16 @@ export const AgencyModal = ({ agency, onClose }) => {
                       <Globe size={14} /> Visit Corporate Website <ExternalLink size={11} color="#000" />
                     </a>
                   )}
+                  {ap.portfolio_pdf_url && (
+                    <a
+                      href={ap.portfolio_pdf_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center justify-center gap-1.5 border border-[#23232a] text-white no-underline text-[0.8rem] font-bold p-2 rounded-md text-center bg-[#0c0c0e] transition-colors hover:border-gray-500"
+                    >
+                      <FileText size={14} /> Portfolio PDF <ExternalLink size={11} />
+                    </a>
+                  )}
                   {ap.linkedin_url && (
                     <a
                       href={ap.linkedin_url}
@@ -366,7 +376,7 @@ export const AgencyModal = ({ agency, onClose }) => {
           {activeTab === 'profile' && (
             <div className="profile-workspace-view animate-fade-in p-0 bg-transparent">
               <ProfileHeader
-                isFreelancer={false}
+                isGigExpert={false}
                 name={ap.agency_name || agency.full_name}
                 avatar={ap.logo}
                 subtitle={ap.industry || 'Digital Services Agency'}
@@ -380,7 +390,7 @@ export const AgencyModal = ({ agency, onClose }) => {
               />
 
               <ProfileStats
-                isFreelancer={false}
+                isGigExpert={false}
                 totalProjects={ap.total_projects}
                 commercialBasis={ap.commercial_basis}
                 employeeCount={ap.employee_count}
@@ -389,7 +399,7 @@ export const AgencyModal = ({ agency, onClose }) => {
               <div className="profile-details-split-grid mt-5">
                 <div className="profile-details-left-pane">
                   <ProfileAbout
-                    isFreelancer={false}
+                    isGigExpert={false}
                     description={ap.description}
                   />
                   <TeamStructure employeeCount={ap.employee_count} />
@@ -397,12 +407,13 @@ export const AgencyModal = ({ agency, onClose }) => {
 
                 <div className="profile-details-right-pane">
                   <CapabilityCloud
-                    isFreelancer={false}
+                    isGigExpert={false}
                     skills={(ap.service_details?.selectedServices || []).map(code => ({ skill_name: SERVICE_LABELS[code] || code }))}
                   />
                   <ServiceSpecs serviceDetails={ap.service_details} />
                   <DocumentsList
-                    isFreelancer={false}
+                    isGigExpert={false}
+                    portfolioPdfUrl={ap.portfolio_pdf_url}
                     verifications={agency.verifications}
                     isAdmin={true}
                   />

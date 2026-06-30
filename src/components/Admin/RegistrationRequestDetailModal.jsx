@@ -6,12 +6,12 @@ const fmtDate = (d) =>
   d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
 
 const ROLE_STYLES = {
-  freelancer: { bg: '#1e293b', color: '#38bdf8' },
+  gig_expert: { bg: '#1e293b', color: '#38bdf8' },
   agency:     { bg: '#2e1065', color: '#c084fc' },
 };
 
 function RoleChip({ role }) {
-  const r = ROLE_STYLES[role] || ROLE_STYLES.freelancer;
+  const r = ROLE_STYLES[role] || ROLE_STYLES.gig_expert;
   return (
     <span 
       style={{ background: r.bg, color: r.color }} 
@@ -107,7 +107,7 @@ export const RegistrationRequestDetailModal = ({ request, historyData, isLoading
                 </div>
                 <div className="bg-[#1c1c20] border border-[#2c2c2c] rounded-[8px] p-[16px]">
                   <p className="text-[0.75rem] font-bold uppercase tracking-[0.5px] text-[#70d64d] m-0 mb-[12px] pb-[8px] border-b border-[#2c2c2c]">Legal & Identification</p>
-                  {request.role === 'freelancer' ? (<>
+                  {request.role === 'gig_expert' ? (<>
                     <div className="flex justify-between text-[0.82rem] border-b border-[#1e1e1e] py-[5px]"><strong>Legal Name (PAN):</strong> <span>{app.legalNamePan || 'N/A'}</span></div>
                     <div className="flex justify-between text-[0.82rem] border-b border-[#1e1e1e] py-[5px]"><strong>Personal PAN:</strong> <span className="uppercase">{app.personalPan || 'N/A'}</span></div>
                   </>) : (<>
@@ -145,6 +145,7 @@ export const RegistrationRequestDetailModal = ({ request, historyData, isLoading
                     ))}
                   </div>
                   {app.portfolioUrl && <div><strong className="text-[0.82rem]">Portfolio: </strong><a href={app.portfolioUrl} target="_blank" rel="noreferrer" className="text-[#70d64d] text-[0.82rem] hover:underline">Open Link</a></div>}
+                  {app.portfolioPdfUrl && <div className="mt-1"><strong className="text-[0.82rem]">Portfolio PDF: </strong><a href={app.portfolioPdfUrl} target="_blank" rel="noreferrer" className="text-[#70d64d] text-[0.82rem] hover:underline">View PDF</a></div>}
                 </div>
                 <div className="bg-[#1c1c20] border border-[#2c2c2c] rounded-[8px] p-[16px]">
                   <p className="text-[0.75rem] font-bold uppercase tracking-[0.5px] text-[#70d64d] m-0 mb-[12px] pb-[8px] border-b border-[#2c2c2c]">Commercial Rates</p>
@@ -175,7 +176,7 @@ export const RegistrationRequestDetailModal = ({ request, historyData, isLoading
                         return (
                           <div key={log.id} style={{ borderLeft: `2px solid ${c}` }} className="pl-[10px] text-[0.75rem]">
                             <div className="flex justify-between">
-                              <strong style={{ color: c }}>{log.action}</strong>
+                              <strong style={{ color: c }}>{log.action === 'REJECTED' ? 'NOT SELECTED' : log.action}</strong>
                               <span className="text-gray-500 text-[0.65rem]">{new Date(log.created_at).toLocaleDateString()}</span>
                             </div>
                             <div className="text-[#d1d5db] mt-[2px]">
@@ -210,7 +211,7 @@ export const RegistrationRequestDetailModal = ({ request, historyData, isLoading
                 {['approved', 'not Selected'].map(v => (
                   <label key={v} className="flex items-center gap-[8px] text-white cursor-pointer">
                     <input type="radio" name="newStatus" value={v} checked={newStatus === v} onChange={() => setNewStatus(v)} className="accent-[#70d64d]" />
-                    {v.charAt(0).toUpperCase() + v.slice(1)} Request
+                    {v === 'rejected' ? 'Not Selected' : (v.charAt(0).toUpperCase() + v.slice(1))} Request
                   </label>
                 ))}
               </div>

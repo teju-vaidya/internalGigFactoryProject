@@ -56,7 +56,7 @@ const NAV_CONFIG = {
   admin: [
     { label: "Dashboard", icon: LayoutDashboard, to: "/admin/dashboard" },
     { label: "Reg. Requests", icon: FileSearch, to: "/admin/requests" },
-    { label: "Freelancers", icon: Users, to: "/admin/freelancers" },
+    { label: "Gig Experts", icon: Users, to: "/admin/gigExperts" },
     { label: "Agencies", icon: Building2, to: "/admin/agencies" },
     { label: "Projects", icon: Briefcase, to: "/admin/projects" },
     { label: "Analytics", icon: BarChart3, to: "/admin/analytics" },
@@ -64,7 +64,7 @@ const NAV_CONFIG = {
     { label: "Communication", icon: Mail, to: "/admin/communication" },
     { label: "Settings", icon: Settings, to: "/admin/settings" },
   ],
-  freelancer: [
+  gig_expert: [
     { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard" },
     { label: "Browse Projects", icon: Briefcase, to: "/projects" },
     { label: "My Applications", icon: FileCheck, to: "/applications" },
@@ -112,7 +112,7 @@ function NotifDropdown({
   onClose,
 }) {
   const navigate = useNavigate();
-  const role = useAuthStore((state) => state.user?.role) || 'freelancer';
+  const role = useAuthStore((state) => state.user?.role) || 'gig_expert';
   
   return (
     <div className="notif-dropdown">
@@ -275,7 +275,7 @@ export default function AppLayout({ children, pageTitle }) {
     "/profile",
     "/settings",
     "/admin/projects",
-    "/admin/freelancers",
+    "/admin/gigExperts",
     "/admin/agencies",
     "/admin/requests",
     "/admin/activities",
@@ -286,14 +286,14 @@ export default function AppLayout({ children, pageTitle }) {
   const profile = useAuthStore((state) => state.profile);
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const userName = user?.fullName || user?.full_name || "User";
-  const role = user?.role || "freelancer";
+  const role = user?.role || "gig_expert";
   const avatarUrl =
-    role === "freelancer"
+    role === "gig_expert"
       ? profile?.user?.profile_photo || user?.profile_photo
       : role === "agency"
         ? profile?.logo || user?.profile_photo
         : user?.profile_photo;
-  const navItems = NAV_CONFIG[role] || NAV_CONFIG.freelancer;
+  const navItems = NAV_CONFIG[role] || NAV_CONFIG.gig_expert;
 
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -582,8 +582,8 @@ export default function AppLayout({ children, pageTitle }) {
                     </span>
                     <span className="topbar-profile-role">
                       {role === "admin"
-                        ? "Super Admin"
-                        : role.charAt(0).toUpperCase() + role.slice(1)}
+                        ? "Super Admin" 
+                        : role === "gig_expert" ? "Gig Expert" : role.charAt(0).toUpperCase() + role.slice(1)}
                     </span>
                   </div>
                   {avatarUrl ? (

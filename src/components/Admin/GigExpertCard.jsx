@@ -24,7 +24,7 @@ function Avatar({ name, photo, size = 40 }) {
   );
 }
 
-export const FreelancerCard = ({ freelancers, isLoading, onSelectFreelancer, status }) => {
+export const GigExpertCard = ({ gigExperts, isLoading, onSelectGigExpert, status }) => {
   if (isLoading) {
     return (
       <div className="grid grid-cols-[repeat(auto-fill,minmax(290px,1fr))] gap-[16px]">
@@ -52,23 +52,23 @@ export const FreelancerCard = ({ freelancers, isLoading, onSelectFreelancer, sta
     );
   }
 
-  if (freelancers.length === 0) {
+  if (gigExperts.length === 0) {
     return (
       <div className="bg-[#121215] border border-[#23232a] rounded-[10px] p-[48px] text-center text-gray-500">
-        No freelancers found.
+        No gigExperts found.
       </div>
     );
   }
 
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(290px,1fr))] gap-[16px]">
-      {freelancers.map(f => {
-        const fp = f.freelancer_profile;
-        const skills = fp?.freelancer_skills?.slice(0, 3).map(s => s.skill_name) || [];
+      {gigExperts.map(f => {
+        const fp = f.gig_expert_profile;
+        const skills = fp?.gig_expert_skills?.slice(0, 3).map(s => s.skill_name) || [];
         return (
           <div
             key={f.id}
-            onClick={() => onSelectFreelancer(f)}
+            onClick={() => onSelectGigExpert(f)}
             className="bg-[#121215] border border-[#23232a] rounded-[10px] p-[20px] flex flex-col gap-[14px] relative cursor-pointer transition-all duration-200 hover:-translate-y-[2px] hover:border-[#70d64d]"
           >
             {/* Status Badge top right */}
@@ -112,9 +112,9 @@ export const FreelancerCard = ({ freelancers, isLoading, onSelectFreelancer, sta
                   {s}
                 </span>
               ))}
-              {(fp?.freelancer_skills?.length || 0) > 3 && (
+              {(fp?.gig_expert_skills?.length || 0) > 3 && (
                 <span className="text-gray-500 text-[0.62rem] px-[4px] py-[2px] self-center">
-                  +{fp.freelancer_skills.length - 3} more
+                  +{fp.gig_expert_skills.length - 3} more
                 </span>
               )}
               {skills.length === 0 && (
@@ -151,4 +151,4 @@ export const FreelancerCard = ({ freelancers, isLoading, onSelectFreelancer, sta
   );
 };
 
-export default FreelancerCard;
+export default GigExpertCard;

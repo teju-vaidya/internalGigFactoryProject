@@ -119,7 +119,7 @@ export const Profile = () => {
 
   const handleEditClick = () => {
     setActiveTab('basic');
-    const isFreelancerRole = user?.role === 'freelancer';
+    const isGigExpertRole = user?.role === 'gig_expert';
     const initialSelectedServices = profile?.service_details?.selectedServices || [];
     const bimDetails = profile?.service_details?.bimDetails || { softwareStack: [], maxLod: '', cdeExperience: '' };
     const auditDetails = profile?.service_details?.auditDetails || { equipmentOwned: '', serviceRadius: '' };
@@ -127,7 +127,7 @@ export const Profile = () => {
     const boqDetails = profile?.service_details?.boqDetails || { measurementStandards: '', estimationSoftware: '' };
     const vizDetails = profile?.service_details?.vizDetails || { renderingEngines: '', hardwareCapacity: '', animationCapability: 'No' };
     
-    if (isFreelancerRole) {
+    if (isGigExpertRole) {
       setFormData({
         title: profile?.title || '',
         bio: profile?.bio || '',
@@ -136,13 +136,14 @@ export const Profile = () => {
         availability: profile?.availability || 'AVAILABLE',
         portfolioUrl: profile?.portfolio_url || '',
         resumeUrl: profile?.resume_url || '',
+        portfolioPdfUrl: profile?.portfolio_pdf_url || '',
         linkedinUrl: profile?.linkedin_url || '',
         legalNamePan: profile?.legal_name_pan || '',
         personalPan: profile?.personal_pan || '',
         commercialBasis: profile?.commercial_basis || '',
         noticePeriod: profile?.notice_period || '',
         selectedServices: initialSelectedServices,
-        skillsList: (profile?.freelancer_skills || []).map(s => s.skill_name).join(', '),
+        skillsList: (profile?.gig_expert_skills || []).map(s => s.skill_name).join(', '),
         bimDetails,
         auditDetails,
         peerReviewDetails,
@@ -156,6 +157,7 @@ export const Profile = () => {
         description: profile?.description || '',
         gstNumber: profile?.gst_number || '',
         website: profile?.website || '',
+        portfolioPdfUrl: profile?.portfolio_pdf_url || '',
         employeeCount: profile?.employee_count || 0,
         foundedYear: profile?.founded_year || 2020,
         industry: profile?.industry || '',
@@ -192,7 +194,7 @@ export const Profile = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        if (isFreelancer) {
+        if (isGigExpert) {
           setFormData((prev) => ({ ...prev, profilePhoto: reader.result }));
         } else {
           setFormData((prev) => ({ ...prev, logo: reader.result }));
@@ -225,11 +227,11 @@ export const Profile = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setIsSaving(true);
-    const isFreelancerRole = user?.role === 'freelancer';
+    const isGigExpertRole = user?.role === 'gig_expert';
     let payload = { ...formData };
     
     // Validate required fields
-    if (isFreelancerRole) {
+    if (isGigExpertRole) {
       if (!formData.legalNamePan || !formData.legalNamePan.trim()) {
         toast.error('Legal Name (as on PAN) is required.');
         setActiveTab('legal');
@@ -287,7 +289,7 @@ export const Profile = () => {
     
     payload.serviceDetails = serviceDetails;
 
-    if (isFreelancerRole) {
+    if (isGigExpertRole) {
       const customSkills = formData.skillsList
         ? formData.skillsList.split(',').map(s => s.trim()).filter(Boolean)
         : [];
@@ -328,19 +330,19 @@ export const Profile = () => {
     );
   }
 
-  const role = user?.role || 'freelancer';
-  const isFreelancer = role === 'freelancer';
-  const name = isFreelancer ? profile?.user?.full_name : profile?.agency_name;
-  const avatar = isFreelancer ? profile?.user?.profile_photo : profile?.logo;
-  const subtitle = isFreelancer ? profile?.title : profile?.industry || 'Digital Services Agency';
+  const role = user?.role || 'gig_expert';
+  const isGigExpert = role === 'gig_expert';
+  const name = isGigExpert ? profile?.user?.full_name : profile?.agency_name;
+  const avatar = isGigExpert ? profile?.user?.profile_photo : profile?.logo;
+  const subtitle = isGigExpert ? profile?.title : profile?.industry || 'Digital Services Agency';
   const emailVal = profile?.user?.email;
   const phoneVal = profile?.user?.mobile;
   const locationVal = profile?.city && profile?.country ? `${profile.city}, ${profile.country}` : 'Not Specified';
-  const webVal = isFreelancer ? profile?.portfolio_url : profile?.website;
+  const webVal = isGigExpert ? profile?.portfolio_url : profile?.website;
   const initials = getInitials(name);
 
-  const skills = isFreelancer 
-    ? (profile?.freelancer_skills || [])
+  const skills = isGigExpert 
+    ? (profile?.gig_expert_skills || [])
     : (profile?.service_details?.selectedServices || []).map(code => ({ skill_name: SERVICE_LABELS[code] || code }));
   
   return (
@@ -348,7 +350,7 @@ export const Profile = () => {
     <div className="profile-workspace-view animate-fade-in">
       <ProfileHeader
         
-        isFreelancer={isFreelancer}
+        isGigExpert={isGigExpert}
         name={name}
         avatar={avatar}
         subtitle={subtitle}
@@ -363,7 +365,7 @@ export const Profile = () => {
       />
 
       <ProfileStats
-        isFreelancer={isFreelancer}
+        isGigExpert={isGigExpert}
         totalProjects={profile?.total_projects}
         hourlyRate={profile?.hourly_rate}
         commercialBasis={profile?.commercial_basis}
@@ -373,12 +375,12 @@ export const Profile = () => {
       <div className="profile-details-split-grid">
         <div className="profile-details-left-pane">
           <ProfileAbout
-            isFreelancer={isFreelancer}
+            isGigExpert={isGigExpert}
             bio={profile?.bio}
             description={profile?.description}
           />
 
-          {isFreelancer ? (
+          {isGigExpert ? (
             <WorkHistory workHistory={profile?.work_history} />
           ) : (
             <TeamStructure teamMembers={profile?.team_members || []} employeeCount={profile?.employee_count} />
@@ -387,7 +389,7 @@ export const Profile = () => {
 
         <div className="profile-details-right-pane">
           <CapabilityCloud
-            isFreelancer={isFreelancer}
+            isGigExpert={isGigExpert}
             skills={skills}
           />
 
@@ -395,8 +397,9 @@ export const Profile = () => {
 
           <DocumentsList 
          
-            isFreelancer={isFreelancer}
+            isGigExpert={isGigExpert}
             resumeUrl={profile?.resume_url}
+            portfolioPdfUrl={profile?.portfolio_pdf_url}
             verifications={profile?.verifications}
             documents={documents}
             onUpload={handleUploadDocument}
@@ -409,7 +412,7 @@ export const Profile = () => {
 
       {isEditModalOpen && (
         <EditProfileModal
-          isFreelancer={isFreelancer}
+          isGigExpert={isGigExpert}
           formData={formData}
           setFormData={setFormData}
           activeTab={activeTab}

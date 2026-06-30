@@ -10,7 +10,7 @@ export const STATUS_CFG = {
   approved:  { bg: 'rgba(112,214,77,0.12)',  color: '#70d64d',  label: 'Approved'  },
   pending:   { bg: 'rgba(245,158,11,0.12)',  color: '#f59e0b',  label: 'Pending'   },
   inactive:  { bg: 'rgba(245,158,11,0.12)',  color: '#f59e0b',  label: 'Inactive'  },
-  rejected:  { bg: 'rgba(239,68,68,0.12)',   color: '#ef4444',  label: 'Rejected'  },
+  rejected:  { bg: 'rgba(239,68,68,0.12)',   color: '#ef4444',  label: 'Not Selected'  },
   suspended: { bg: 'rgba(107,114,128,0.12)', color: '#6b7280',  label: 'Suspended' },
 };
 

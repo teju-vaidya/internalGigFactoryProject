@@ -1,5 +1,8 @@
-import React from "react";
-import { ClipboardList, Paperclip, Wallet } from "lucide-react";
+import { useState } from "react";
+import { ClipboardList, Paperclip, Wallet, Download, FileArchive } from "lucide-react";
+import { api } from "../../../utils/api";
+import { toast } from "react-toastify";
+import ConfirmDialog from "../../../components/Admin/ConfirmDialog";
 
 export default function ProjectMilestones({
   milestones,
@@ -11,10 +14,79 @@ export default function ProjectMilestones({
   setSelectedMilestoneForReceipt,
   setSelectedPaymentForReceipt,
   setSelectedDeliverableForEdit,
+  onRefresh,
 }) {
+  const [confirmConfig, setConfirmConfig] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "confirm",
+    variant: "primary",
+    promptPlaceholder: "",
+    defaultValue: "",
+    onConfirm: () => {},
+  });
+
+  const showConfirm = ({
+    title,
+    message,
+    type = "confirm",
+    variant = "primary",
+    promptPlaceholder = "",
+    defaultValue = "",
+    onConfirm,
+  }) => {
+    setConfirmConfig({
+      isOpen: true,
+      title,
+      message,
+      type,
+      variant,
+      promptPlaceholder,
+      defaultValue,
+      onConfirm: async (val) => {
+        if (onConfirm) await onConfirm(val);
+        setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
+      },
+    });
+  };
+
+  const handleDownloadZip = (milestoneId, deliverableId) => {
+    try {
+      const downloadUrl = api.getDownloadUrl(`/projects/milestones/deliverables/${deliverableId}/zip`);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.setAttribute("download", "");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      toast.error(err.message || "Failed to download ZIP archive.");
+    }
+  };
+
+  const handleDeleteSubmission = (deliverableId) => {
+    showConfirm({
+      title: "Delete Submission",
+      message: "Are you sure you want to delete this deliverable submission? This will permanently delete all associated files from storage.",
+      variant: "danger",
+      onConfirm: async () => {
+        try {
+          await api.delete(`/projects/milestones/deliverables/${deliverableId}`);
+          toast.success("Deliverable submission deleted successfully.");
+          if (onRefresh) {
+            onRefresh();
+          }
+        } catch (err) {
+          toast.error(err.message || "Failed to delete deliverable submission.");
+        }
+      }
+    });
+  };
   return (
-    <section className="bg-[#121215] border border-[#23232a] rounded-[10px] p-6 md:p-8">
-      <div className="flex items-center gap-[10px] mb-6 border-b border-[#23232a] pb-3">
+    <>
+      <section className="bg-[#121215] border border-[#23232a] rounded-[10px] p-6 md:p-8">
+        <div className="flex items-center gap-[10px] mb-6 border-b border-[#23232a] pb-3">
         <ClipboardList size={18} className="text-[#70d64d]" />
         <h3 className="text-white font-bold text-[1rem] m-0">
           Project Milestones
@@ -229,28 +301,41 @@ export default function ProjectMilestones({
                                           </div>
                                         )}
                                         {deliv.files && deliv.files.length > 0 && (
-                                          <div className="flex flex-wrap gap-2 items-center text-[10px] text-gray-500 mt-1">
-                                            <span className="font-bold uppercase tracking-wider">
-                                              Attachments:
-                                            </span>
-                                            {deliv.files.map((f) => (
-                                              <a
-                                                key={f.id}
-                                                href={f.file_url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-[#70d64d] hover:underline font-semibold flex items-center gap-1"
+                                          <div className="flex flex-col gap-2 mt-2">
+                                            <div className="flex justify-between items-center bg-[#18181b] border border-[#27272a] rounded-[6px] px-[10px] py-[6px]">
+                                              <span className="text-gray-400 text-[10px] font-bold flex items-center gap-1.5 uppercase tracking-wider">
+                                                <FileArchive size={14} className="text-gray-400" />
+                                                Attachments ({deliv.files.length})
+                                              </span>
+                                              <button
+                                                onClick={() => handleDownloadZip(milestone.id, deliv.id)}
+                                                className="bg-[#70d64d]/15 text-[#70d64d] hover:bg-[#70d64d]/25 border border-[#70d64d]/30 hover:border-[#70d64d]/40 rounded-[4px] px-[8px] py-[4px] text-[10px] font-bold cursor-pointer transition-all flex items-center gap-[4px]"
                                               >
-                                                <Paperclip size={10} />{" "}
-                                                {f.file_name}
-                                              </a>
-                                            ))}
+                                                <Download size={12} />
+                                                Download Zip
+                                              </button>
+                                            </div>
+                                            <div className="flex flex-wrap gap-2">
+                                              {deliv.files.map((f) => (
+                                                <a
+                                                  key={f.id}
+                                                  href={f.file_url}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="text-gray-300 hover:text-white bg-[#0e0e11] border border-[#1e1e24] hover:border-[#70d64d] text-[10px] rounded-[4px] px-[8px] py-[4px] transition-all truncate max-w-[200px]"
+                                                  title={f.file_name}
+                                                >
+                                                  <Paperclip size={10} className="inline mr-1" />
+                                                  {f.file_name}
+                                                </a>
+                                              ))}
+                                            </div>
                                           </div>
                                         )}
                                         {deliv.status !== "approved" &&
                                           deliv.submitted_by === user.id &&
                                           !isProjectCompleted && (
-                                            <div className="flex justify-end mt-2">
+                                            <div className="flex justify-end gap-2 mt-2">
                                               <button
                                                 onClick={() => {
                                                   setSelectedMilestoneForDeliverable(
@@ -263,6 +348,12 @@ export default function ProjectMilestones({
                                                 className="bg-[#202024] hover:bg-[#2d2d34] border border-[#2d2d34] hover:border-[#70d64d]/30 text-[#70d64d] hover:text-[#8ee67b] font-bold rounded-[4px] px-2.5 py-1 text-[10px] cursor-pointer transition-colors"
                                               >
                                                 Edit Submission
+                                              </button>
+                                              <button
+                                                onClick={() => handleDeleteSubmission(deliv.id)}
+                                                className="bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 text-red-400 hover:text-red-300 font-bold rounded-[4px] px-2.5 py-1 text-[10px] cursor-pointer transition-colors"
+                                              >
+                                                Delete Submission
                                               </button>
                                             </div>
                                           )}
@@ -331,6 +422,12 @@ export default function ProjectMilestones({
           ))}
         </div>
       )}
-    </section>
+      </section>
+
+      <ConfirmDialog
+        {...confirmConfig}
+        onCancel={() => setConfirmConfig((prev) => ({ ...prev, isOpen: false }))}
+      />
+    </>
   );
 }

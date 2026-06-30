@@ -86,7 +86,7 @@ const AuthStatusModal = ({ isOpen, onClose, statusData, email, onRegisterTrigger
     if (onReapplyTrigger) {
       onReapplyTrigger(
         applicationData,
-        role || 'freelancer',
+        role || 'gig_expert',
         email || statusData.email,
         fullName || statusData.fullName,
         mobile || statusData.mobile
@@ -98,7 +98,7 @@ const AuthStatusModal = ({ isOpen, onClose, statusData, email, onRegisterTrigger
   const META = {
     user_not_found:      { Icon: AlertTriangle, title: 'Account Not Found' },
     pending_approval:    { Icon: Clock,         title: 'Review in Progress' },
-    rejected_cooldown:   { Icon: XCircle,       title: 'Application Rejected' },
+    rejected_cooldown:   { Icon: XCircle,       title: 'Application Not Selected' },
     rejected_can_reapply:{ Icon: RefreshCw,     title: 'Reapply Available' },
   };
   const { Icon, title } = META[status] || META.user_not_found;
@@ -186,7 +186,7 @@ const AuthStatusModal = ({ isOpen, onClose, statusData, email, onRegisterTrigger
                   A cooldown period is currently active.
                 </p>
 
-                {rejectionReason && <ReasonBox label="REASON FOR REJECTION" text={rejectionReason} />}
+                {rejectionReason && <ReasonBox label="REASON FOR NOT SELECTING" text={rejectionReason} />}
 
                 <div className="w-full bg-[var(--input-bg)] border border-[var(--input-border)] rounded-md p-[14px_12px] text-center mb-4.5">
                   <span className="block text-[0.6rem] font-bold tracking-[1.5px] text-[var(--text-muted)] uppercase mb-2">COOLDOWN IN EFFECT</span>
@@ -207,11 +207,11 @@ const AuthStatusModal = ({ isOpen, onClose, statusData, email, onRegisterTrigger
             {status === 'rejected_can_reapply' && (
               <>
                 <p className="text-[var(--text-muted)] text-[0.85rem] leading-[1.6] mb-4">
-                  Your previous application was rejected, but your cooldown has expired!
+                  Your previous application was not selected, but your cooldown has expired!
                   Review, edit, and resubmit your application below.
                 </p>
 
-                {rejectionReason && <ReasonBox label="PREVIOUS REJECTION REASON" text={rejectionReason} />}
+                {rejectionReason && <ReasonBox label="PREVIOUS REASON FOR NOT SELECTING" text={rejectionReason} />}
 
                 <p className="text-[var(--text-muted)] text-[0.75rem] mb-5">
                   Your previous details have been saved for your convenience.

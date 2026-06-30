@@ -21,7 +21,7 @@ import { ActivityTimeline } from '../../components/Dashboard/ActivityTimeline';
 export const Dashboard = () => {
   const loggedInUser = useAuthStore((state) => state.user) || {};
   const profile = useAuthStore((state) => state.profile);
-  const role = loggedInUser.role || 'Gig Expert';
+  const role = loggedInUser.role || 'freelancer';
   
   const [activeAdminTab, setActiveAdminTab] = useState('applications');
   const [rejectTarget, setRejectTarget] = useState(null); // drives reject modal
@@ -34,7 +34,8 @@ export const Dashboard = () => {
     queryKey: ['registrationRequests'],
     queryFn: async () => {
       const response = await api.get('/auth/registration-requests');
-      return response.requests || [];
+      const list = response.requests || [];
+      return list.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
     },
     enabled: role === 'admin',
   });
@@ -106,7 +107,7 @@ export const Dashboard = () => {
 
   useEffect(() => {
     if (rejectQuery.data) {
-      toast.success('Registration request not selected.');
+      toast.success('Registration request rejected.');
       queryClient.invalidateQueries({ queryKey: ['registrationRequests'] });
       setRejectTarget(null);
       setRejectParams(null);
@@ -115,7 +116,7 @@ export const Dashboard = () => {
 
   useEffect(() => {
     if (rejectQuery.error) {
-      toast.error(rejectQuery.error.message || 'Not selecting failed.');
+      toast.error(rejectQuery.error.message || 'Rejection failed.');
       setRejectParams(null);
     }
   }, [rejectQuery.error]);
@@ -126,7 +127,7 @@ export const Dashboard = () => {
 
   /* Mock Datasets mapped for Admin state */
   const [adminApplications, setAdminApplications] = useState([
-    { id: 1, type: 'FREELANCER', name: 'Sarah Johnson', project: 'E-commerce Website Redesign', email: 'sarah.j@email.com', status: 'PENDING' },
+    { id: 1, type: 'GIG_EXPERT', name: 'Sarah Johnson', project: 'E-commerce Website Redesign', email: 'sarah.j@email.com', status: 'PENDING' },
     { id: 2, type: 'AGENCY', name: 'Creative Studios Inc.', project: 'Mobile App Development', email: 'contact@creativestudios.com', status: 'SELECTED' }
   ]);
 
@@ -248,7 +249,7 @@ export const Dashboard = () => {
   });
 
   const completedProjectsCount = useMemo(() => {
-    return role === 'freelancer' 
+    return role === 'gig_expert' 
       ? (profile?.completed_projects || 0) 
       : (profile?.total_completed_projects || 0);
   }, [profile, role]);
@@ -355,7 +356,7 @@ export const Dashboard = () => {
           tableData={tableData}
         />
 
-        {/* Contextual Side Activity Panel rendered for Freelancer / Agency views */}
+        {/* Contextual Side Activity Panel rendered for Gig Expert / Agency views */}
         <ActivityTimeline role={role} notifications={combinedActivities} />
       </div>
 

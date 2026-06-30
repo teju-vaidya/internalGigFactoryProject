@@ -117,6 +117,22 @@ export const api = {
     request(endpoint, { method: "PATCH", body, ...options }),
   postFile: (endpoint, formData) => uploadFile(endpoint, formData),
   putFile: (endpoint, formData) => uploadFilePut(endpoint, formData),
+  downloadFile: (endpoint) => {
+    const token = useAuthStore.getState().token;
+    return fetch(`${API_BASE_URL}${endpoint}`, {
+      method: "GET",
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      }
+    }).then(res => {
+      if (!res.ok) throw new Error("Download failed");
+      return res.blob();
+    });
+  },
+  getDownloadUrl: (endpoint) => {
+    const token = useAuthStore.getState().token;
+    return `${API_BASE_URL}${endpoint}?token=${token}`;
+  }
 };
 export const getBackendUrl = () => {
   let resolvedUrl = '';

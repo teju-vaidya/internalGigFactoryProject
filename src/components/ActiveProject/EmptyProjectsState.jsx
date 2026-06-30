@@ -56,7 +56,7 @@ export const EmptyProjectsState = ({ applications = [] }) => {
                 statusText = 'APPROVED';
                 statusClass = 'bg-[#70d64d]/10 text-[#70d64d] border border-[#70d64d]/20';
               } else if (statusLower === 'rejected') {
-                statusText = 'REJECTED';
+                statusText = 'NOT SELECTED';
                 statusClass = 'bg-red-500/10 text-red-400 border border-red-500/20';
               }
 

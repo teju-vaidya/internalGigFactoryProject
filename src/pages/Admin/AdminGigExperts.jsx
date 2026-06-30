@@ -6,15 +6,15 @@ import { api } from '../../utils/api';
 import { Pagination, PageSizeSelector } from '../../components/AdminShared';
 
 // Import subcomponents
-import { FreelancerTable } from '../../components/Admin/FreelancerTable';
-import { FreelancerCard } from '../../components/Admin/FreelancerCard';
+import { GigExpertTable } from '../../components/Admin/GigExpertTable';
+import { GigExpertCard } from '../../components/Admin/GigExpertCard';
 
-export default function AdminFreelancers() {
+export default function AdminGigExperts() {
   const [search, setSearch]   = useState('');
-  const [status, setStatus]   = useState(() => localStorage.getItem('freelancer_status_filter') || '');
-  const [sort, setSort]       = useState(() => localStorage.getItem('freelancer_sort') || 'newest');
+  const [status, setStatus]   = useState(() => localStorage.getItem('gig_expert_status_filter') || '');
+  const [sort, setSort]       = useState(() => localStorage.getItem('gig_expert_sort') || 'newest');
   const [page, setPage]       = useState(1);
-  const [limit, setLimit]     = useState(() => Number(localStorage.getItem('admin_freelancers_limit')) || 10);
+  const [limit, setLimit]     = useState(() => Number(localStorage.getItem('admin_gig_experts_limit')) || 10);
   const [viewMode, setViewMode] = useState(() => localStorage.getItem('admin_view_mode') || 'list');
   const navigate = useNavigate();
 
@@ -26,11 +26,11 @@ export default function AdminFreelancers() {
   }, [search]);
 
   useEffect(() => {
-    localStorage.setItem('freelancer_status_filter', status);
+    localStorage.setItem('gig_expert_status_filter', status);
   }, [status]);
 
   useEffect(() => {
-    localStorage.setItem('freelancer_sort', sort);
+    localStorage.setItem('gig_expert_sort', sort);
   }, [sort]);
 
   useEffect(() => {
@@ -38,23 +38,23 @@ export default function AdminFreelancers() {
   }, [viewMode]);
 
   useEffect(() => {
-    localStorage.setItem('admin_freelancers_limit', limit);
+    localStorage.setItem('admin_gig_experts_limit', limit);
   }, [limit]);
 
   useEffect(() => { setPage(1); }, [dSearch, status, sort, limit]);
 
   const { data, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ['admin-freelancers', page, limit, dSearch, status, sort],
+    queryKey: ['admin-gigExperts', page, limit, dSearch, status, sort],
     queryFn: () => {
       const params = new URLSearchParams({ page, limit, sort });
       if (dSearch) params.set('search', dSearch);
       if (status)  params.set('status', status);
-      return api.get(`/profiles/admin/freelancers?${params}`);
+      return api.get(`/profiles/admin/gigExperts?${params}`);
     },
     keepPreviousData: true,
   });
 
-  const freelancers = data?.freelancers || [];
+  const gigExperts = data?.gigExperts || [];
   const total       = data?.total        || 0;
   const totalPages  = data?.totalPages   || 1;
 
@@ -68,9 +68,9 @@ export default function AdminFreelancers() {
       {/* Header */}
       <div className="flex justify-between items-center flex-wrap gap-[12px]">
         <div>
-          <h2 className="text-white font-extrabold text-[1.4rem] m-0">Freelancers</h2>
+          <h2 className="text-white font-extrabold text-[1.4rem] m-0">Gig Experts</h2>
           <p className="text-gray-500 text-[0.82rem] m-0 mt-[4px]">
-            {isLoading ? 'Loading…' : `${total} freelancers registered on the platform`}
+            {isLoading ? 'Loading…' : `${total} gig experts registered on the platform`}
           </p>
         </div>
         <button 
@@ -143,17 +143,17 @@ export default function AdminFreelancers() {
 
       {/* Main Content Area */}
       {viewMode === 'list' ? (
-        <FreelancerTable
-          freelancers={freelancers}
+        <GigExpertTable
+          gigExperts={gigExperts}
           isLoading={isLoading}
-          onSelectFreelancer={(freelancer) => navigate(`/admin/users/${freelancer.id}/profile?from=Freelancers+Listing`)}
+          onSelectGigExpert={(gigExpert) => navigate(`/admin/users/${gigExpert.id}/profile?from=GigExperts+Listing`)}
           status={status}
         />
       ) : (
-        <FreelancerCard
-          freelancers={freelancers}
+        <GigExpertCard
+          gigExperts={gigExperts}
           isLoading={isLoading}
-          onSelectFreelancer={(freelancer) => navigate(`/admin/users/${freelancer.id}/profile?from=Freelancers+Listing`)}
+          onSelectGigExpert={(gigExpert) => navigate(`/admin/users/${gigExpert.id}/profile?from=GigExperts+Listing`)}
           status={status}
         />
       )}

@@ -21,7 +21,7 @@ const Login = () => {
   const [timer, setTimer] = useState(0);
 
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const redirectUrl = searchParams.get('redirect');
   const setAuth = useAuthStore((state) => state.setAuth);
   const token = useAuthStore((state) => state.token);
@@ -29,25 +29,61 @@ const Login = () => {
 
   const [geoInfo, setGeoInfo] = useState({ ip: '', location: '' });
 
+  // Handle SSO redirect query parameters
+  useEffect(() => {
+    const tokenParam = searchParams.get('token');
+    const refreshTokenParam = searchParams.get('refreshToken');
+    const userParam = searchParams.get('user');
+
+    if (tokenParam && refreshTokenParam && userParam) {
+      try {
+        const decodedUser = JSON.parse(decodeURIComponent(userParam));
+        setAuth(tokenParam, refreshTokenParam, decodedUser);
+        
+        // Remove token/user query parameters from the address bar
+        const cleanParams = new URLSearchParams(searchParams);
+        cleanParams.delete('token');
+        cleanParams.delete('refreshToken');
+        cleanParams.delete('user');
+        setSearchParams(cleanParams, { replace: true });
+        
+        toast.success('SSO Login successful!');
+      } catch (err) {
+        console.error('Failed to parse SSO login payload:', err);
+        toast.error('SSO Login failed: Invalid user payload');
+      }
+    }
+  }, [searchParams, setSearchParams, setAuth]);
+
   useEffect(() => {
     const fetchGeo = async () => {
+      // 1. IP-based lookup using ipapi.co
       try {
         const res = await fetch('https://ipapi.co/json/');
         if (!res.ok) throw new Error('API response error');
         const data = await res.json();
-        const locStr = [data.city, data.region, data.country_name].filter(Boolean).join(', ');
+        let city = data.city || '';
+        if (city.toLowerCase() === 'nanded') {
+          city = 'Nagpur';
+        }
+        const locStr = [city, data.region, data.country_name].filter(Boolean).join(', ');
         setGeoInfo({
           ip: data.ip || '',
           location: locStr || ''
         });
       } catch (err) {
+        // 2. Fallback to ipwho.is if ipapi.co fails
         try {
-          const res2 = await fetch('https://ip-api.com/json/');
+          const res2 = await fetch('https://ipwho.is/');
           const data2 = await res2.json();
-          if (data2 && data2.status === 'success') {
-            const locStr2 = [data2.city, data2.regionName, data2.country].filter(Boolean).join(', ');
+          if (data2 && data2.success) {
+            let city2 = data2.city || '';
+            if (city2.toLowerCase() === 'nanded') {
+              city2 = 'Nagpur';
+            }
+            const locStr2 = [city2, data2.region, data2.country].filter(Boolean).join(', ');
             setGeoInfo({
-              ip: data2.query || '',
+              ip: data2.ip || '',
               location: locStr2 || ''
             });
           }
@@ -270,7 +306,7 @@ const Login = () => {
 
         {/* Header */}
         <h1 className="login-title">LOGIN TO PORTAL</h1> 
-        <p className="login-subtitle">Building Intelligence,Growing Together</p> 
+        <p className="login-subtitle">GET BEST GIG OUT THERE</p> 
 
         <hr className="divider-line" />
 

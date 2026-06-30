@@ -1,12 +1,12 @@
 import React from 'react';
 import { Cpu, Award } from 'lucide-react';
 
-export const CapabilityCloud = ({ isFreelancer, skills }) => {
+export const CapabilityCloud = ({ isGigExpert, skills }) => {
   return (
     <div className="pane-content-card">
       <h3>
-        {isFreelancer ? <Cpu size={18} /> : <Award size={18} />}
-        {isFreelancer ? 'Skills & Expertise' : 'Agency Capabilities'}
+        {isGigExpert ? <Cpu size={18} /> : <Award size={18} />}
+        {isGigExpert ? 'Skills & Expertise' : 'Agency Capabilities'}
       </h3>
       <div className="skills-pill-cloud">
         {skills.length === 0 ? (

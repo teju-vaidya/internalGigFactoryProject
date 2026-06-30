@@ -348,7 +348,7 @@ export default function AdminActivities() {
                           <span className="truncate max-w-[150px]">{activity.project.title}</span>
                           <ArrowUpRight size={12} className="shrink-0" />
                         </div>
-                      ) : (activity.module === 'user' || activity.module === 'registration' || activity.entity_type === 'user' || activity.entity_type === 'freelancer' || activity.entity_type === 'agency') && activity.entity_id ? (
+                      ) : (activity.module === 'user' || activity.module === 'registration' || activity.entity_type === 'user' || activity.entity_type === 'gig_expert' || activity.entity_type === 'agency') && activity.entity_id ? (
                         <div
                           onClick={() => navigate(`/admin/users/${activity.entity_id}/profile`)}
                           className="flex items-center gap-[4px] text-[#70d64d] hover:text-white cursor-pointer transition-colors font-medium"

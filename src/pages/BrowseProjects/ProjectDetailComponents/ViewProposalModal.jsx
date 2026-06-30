@@ -81,7 +81,7 @@ const fmtDate = (d) =>
                   Applicant Role
                 </span>
                 <span className="text-white font-semibold block mt-0.5 capitalize">
-                  {selectedBidForProposal.applicant?.role || "Freelancer"}
+                  {selectedBidForProposal.applicant?.role || "Gig Expert"}
                 </span>
               </div>
               <div>
@@ -99,7 +99,7 @@ const fmtDate = (d) =>
                           : "bg-sky-500/10 text-sky-400"
                   }`}
                 >
-                  {selectedBidForProposal.status}
+                  {selectedBidForProposal.status === 'rejected' ? 'not selected' : selectedBidForProposal.status}
                 </span>
               </div>
             </div>
@@ -197,7 +197,7 @@ const fmtDate = (d) =>
                         }}
                         className="bg-[#ef444433] text-[#ef4444] border-none font-bold rounded-[6px] px-[14px] py-[8px] text-[0.75rem] cursor-pointer hover:bg-[#ef444455] transition-colors"
                       >
-                        Reject
+                        Not Select
                       </button>
                     </>
                   )}

@@ -129,7 +129,7 @@ export default function AdminBidsCard({
                             : "bg-sky-500/10 text-sky-400"
                     }`}
                   >
-                    {app.status}
+                    {app.status === 'rejected' ? 'not selected' : app.status}
                   </span>
                 </div>
 

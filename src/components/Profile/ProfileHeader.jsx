@@ -3,7 +3,7 @@ import { Mail, MapPin, Phone, Globe, Calendar, Edit2 } from 'lucide-react';
 
 export const ProfileHeader = ({
   role,
-  isFreelancer,
+  isGigExpert,
   name,
   avatar,
   subtitle,
@@ -34,7 +34,7 @@ export const ProfileHeader = ({
           <div className="profile-name-row">
             <h1>{name || 'No Name Found'}</h1>
             <span className="availability-chip">
-              {isFreelancer ? (availability || 'AVAILABLE') : 'ACTIVE PORTAL'}
+              {isGigExpert ? (availability || 'AVAILABLE') : 'ACTIVE PORTAL'}
             </span>
           </div>
 
@@ -52,7 +52,7 @@ export const ProfileHeader = ({
                 </a>
               </span>
             )}
-            {!isFreelancer && foundedYear && (
+            {!isGigExpert && foundedYear && (
               <span><Calendar size={14} /> Est. {foundedYear}</span>
             )}
           </div>

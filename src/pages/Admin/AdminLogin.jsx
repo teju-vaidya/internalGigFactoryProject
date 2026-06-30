@@ -19,23 +19,33 @@ const AdminLogin = () => {
 
   useEffect(() => {
     const fetchGeo = async () => {
+      // 1. IP-based lookup using ipapi.co
       try {
         const res = await fetch('https://ipapi.co/json/');
         if (!res.ok) throw new Error('API response error');
         const data = await res.json();
-        const locStr = [data.city, data.region, data.country_name].filter(Boolean).join(', ');
+        let city = data.city || '';
+        if (city.toLowerCase() === 'nanded') {
+          city = 'Nagpur';
+        }
+        const locStr = [city, data.region, data.country_name].filter(Boolean).join(', ');
         setGeoInfo({
           ip: data.ip || '',
           location: locStr || ''
         });
       } catch (err) {
+        // 2. Fallback to ipwho.is if ipapi.co fails
         try {
-          const res2 = await fetch('https://ip-api.com/json/');
+          const res2 = await fetch('https://ipwho.is/');
           const data2 = await res2.json();
-          if (data2 && data2.status === 'success') {
-            const locStr2 = [data2.city, data2.regionName, data2.country].filter(Boolean).join(', ');
+          if (data2 && data2.success) {
+            let city2 = data2.city || '';
+            if (city2.toLowerCase() === 'nanded') {
+              city2 = 'Nagpur';
+            }
+            const locStr2 = [city2, data2.region, data2.country].filter(Boolean).join(', ');
             setGeoInfo({
-              ip: data2.query || '',
+              ip: data2.ip || '',
               location: locStr2 || ''
             });
           }

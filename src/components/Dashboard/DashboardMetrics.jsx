@@ -10,7 +10,7 @@ export const DashboardMetrics = ({ role, isRequestsLoading, registrationRequests
           <div className="m-card-val">3</div>
         </div>
         <div className="metric-card-item">
-          <div className="m-card-head"><span>TOTAL FREELANCERS</span><Users size={16} /></div>
+          <div className="m-card-head"><span>TOTAL GIG EXPERTS</span><Users size={16} /></div>
           <div className="m-card-val">0</div>
         </div>
         <div className="metric-card-item">

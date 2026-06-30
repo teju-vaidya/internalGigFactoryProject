@@ -115,7 +115,8 @@ export default function RegistrationRequests() {
       const matchSearch = !q || r.full_name?.toLowerCase().includes(q) || r.email?.toLowerCase().includes(q) || r.mobile?.includes(q);
       return matchStatus && matchRole && matchSearch;
     });
-    if (sortBy === 'oldest')    arr.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    if (sortBy === 'newest')    arr.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+    else if (sortBy === 'oldest')    arr.sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
     else if (sortBy === 'name') arr.sort((a, b) => (a.full_name || '').localeCompare(b.full_name || ''));
     return arr;
   }, [allRequests, statusFilter, roleFilter, dSearch, sortBy]);
@@ -142,7 +143,7 @@ export default function RegistrationRequests() {
           { label: 'Total Requests', value: stats.total,    Icon: FileText,  accent: false },
           { label: 'Pending Review', value: stats.pending,  Icon: Clock,     accent: true  },
           { label: 'Approved',       value: stats.approved, Icon: Users,     accent: false },
-          { label: 'Not Selected',       value: stats.rejected, Icon: Building2, accent: false },
+          { label: 'Rejected',       value: stats.rejected, Icon: Building2, accent: false },
         ].map(({ label, value, Icon, accent }) => (
           <div 
             key={label} 
@@ -190,14 +191,14 @@ export default function RegistrationRequests() {
                   onClick={() => setStatusFilter(s)} 
                   className={`${filterBtnClass} ${statusFilter === s ? filterBtnActiveClass : ''}`}
                 >
-                  {s.charAt(0).toUpperCase() + s.slice(1)}
+                  {s === 'rejected' ? 'Not Selected' : (s.charAt(0).toUpperCase() + s.slice(1))}
                 </button>
               ))}
             </div>
             {/* Role filter */}
             <select value={roleFilter} onChange={e => setRoleFilter(e.target.value)} className={selectClass}>
               <option value="all">All Roles</option>
-              <option value="freelancer">Freelancer</option>
+              <option value="gig_expert">Gig Expert</option>
               <option value="agency">Agency</option>
             </select>
             {/* Sort */}

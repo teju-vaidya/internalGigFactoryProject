@@ -20,7 +20,7 @@ export default function ProjectDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [isApplyOpen, setIsApplyOpen] = useState(false);
-  const [selectedRole, setSelectedRole] = useState("freelancer");
+  const [selectedRole, setSelectedRole] = useState("gig_expert");
   const [selectedMilestoneForDeliverable, setSelectedMilestoneForDeliverable] =
     useState(null);
   const [selectedMilestoneForReceipt, setSelectedMilestoneForReceipt] =
@@ -32,7 +32,7 @@ export default function ProjectDetail() {
 
   // Get active user info from store to auto-detect role name
   const user = useAuthStore((state) => state.user) || {};
-  const userRole = user.role || "freelancer";
+  const userRole = user.role || "gig_expert";
 
   useEffect(() => {
     if (userRole === "admin") {
@@ -275,6 +275,7 @@ export default function ProjectDetail() {
             setSelectedMilestoneForReceipt={setSelectedMilestoneForReceipt}
             setSelectedPaymentForReceipt={setSelectedPaymentForReceipt}
             setSelectedDeliverableForEdit={setSelectedDeliverableForEdit}
+            onRefresh={refetch}
           />
         </div>
 

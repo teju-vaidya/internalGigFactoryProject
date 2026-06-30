@@ -30,7 +30,7 @@ import { toast } from 'react-toastify';
 
 export default function AdminCommunication() {
   const [target, setTarget] = useState('roles'); // 'roles' or 'specific'
-  const [selectedRoles, setSelectedRoles] = useState([]); // 'freelancer', 'agency'
+  const [selectedRoles, setSelectedRoles] = useState([]); // 'gig_expert', 'agency'
   const [selectedEmails, setSelectedEmails] = useState([]); // array of specific emails
   const [subject, setSubject] = useState('');
   const [emailContent, setEmailContent] = useState('');
@@ -74,10 +74,10 @@ export default function AdminCommunication() {
 
   const apiBase = (import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace('/api', '');
 
-  // 1. Fetch Freelancers for specific recipient picker
+  // 1. Fetch Gig Experts for specific recipient picker
   const { data: freelancersData, isLoading: isFreelancersLoading } = useQuery({
-    queryKey: ['admin-freelancers-list-comm'],
-    queryFn: () => api.get('/profiles/admin/freelancers?limit=200').then(r => r.freelancers || []),
+    queryKey: ['admin-gigExperts-list-comm'],
+    queryFn: () => api.get('/profiles/admin/gigExperts?limit=200').then(r => r.gigExperts || []),
   });
 
   // 2. Fetch Agencies for specific recipient picker
@@ -103,8 +103,8 @@ export default function AdminCommunication() {
         list.push({
           id: f.id,
           email: f.email,
-          name: f.full_name || 'Freelancer',
-          role: 'freelancer',
+          name: f.full_name || 'Gig Expert',
+          role: 'gig_expert',
           photo: f.profile_photo || null
         });
       });
@@ -505,11 +505,11 @@ export default function AdminCommunication() {
               <div className="flex flex-col gap-[12px] animate-fade-in">
                 <p className="text-gray-500 text-[0.78rem] m-0">Send email to all users belonging to selected categories.</p>
 
-                {/* Freelancers Category Box */}
+                {/* Gig Experts Category Box */}
                 <div
-                  onClick={() => handleToggleRole('freelancer')}
+                  onClick={() => handleToggleRole('gig_expert')}
                   className={`flex items-center justify-between p-[16px] rounded-[8px] border cursor-pointer transition-all ${
-                    selectedRoles.includes('freelancer')
+                    selectedRoles.includes('gig_expert')
                       ? 'bg-[rgba(112,214,77,0.04)] border-[#70d64d] text-white'
                       : 'bg-[#0c0c0e] border-[#23232a] text-gray-400 hover:border-[#3a3a44]'
                   }`}
@@ -519,13 +519,13 @@ export default function AdminCommunication() {
                       <UserCheck size={16} className="text-[#70d64d]" />
                     </div>
                     <div>
-                      <p className="text-white text-[0.85rem] font-bold m-0">Freelancers</p>
+                      <p className="text-white text-[0.85rem] font-bold m-0">Gig Experts</p>
                       <p className="text-gray-500 text-[0.72rem] m-0">All registered independent contractors</p>
                     </div>
                   </div>
                   <input
                     type="checkbox"
-                    checked={selectedRoles.includes('freelancer')}
+                    checked={selectedRoles.includes('gig_expert')}
                     onChange={() => {}} // handled by parent div click
                     className="accent-[#70d64d] pointer-events-none"
                   />
@@ -561,7 +561,7 @@ export default function AdminCommunication() {
                 <div className="flex justify-between items-center mt-[10px]">
                   <button
                     type="button"
-                    onClick={() => setSelectedRoles(['freelancer', 'agency'])}
+                    onClick={() => setSelectedRoles(['gig_expert', 'agency'])}
                     className="text-[#70d64d] text-[0.75rem] font-semibold hover:underline bg-transparent border-none outline-none"
                   >
                     Select All Category Roles
@@ -740,7 +740,7 @@ export default function AdminCommunication() {
                           </div>
                           <span
                             className={`text-[0.6rem] font-bold px-[6px] py-[2px] rounded border uppercase shrink-0 ${
-                              user.role === 'freelancer'
+                              user.role === 'gig_expert'
                                 ? 'bg-[rgba(112,214,77,0.12)] text-[#70d64d] border-[rgba(112,214,77,0.25)]'
                                 : 'bg-[rgba(56,189,248,0.12)] text-[#38bdf8] border-[rgba(56,189,248,0.25)]'
                             }`}

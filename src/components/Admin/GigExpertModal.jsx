@@ -43,7 +43,7 @@ const getInitials = (name) => {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 };
 
-export const FreelancerModal = ({ freelancer, onClose }) => {
+export const GigExpertModal = ({ gigExpert, onClose }) => {
   const [suspendReason, setSuspendReason] = useState('');
   const [showSuspendInput, setShowSuspendInput] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
@@ -51,11 +51,11 @@ export const FreelancerModal = ({ freelancer, onClose }) => {
   const queryClient = useQueryClient();
 
   const suspendMutation = useMutation({
-    mutationFn: () => api.post(`/admin/users/${freelancer?.id}/suspend`, { reason: suspendReason }),
+    mutationFn: () => api.post(`/admin/users/${gigExpert?.id}/suspend`, { reason: suspendReason }),
     onSuccess: (res) => {
       toast.success(res.message || 'Account suspended.');
-      queryClient.invalidateQueries({ queryKey: ['admin-freelancers'] });
-      if (freelancer) freelancer.account_status = 'suspended';
+      queryClient.invalidateQueries({ queryKey: ['admin-gigExperts'] });
+      if (gigExpert) gigExpert.account_status = 'suspended';
       setShowSuspendInput(false);
       setSuspendReason('');
     },
@@ -65,22 +65,22 @@ export const FreelancerModal = ({ freelancer, onClose }) => {
   });
 
   const reactivateMutation = useMutation({
-    mutationFn: () => api.post(`/admin/users/${freelancer?.id}/unsuspend`),
+    mutationFn: () => api.post(`/admin/users/${gigExpert?.id}/unsuspend`),
     onSuccess: (res) => {
       toast.success(res.message || 'Account reactivated.');
-      queryClient.invalidateQueries({ queryKey: ['admin-freelancers'] });
-      if (freelancer) freelancer.account_status = 'approved';
+      queryClient.invalidateQueries({ queryKey: ['admin-gigExperts'] });
+      if (gigExpert) gigExpert.account_status = 'approved';
     },
     onError: (err) => {
       toast.error(err.message || 'Reactivation failed.');
     }
   });
 
-  if (!freelancer) return null;
-  const fp = freelancer.freelancer_profile || {};
-  const skills = fp?.freelancer_skills?.map(s => s.skill_name) || [];
+  if (!gigExpert) return null;
+  const fp = gigExpert.gig_expert_profile || {};
+  const skills = fp?.gig_expert_skills?.map(s => s.skill_name) || [];
 
-  const statusCfg = STATUS_CFG[freelancer.account_status] || STATUS_CFG.pending;
+  const statusCfg = STATUS_CFG[gigExpert.account_status] || STATUS_CFG.pending;
 
   const btnBaseClass = "inline-flex items-center gap-[5px] rounded-[5px] text-[0.8rem] font-bold cursor-pointer transition-opacity duration-150";
 
@@ -94,20 +94,20 @@ export const FreelancerModal = ({ freelancer, onClose }) => {
         {/* Header */}
         <div className="flex items-center justify-between p-[24px] border-b border-[#23232a] bg-[#0c0c0e]">
           <div className="flex items-center gap-[16px]">
-            <Avatar name={freelancer.full_name} photo={freelancer.profile_photo} size={50} />
+            <Avatar name={gigExpert.full_name} photo={gigExpert.profile_photo} size={50} />
             <div>
               <h2 className="text-white text-[1.25rem] font-extrabold m-0 mb-[4px]">
-                {freelancer.full_name}
+                {gigExpert.full_name}
               </h2>
               <div className="flex gap-[8px] items-center">
                 <span 
                   style={{ background: statusCfg.bg, color: statusCfg.color }} 
                   className="inline-flex items-center gap-[5px] px-[8px] py-[3px] rounded-[4px] text-[0.68rem] font-bold"
                 >
-                  {freelancer.account_status?.toUpperCase()}
+                  {gigExpert.account_status?.toUpperCase()}
                 </span>
                 <span className="text-[0.75rem] text-gray-500">
-                  {freelancer.is_verified ? '✓ VERIFIED USER' : 'UNVERIFIED USER'}
+                  {gigExpert.is_verified ? '✓ VERIFIED USER' : 'UNVERIFIED USER'}
                 </span>
               </div>
             </div>
@@ -116,7 +116,7 @@ export const FreelancerModal = ({ freelancer, onClose }) => {
             <button 
               onClick={() => {
                 onClose();
-                navigate(`/admin/users/${freelancer.id}/profile`);
+                navigate(`/admin/users/${gigExpert.id}/profile`);
               }}
               className="bg-[rgba(112,214,77,0.1)] border border-[rgba(112,214,77,0.3)] text-[#70d64d] px-[12px] py-[6px] rounded-[6px] text-[0.75rem] font-bold cursor-pointer flex items-center gap-[6px] transition-opacity hover:opacity-90"
             >
@@ -199,7 +199,7 @@ export const FreelancerModal = ({ freelancer, onClose }) => {
                 {/* Account Management Actions */}
                 <div className="bg-[#1c0c0e] border border-[#ef444433] rounded-[8px] p-[18px]">
                   <p className="text-[0.72rem] font-bold uppercase tracking-[0.6px] text-[#ef4444] m-0 mb-[14px] pb-[6px] border-b border-[#ef444433]">Account Management</p>
-                  {freelancer.account_status === 'suspended' ? (
+                  {gigExpert.account_status === 'suspended' ? (
                     <div className="flex flex-col gap-[10px]">
                       <p className="text-[#ef4444] text-[0.8rem] m-0">This account is currently suspended.</p>
                       <button
@@ -273,11 +273,11 @@ export const FreelancerModal = ({ freelancer, onClose }) => {
                 {/* Contact Information */}
                 <div className="bg-[#0c0c0e] border border-[#23232a] rounded-[8px] p-[18px]">
                   <p className="text-[0.72rem] font-bold uppercase tracking-[0.6px] text-[#70d64d] m-0 mb-[14px] pb-[6px] border-b border-[#23232a]">Contact Info</p>
-                  <div className="flex justify-between text-[0.85rem] border-b border-[#1a1a22] py-[7px] text-[#d1d5db]"><strong>Email:</strong> <span>{freelancer.email}</span></div>
-                  <div className="flex justify-between text-[0.85rem] border-b border-[#1a1a22] py-[7px] text-[#d1d5db]"><strong>Phone:</strong> <span>{freelancer.mobile || '—'}</span></div>
+                  <div className="flex justify-between text-[0.85rem] border-b border-[#1a1a22] py-[7px] text-[#d1d5db]"><strong>Email:</strong> <span>{gigExpert.email}</span></div>
+                  <div className="flex justify-between text-[0.85rem] border-b border-[#1a1a22] py-[7px] text-[#d1d5db]"><strong>Phone:</strong> <span>{gigExpert.mobile || '—'}</span></div>
                   <div className="flex justify-between text-[0.85rem] border-b border-[#1a1a22] py-[7px] text-[#d1d5db]"><strong>Location:</strong> <span>{fp.city && fp.country ? `${fp.city}, ${fp.country}` : '—'}</span></div>
-                  <div className="flex justify-between text-[0.85rem] border-b border-[#1a1a22] py-[7px] text-[#d1d5db]"><strong>Registered On:</strong> <span>{fmtDate(freelancer.created_at)}</span></div>
-                  <div className="flex justify-between text-[0.85rem] border-b border-[#1a1a22] py-[7px] text-[#d1d5db]"><strong>Last Login:</strong> <span>{fmtDate(freelancer.last_login)}</span></div>
+                  <div className="flex justify-between text-[0.85rem] border-b border-[#1a1a22] py-[7px] text-[#d1d5db]"><strong>Registered On:</strong> <span>{fmtDate(gigExpert.created_at)}</span></div>
+                  <div className="flex justify-between text-[0.85rem] border-b border-[#1a1a22] py-[7px] text-[#d1d5db]"><strong>Last Login:</strong> <span>{fmtDate(gigExpert.last_login)}</span></div>
                 </div>
 
                 {/* Skills */}
@@ -317,6 +317,16 @@ export const FreelancerModal = ({ freelancer, onClose }) => {
                         <Globe size={14} /> Portfolio Site <ExternalLink size={11} />
                       </a>
                     )}
+                    {fp.portfolio_pdf_url && (
+                      <a
+                        href={fp.portfolio_pdf_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center justify-center gap-[6px] border border-[#23232a] text-white text-[0.8rem] font-bold p-[8px] rounded-[6px] text-center no-underline bg-[#0c0c0e] transition-colors hover:border-gray-500"
+                      >
+                        <FileText size={14} /> Portfolio PDF <ExternalLink size={11} />
+                      </a>
+                    )}
                     {fp.linkedin_url && (
                       <a
                         href={fp.linkedin_url}
@@ -338,21 +348,21 @@ export const FreelancerModal = ({ freelancer, onClose }) => {
           {activeTab === 'profile' && (
             <div className="profile-workspace-view animate-fade-in" style={{ padding: '0', background: 'transparent' }}>
               <ProfileHeader
-                isFreelancer={true}
-                name={freelancer.full_name}
-                avatar={freelancer.profile_photo}
+                isGigExpert={true}
+                name={gigExpert.full_name}
+                avatar={gigExpert.profile_photo}
                 subtitle={fp.title}
-                emailVal={freelancer.email}
-                phoneVal={freelancer.mobile}
+                emailVal={gigExpert.email}
+                phoneVal={gigExpert.mobile}
                 locationVal={fp.city && fp.country ? `${fp.city}, ${fp.country}` : 'Not Specified'}
                 webVal={fp.portfolio_url}
-                initials={getInitials(freelancer.full_name)}
+                initials={getInitials(gigExpert.full_name)}
                 availability={fp.availability}
                 hideEditButton={true}
               />
 
               <ProfileStats
-                isFreelancer={true}
+                isGigExpert={true}
                 totalProjects={fp.total_projects}
                 hourlyRate={fp.hourly_rate}
                 commercialBasis={fp.commercial_basis}
@@ -361,22 +371,23 @@ export const FreelancerModal = ({ freelancer, onClose }) => {
               <div className="profile-details-split-grid mt-[20px]">
                 <div className="profile-details-left-pane">
                   <ProfileAbout
-                    isFreelancer={true}
+                    isGigExpert={true}
                     bio={fp.bio}
                   />
-                  <WorkHistory workHistory={freelancer.work_history} />
+                  <WorkHistory workHistory={gigExpert.work_history} />
                 </div>
 
                 <div className="profile-details-right-pane">
                   <CapabilityCloud
-                    isFreelancer={true}
-                    skills={fp.freelancer_skills || []}
+                    isGigExpert={true}
+                    skills={fp.gig_expert_skills || []}
                   />
                   <ServiceSpecs serviceDetails={fp.service_details} />
                   <DocumentsList
-                    isFreelancer={true}
+                    isGigExpert={true}
                     resumeUrl={fp.resume_url}
-                    verifications={freelancer.verifications}
+                    portfolioPdfUrl={fp.portfolio_pdf_url}
+                    verifications={gigExpert.verifications}
                     isAdmin={true}
                   />
                 </div>
@@ -385,7 +396,7 @@ export const FreelancerModal = ({ freelancer, onClose }) => {
           )}
 
           {activeTab === 'activity' && (
-            <ActivityHistoryView id={freelancer.id} />
+            <ActivityHistoryView id={gigExpert.id} />
           )}
 
         </div>
@@ -394,4 +405,4 @@ export const FreelancerModal = ({ freelancer, onClose }) => {
   );
 };
 
-export default FreelancerModal;
+export default GigExpertModal;

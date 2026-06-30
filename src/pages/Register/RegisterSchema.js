@@ -13,7 +13,7 @@ const mobileRegex = /^[0-9]{10}$/;
 const optionalString = () => yup.string().transform((value, originalValue) => originalValue === '' ? null : value).nullable();
 const optionalUrl = (msg) => optionalString().url(msg || 'Must be a valid URL starting with http:// or https://');
 
-export const freelancerSchema = yup.object().shape({
+export const gigExpertSchema = yup.object().shape({
   // Step 1: Basic Details
   fullName: yup.string().required('Full name is required').min(2, 'Name must be at least 2 characters'),
   designation: yup.string().required('Designation/Role is required'),
@@ -31,6 +31,7 @@ export const freelancerSchema = yup.object().shape({
 
   // Step 4: Portfolio & Commercials
   portfolioUrl: optionalUrl(),
+  portfolioPdfUrl: yup.string().nullable(),
   commercialBasis: yup.string().required('Commercial basis is required'),
   baseRate: yup.number().typeError('Base rate must be a number').positive('Base rate must be positive').required('Base rate is required'),
   noticePeriod: yup.string().required('Notice period is required'),
@@ -62,6 +63,7 @@ export const agencySchema = yup.object().shape({
 
   // Step 4: Portfolio & Commercials
   portfolioUrl: optionalUrl(),
+  portfolioPdfUrl: yup.string().nullable(),
   commercialBasis: yup.string().required('Commercial basis is required'),
   baseRate: yup.number().typeError('Base rate must be a number').positive('Base rate must be positive').required('Base rate is required'),
   noticePeriod: yup.string().required('Notice period is required'),

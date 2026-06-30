@@ -1,5 +1,6 @@
-import React from "react";
-import { Award, Wallet, Edit, Trash2 } from "lucide-react";
+import { Award, Wallet, Edit, Download, FileArchive } from "lucide-react";
+import { api } from "../../../utils/api";
+import { toast } from "react-toastify";
 
 const fmtDate = (d) =>
   d
@@ -23,6 +24,20 @@ export default function AdminProjectMilestones({
   onRecordPayment,
 }) {
   const isProjectCompleted = project?.status?.toLowerCase() === "completed";
+
+  const handleDownloadZip = (milestoneId, deliverableId) => {
+    try {
+      const downloadUrl = api.getDownloadUrl(`/projects/milestones/deliverables/${deliverableId}/zip`);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.setAttribute("download", "");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      toast.error(err.message || "Failed to download ZIP archive.");
+    }
+  };
 
   return (
     <div className="bg-[#121215] border border-[#23232a] rounded-[10px] p-[24px] flex flex-col gap-[16px]">
@@ -123,21 +138,34 @@ export default function AdminProjectMilestones({
                         )}
 
                         {del.files && del.files.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            <span className="text-gray-500 text-[0.7rem]">
-                              Files:
-                            </span>
-                            {del.files.map((f) => (
-                              <a
-                                key={f.id}
-                                href={f.file_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-[#70d64d] text-[0.7rem] hover:underline"
+                          <div className="flex flex-col gap-2 mt-2">
+                            <div className="flex justify-between items-center bg-[#18181b] border border-[#27272a] rounded-[6px] px-[10px] py-[6px]">
+                              <span className="text-gray-400 text-[0.7rem] font-bold flex items-center gap-1.5">
+                                <FileArchive size={14} className="text-gray-400" />
+                                Submitted Files ({del.files.length})
+                              </span>
+                              <button
+                                onClick={() => handleDownloadZip(ms.id, del.id)}
+                                className="bg-[#70d64d]/15 text-[#70d64d] hover:bg-[#70d64d]/25 border border-[#70d64d]/30 hover:border-[#70d64d]/40 rounded-[4px] px-[8px] py-[4px] text-[0.68rem] font-bold cursor-pointer transition-all flex items-center gap-[4px]"
                               >
-                                {f.file_name}
-                              </a>
-                            ))}
+                                <Download size={12} />
+                                Download Zip
+                              </button>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {del.files.map((f) => (
+                                <a
+                                  key={f.id}
+                                  href={f.file_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-gray-300 hover:text-white bg-[#0e0e11] border border-[#1e1e24] hover:border-[#70d64d] text-[0.7rem] rounded-[4px] px-[8px] py-[4px] transition-all truncate max-w-[200px]"
+                                  title={f.file_name}
+                                >
+                                  {f.file_name}
+                                </a>
+                              ))}
+                            </div>
                           </div>
                         )}
 
@@ -154,7 +182,7 @@ export default function AdminProjectMilestones({
                                     : "text-amber-400"
                                 }`}
                             >
-                              {del.status}
+                              {del.status === 'rejected' ? 'not selected' : del.status}
                             </span>
                           </div>
 

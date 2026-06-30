@@ -110,7 +110,7 @@ export const AdminUserProfile = () => {
   });
 
   const handleResetAssignment = (projectId) => {
-    if (window.confirm("Are you sure you want to reset this project's assignment? This will remove the assigned freelancer/agency, set the project status back to 'open', and restore all bids back to 'applied' status.")) {
+    if (window.confirm("Are you sure you want to reset this project's assignment? This will remove the assigned gigExpert/agency, set the project status back to 'open', and restore all bids back to 'applied' status.")) {
       resetAssignmentMutation.mutate(projectId);
     }
   };
@@ -164,30 +164,30 @@ export const AdminUserProfile = () => {
   }
 
   const { user, assignedProjects = [], applications = [], paymentTracking = [], milestonePayments = [] } = data;
-  const isFreelancer = user.role === "freelancer";
-  const fp = user.freelancer_profile || {};
+  const isGigExpert = user.role === "gig_expert";
+  const fp = user.gig_expert_profile || {};
   const ap = user.agency_profile || {};
 
 
-  const name = isFreelancer ? user.full_name : ap.agency_name || user.full_name;
-  const avatar = isFreelancer ? user.profile_photo : ap.logo;
-  const subtitle = isFreelancer
+  const name = isGigExpert ? user.full_name : ap.agency_name || user.full_name;
+  const avatar = isGigExpert ? user.profile_photo : ap.logo;
+  const subtitle = isGigExpert
     ? fp.title
     : ap.industry || "Digital Services Agency";
   const emailVal = user.email;
   const phoneVal = user.mobile;
-  const locationVal = isFreelancer
+  const locationVal = isGigExpert
     ? fp.city && fp.country
       ? `${fp.city}, ${fp.country}`
       : "Not Specified"
     : ap.city && ap.country
       ? `${ap.city}, ${ap.country}`
       : "Not Specified";
-  const webVal = isFreelancer ? fp.portfolio_url : ap.website;
+  const webVal = isGigExpert ? fp.portfolio_url : ap.website;
   const initials = getInitials(name);
 
-  const skills = isFreelancer
-    ? fp.freelancer_skills || []
+  const skills = isGigExpert
+    ? fp.gig_expert_skills || []
     : (ap.service_details?.selectedServices || []).map((code) => ({
         skill_name: SERVICE_LABELS[code] || code,
       }));
@@ -260,7 +260,7 @@ export const AdminUserProfile = () => {
       {activeTab === "profile" && (
         <div className="profile-workspace-view animate-fade-in p-0 bg-transparent">
           <ProfileHeader
-            isFreelancer={isFreelancer}
+            isGigExpert={isGigExpert}
             name={name}
             avatar={avatar}
             subtitle={subtitle}
@@ -268,31 +268,31 @@ export const AdminUserProfile = () => {
             phoneVal={phoneVal}
             locationVal={locationVal}
             webVal={webVal}
-            foundedYear={isFreelancer ? undefined : ap.founded_year}
+            foundedYear={isGigExpert ? undefined : ap.founded_year}
             initials={getInitials(name)}
-            availability={isFreelancer ? fp.availability : undefined}
+            availability={isGigExpert ? fp.availability : undefined}
             hideEditButton={true}
           />
 
           <ProfileStats
-            isFreelancer={isFreelancer}
-            totalProjects={isFreelancer ? fp.total_projects : ap.total_projects}
-            hourlyRate={isFreelancer ? fp.hourly_rate : undefined}
+            isGigExpert={isGigExpert}
+            totalProjects={isGigExpert ? fp.total_projects : ap.total_projects}
+            hourlyRate={isGigExpert ? fp.hourly_rate : undefined}
             commercialBasis={
-              isFreelancer ? fp.commercial_basis : ap.commercial_basis
+              isGigExpert ? fp.commercial_basis : ap.commercial_basis
             }
-            employeeCount={isFreelancer ? undefined : ap.employee_count}
+            employeeCount={isGigExpert ? undefined : ap.employee_count}
           />
 
           <div className="profile-details-split-grid mt-5">
             <div className="profile-details-left-pane">
               <ProfileAbout
-                isFreelancer={isFreelancer}
-                bio={isFreelancer ? fp.bio : undefined}
-                description={isFreelancer ? undefined : ap.description}
+                isGigExpert={isGigExpert}
+                bio={isGigExpert ? fp.bio : undefined}
+                description={isGigExpert ? undefined : ap.description}
               />
 
-              {isFreelancer ? (
+              {isGigExpert ? (
                 <WorkHistory workHistory={user.work_history || []} />
               ) : (
                 <TeamStructure
@@ -374,17 +374,18 @@ export const AdminUserProfile = () => {
             </div>
 
             <div className="profile-details-right-pane">
-              <CapabilityCloud isFreelancer={isFreelancer} skills={skills} />
+              <CapabilityCloud isGigExpert={isGigExpert} skills={skills} />
 
               <ServiceSpecs
                 serviceDetails={
-                  isFreelancer ? fp.service_details : ap.service_details
+                  isGigExpert ? fp.service_details : ap.service_details
                 }
               />
 
               <DocumentsList   role={user.role}
-                isFreelancer={isFreelancer}
-                resumeUrl={isFreelancer ? fp.resume_url : undefined}
+                isGigExpert={isGigExpert}
+                resumeUrl={isGigExpert ? fp.resume_url : undefined}
+                portfolioPdfUrl={isGigExpert ? fp.portfolio_pdf_url : ap.portfolio_pdf_url}
                 verifications={user.verifications}
                 documents={data?.profileDocuments || []}
                 isAdmin={true}
@@ -549,7 +550,7 @@ export const AdminUserProfile = () => {
                               <span className={`text-[0.65rem] font-bold px-2 py-0.5 rounded uppercase ${
                                 app.status === 'accepted' ? 'bg-[#70d64d]/12 text-[#70d64d]' : app.status === 'rejected' ? 'bg-red-500/12 text-red-400' : app.status === 'shortlisted' ? 'bg-amber-500/12 text-amber-400' : 'bg-gray-500/12 text-gray-400'
                               }`}>
-                                {app.status || 'applied'}
+                                {app.status === 'rejected' ? 'not selected' : (app.status || 'applied')}
                               </span>
                             </td>
                             <td className="p-4">
@@ -576,7 +577,7 @@ export const AdminUserProfile = () => {
                                       onClick={() => handleUpdateBidStatus(app.id, 'rejected')}
                                       className="bg-transparent border border-[#ef4444]/40 hover:bg-[#ef4444]/10 text-[#ef4444] text-[0.65rem] px-2 py-0.5 rounded font-bold cursor-pointer transition-all"
                                     >
-                                      Reject
+                                      Not Select
                                     </button>
                                   </>
                                 ) : app.status === 'accepted' ? (
@@ -618,7 +619,7 @@ export const AdminUserProfile = () => {
                                       onClick={() => handleUpdateBidStatus(app.id, 'rejected')}
                                       className="bg-transparent border border-[#ef4444]/40 hover:bg-[#ef4444]/10 text-[#ef4444] text-[0.65rem] px-2 py-0.5 rounded font-bold cursor-pointer transition-all"
                                     >
-                                      Reject
+                                      Not Select
                                     </button>
                                   </>
                                 )}

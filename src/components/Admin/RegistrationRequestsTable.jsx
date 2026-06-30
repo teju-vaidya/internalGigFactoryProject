@@ -6,12 +6,12 @@ const fmtDate = (d) =>
   d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
 
 const ROLE_STYLES = {
-  freelancer: { bg: '#1e293b', color: '#38bdf8' },
+  gig_expert: { bg: '#1e293b', color: '#38bdf8' },
   agency:     { bg: '#2e1065', color: '#c084fc' },
 };
 
 function RoleChip({ role }) {
-  const r = ROLE_STYLES[role] || ROLE_STYLES.freelancer;
+  const r = ROLE_STYLES[role] || ROLE_STYLES.gig_expert;
   return (
     <span 
       style={{ background: r.bg, color: r.color }} 

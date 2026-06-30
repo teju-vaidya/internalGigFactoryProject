@@ -66,7 +66,9 @@ export default function ProjectSidebar({
               <span className="text-gray-500 font-semibold uppercase">
                 Your Role
               </span>
-              <span className="text-white font-bold capitalize">{userRole}</span>
+              <span className="text-white font-bold capitalize">
+                {userRole}
+              </span>
             </div>
           </div>
 
@@ -130,46 +132,51 @@ export default function ProjectSidebar({
                         : "#f59e0b",
                 }}
               >
-                {myApplication.status || "applied"}
+                {myApplication.status === "rejected"
+                  ? "not selected"
+                  : myApplication.status || "applied"}
               </span>
             </div>
           </div>
-
-          <div className="border-t border-[#23232a] pt-4 mt-3 space-y-3">
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                Your Proposal Strategy
-              </span>
-              <div className="bg-[#0c0c0e] border border-[#23232a] rounded-[6px] p-3 text-xs text-gray-300 whitespace-pre-wrap leading-relaxed max-h-[160px] overflow-y-auto">
-                {myApplication.proposal}
-              </div>
-            </div>
-
-            {myApplication.cover_letter && (
+          {myApplication.proposal && (
+            <div className="border-t border-[#23232a] pt-4 mt-3 space-y-3">
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                  Cover Letter
+                  Your Proposal Strategy
                 </span>
-                <div className="bg-[#0c0c0e] border border-[#23232a] rounded-[6px] p-3 text-xs text-gray-300 whitespace-pre-wrap leading-relaxed max-h-[120px] overflow-y-auto">
-                  {myApplication.cover_letter}
+                <div className="bg-[#0c0c0e] border border-[#23232a] rounded-[6px] p-3 text-xs text-gray-300 whitespace-pre-wrap leading-relaxed max-h-[160px] overflow-y-auto">
+                  {myApplication.proposal}
                 </div>
               </div>
-            )}
 
-            {myApplication.attachment_url && (
-              <div className="flex items-center justify-between bg-[#0c0c0e] border border-[#23232a] rounded-[6px] px-3 py-2 text-xs">
-                <span className="text-gray-500 font-semibold">Supporting Doc:</span>
-                <a
-                  href={myApplication.attachment_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#70d64d] font-bold hover:underline truncate max-w-[150px]"
-                >
-                  View Attachment
-                </a>
-              </div>
-            )}
-          </div>
+              {myApplication.cover_letter && (
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                    Cover Letter
+                  </span>
+                  <div className="bg-[#0c0c0e] border border-[#23232a] rounded-[6px] p-3 text-xs text-gray-300 whitespace-pre-wrap leading-relaxed max-h-[120px] overflow-y-auto">
+                    {myApplication.cover_letter}
+                  </div>
+                </div>
+              )}
+
+              {myApplication.attachment_url && (
+                <div className="flex items-center justify-between bg-[#0c0c0e] border border-[#23232a] rounded-[6px] px-3 py-2 text-xs">
+                  <span className="text-gray-500 font-semibold">
+                    Supporting Doc:
+                  </span>
+                  <a
+                    href={myApplication.attachment_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#70d64d] font-bold hover:underline truncate max-w-[150px]"
+                  >
+                    View Attachment
+                  </a>
+                </div>
+              )}
+            </div>
+          )}
 
           <p className="text-gray-500 text-[10.5px] leading-relaxed mt-2 italic">
             You have successfully submitted your execution strategy. The admin
@@ -184,8 +191,8 @@ export default function ProjectSidebar({
           </div>
 
           <p className="text-gray-500 text-xs leading-relaxed">
-            This project has been completed, so new proposals are no longer being
-            accepted.
+            This project has been completed, so new proposals are no longer
+            being accepted.
           </p>
         </div>
       ) : (

@@ -73,7 +73,7 @@ export const useAuthStore = create(
       fetchProfile: async () => {
         const { token, user } = get();
         if (!token || !user) return;
-        const role = user.role || 'freelancer';
+        const role = user.role || 'gig_expert';
         if (role === 'admin') return;
         
         set({ isProfileLoading: true, profileError: null });
@@ -93,7 +93,7 @@ export const useAuthStore = create(
       updateProfile: async (profileData) => {
         const { user } = get();
         if (!user) return;
-        const role = user.role || 'freelancer';
+        const role = user.role || 'gig_expert';
         
         set({ isProfileLoading: true, profileError: null });
         try {

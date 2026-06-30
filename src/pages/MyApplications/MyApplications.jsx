@@ -12,7 +12,7 @@ import { Pagination, PageSizeSelector } from '../../components/AdminShared';
 export default function MyApplications() {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user) || {};
-  const userRole = user.role || 'freelancer';
+  const userRole = user.role || 'gig_expert';
 
   // Search, Filter & Pagination states
   const [searchTerm, setSearchTerm] = useState('');
@@ -136,7 +136,7 @@ export default function MyApplications() {
         <div className="space-y-1">
           <h2 className="text-white font-extrabold text-[1.6rem] m-0">My Applications</h2>
           <p className="text-gray-500 text-[0.85rem] m-0">
-            Track and manage all your {userRole === 'agency' ? "agency's" : "freelancer's"} project proposals
+            Track and manage all your {userRole === 'agency' ? "agency's" : "gig expert's"} project proposals
           </p>
         </div>
         
@@ -189,7 +189,7 @@ export default function MyApplications() {
         {/* Metric card 4: Rejected */}
         <div className="bg-[#121215] border border-[#23232a] p-5 rounded-[8px] flex flex-col justify-between min-h-[110px]">
           <div className="flex justify-between items-center text-[#8a8a8a] text-[0.7rem] font-bold tracking-wider uppercase">
-            <span>Rejected</span>
+            <span>Not Selected</span>
             <div className="w-7 h-7 bg-[#1c1c22] rounded-full flex items-center justify-center text-red-500/80 border border-[#23232a]">
               <XCircle size={13} />
             </div>
@@ -226,7 +226,7 @@ export default function MyApplications() {
             <option value="all">All Statuses</option>
             <option value="pending">Pending / Applied</option>
             <option value="accepted">Selected / Approved</option>
-            <option value="rejected">Rejected</option>
+            <option value="rejected">Not Selected</option>
           </select>
         </div>
 
@@ -337,7 +337,7 @@ export default function MyApplications() {
                 badgeText = 'SELECTED';
                 badgeClass = 'bg-[#70d64d]/10 text-[#70d64d] border border-[#70d64d]/20';
               } else if (statusLower === 'rejected') {
-                badgeText = 'REJECTED';
+                badgeText = 'NOT SELECTED';
                 badgeClass = 'bg-red-500/10 text-red-400 border border-red-500/20';
               }
 

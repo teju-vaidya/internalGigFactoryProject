@@ -30,7 +30,7 @@ import MyApplications   from './pages/MyApplications/MyApplications.jsx';
 /* ── Admin pages ── */
 import AdminOverview          from './pages/Admin/AdminOverview.jsx';
 import RegistrationRequests   from './pages/Admin/RegistrationRequests.jsx';
-import AdminFreelancers        from './pages/Admin/AdminFreelancers.jsx';
+import AdminGigExperts        from './pages/Admin/AdminGigExperts.jsx';
 import AdminAgencies           from './pages/Admin/AdminAgencies.jsx';
 import AdminUserProfile        from './pages/Admin/AdminUserProfile.jsx';
 import AdminSettings           from './pages/Admin/AdminSettings.jsx';
@@ -150,9 +150,9 @@ function App() {
             <RegistrationRequests />
           </AdminRoute>
         } />
-        <Route path="/admin/freelancers" element={
-          <AdminRoute title="Freelancers">
-            <AdminFreelancers />
+        <Route path="/admin/gigExperts" element={
+          <AdminRoute title="Gig Experts">
+            <AdminGigExperts />
           </AdminRoute>
         } />
         <Route path="/admin/agencies" element={
