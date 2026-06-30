@@ -103,7 +103,7 @@ export default function RegistrationRequests() {
 
   const handleApprove       = (id)         => setReviewParams({ id, status: 'approved' });
   const handleOpenReject    = (req)        => setRejectTarget(req);
-  const handleConfirmReject = (id, reason) => setReviewParams({ id, status: 'rejected', rejectionReason: reason });
+  const handleConfirmReject = (id, reason) => setReviewParams({ id, status: 'not selected', rejectionReason: reason });
   const handleUpdateDecision = (id, p)    => setReviewParams({ id, ...p });
   
   // client-side filter + sort + paginate
@@ -143,7 +143,7 @@ export default function RegistrationRequests() {
           { label: 'Total Requests', value: stats.total,    Icon: FileText,  accent: false },
           { label: 'Pending Review', value: stats.pending,  Icon: Clock,     accent: true  },
           { label: 'Approved',       value: stats.approved, Icon: Users,     accent: false },
-          { label: 'Rejected',       value: stats.rejected, Icon: Building2, accent: false },
+          { label: 'Not Selected',       value: stats.rejected, Icon: Building2, accent: false },
         ].map(({ label, value, Icon, accent }) => (
           <div 
             key={label} 
@@ -232,6 +232,7 @@ export default function RegistrationRequests() {
           <PageSizeSelector limit={limit} onChangeLimit={setLimit} total={sorted.length} isLoading={isLoading} />
 
           <Pagination page={page} totalPages={totalPages} onPage={setPage} />
+
         </div>
       </div>
 

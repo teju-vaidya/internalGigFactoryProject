@@ -17,7 +17,9 @@ function RoleChip({ role }) {
       style={{ background: r.bg, color: r.color }} 
       className="text-[0.68rem] font-bold px-[8px] py-[3px] rounded-[4px]"
     >
-      {role?.toUpperCase()}
+      { role === "freelancer"
+    ? "GIG EXPERT"
+    : role?.toUpperCase() }
     </span>
   );
 }
