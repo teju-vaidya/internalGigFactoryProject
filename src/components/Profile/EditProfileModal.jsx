@@ -13,6 +13,8 @@ export const EditProfileModal = ({
   isGigExpert,
   formData,
   setFormData,
+  errors = {},
+  setErrors,
   activeTab,
   setActiveTab,
   isSaving,
@@ -24,6 +26,16 @@ export const EditProfileModal = ({
   handleSoftwareToggle,
   handleNestedChange
 }) => {
+  const handleFieldChange = (name, value) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      });
+    }
+  };
   const [uploadingPdf, setUploadingPdf] = React.useState(false);
   const [uploadedPdfName, setUploadedPdfName] = React.useState('');
   const portfolioPdfInputRef = React.useRef(null);
@@ -143,20 +155,21 @@ export const EditProfileModal = ({
                         <input
                           type="text"
                           value={formData.title || ''}
-                          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                          onChange={(e) => handleFieldChange('title', e.target.value)}
                           placeholder="e.g. Senior BIM Modeler"
-                          required
                         />
+                        {errors.title && <span className="validation-error">{errors.title}</span>}
                       </div>
                       <div className="form-group">
                         <label>Availability Status</label>
                         <select
                           value={formData.availability || 'AVAILABLE'}
-                          onChange={(e) => setFormData({ ...formData, availability: e.target.value })}
+                          onChange={(e) => handleFieldChange('availability', e.target.value)}
                         >
                           <option value="AVAILABLE">AVAILABLE</option>
                           <option value="NOT AVAILABLE">NOT AVAILABLE</option>
                         </select>
+                        {errors.availability && <span className="validation-error">{errors.availability}</span>}
                       </div>
                     </div>
                     
@@ -166,20 +179,20 @@ export const EditProfileModal = ({
                         <input
                           type="number"
                           value={formData.experienceYears || ''}
-                          onChange={(e) => setFormData({ ...formData, experienceYears: e.target.value })}
+                          onChange={(e) => handleFieldChange('experienceYears', e.target.value)}
                           placeholder="e.g. 5"
-                          required
                         />
+                        {errors.experienceYears && <span className="validation-error">{errors.experienceYears}</span>}
                       </div>
                       <div className="form-group">
                         <label>Hourly Rate (INR)</label>
                         <input
                           type="number"
                           value={formData.hourlyRate || ''}
-                          onChange={(e) => setFormData({ ...formData, hourlyRate: e.target.value })}
+                          onChange={(e) => handleFieldChange('hourlyRate', e.target.value)}
                           placeholder="e.g. 1500"
-                          required
                         />
+                        {errors.hourlyRate && <span className="validation-error">{errors.hourlyRate}</span>}
                       </div>
                     </div>
 
@@ -188,9 +201,10 @@ export const EditProfileModal = ({
                       <textarea
                         rows={4}
                         value={formData.bio || ''}
-                        onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                        onChange={(e) => handleFieldChange('bio', e.target.value)}
                         placeholder="Write a short summary about your professional background..."
                       />
+                      {errors.bio && <span className="validation-error">{errors.bio}</span>}
                     </div>
                   </>
                 ) : (
@@ -201,20 +215,20 @@ export const EditProfileModal = ({
                         <input
                           type="text"
                           value={formData.agencyName || ''}
-                          onChange={(e) => setFormData({ ...formData, agencyName: e.target.value })}
+                          onChange={(e) => handleFieldChange('agencyName', e.target.value)}
                           placeholder="e.g. Matrix Design Studios"
-                          required
                         />
+                        {errors.agencyName && <span className="validation-error">{errors.agencyName}</span>}
                       </div>
                       <div className="form-group">
                         <label>Industry Sector</label>
                         <input
                           type="text"
                           value={formData.industry || ''}
-                          onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
+                          onChange={(e) => handleFieldChange('industry', e.target.value)}
                           placeholder="e.g. Construction & Engineering"
-                          required
                         />
+                        {errors.industry && <span className="validation-error">{errors.industry}</span>}
                       </div>
                     </div>
 
@@ -223,9 +237,10 @@ export const EditProfileModal = ({
                       <textarea
                         rows={4}
                         value={formData.description || ''}
-                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        onChange={(e) => handleFieldChange('description', e.target.value)}
                         placeholder="Describe your agency's services and focus areas..."
                       />
+                      {errors.description && <span className="validation-error">{errors.description}</span>}
                     </div>
 
                     <div className="form-row-2">
@@ -234,18 +249,20 @@ export const EditProfileModal = ({
                         <input
                           type="number"
                           value={formData.employeeCount || ''}
-                          onChange={(e) => setFormData({ ...formData, employeeCount: e.target.value })}
+                          onChange={(e) => handleFieldChange('employeeCount', e.target.value)}
                           placeholder="e.g. 50"
                         />
+                        {errors.employeeCount && <span className="validation-error">{errors.employeeCount}</span>}
                       </div>
                       <div className="form-group">
                         <label>Founded Year</label>
                         <input
                           type="number"
                           value={formData.foundedYear || ''}
-                          onChange={(e) => setFormData({ ...formData, foundedYear: e.target.value })}
+                          onChange={(e) => handleFieldChange('foundedYear', e.target.value)}
                           placeholder="e.g. 2018"
                         />
+                        {errors.foundedYear && <span className="validation-error">{errors.foundedYear}</span>}
                       </div>
                     </div>
 
@@ -255,18 +272,20 @@ export const EditProfileModal = ({
                         <input
                           type="text"
                           value={formData.city || ''}
-                          onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                          onChange={(e) => handleFieldChange('city', e.target.value)}
                           placeholder="e.g. Mumbai"
                         />
+                        {errors.city && <span className="validation-error">{errors.city}</span>}
                       </div>
                       <div className="form-group">
                         <label>Country</label>
                         <input
                           type="text"
                           value={formData.country || ''}
-                          onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                          onChange={(e) => handleFieldChange('country', e.target.value)}
                           placeholder="e.g. India"
                         />
+                        {errors.country && <span className="validation-error">{errors.country}</span>}
                       </div>
                     </div>
                   </>
@@ -300,6 +319,7 @@ export const EditProfileModal = ({
                     );
                   })}
                 </div>
+                {errors.selectedServices && <span className="validation-error mb-[15px]">{errors.selectedServices}</span>}
 
                 <div className="dynamic-panels-container flex flex-col gap-4 mt-4">
                   {(formData.selectedServices || []).includes('BIM') && (
@@ -500,7 +520,7 @@ export const EditProfileModal = ({
                     <label>Standard Commercial Basis</label>
                     <select
                       value={formData.commercialBasis || ''}
-                      onChange={(e) => setFormData({ ...formData, commercialBasis: e.target.value })}
+                      onChange={(e) => handleFieldChange('commercialBasis', e.target.value)}
                     >
                       <option value="">Select Option</option>
                       <option value="Hourly Rate">Hourly Rate</option>
@@ -508,12 +528,13 @@ export const EditProfileModal = ({
                       <option value="Per Sheet">Per Sheet</option>
                       <option value="Fixed Project Fee">Fixed Project Fee / Lump Sum</option>
                     </select>
+                    {errors.commercialBasis && <span className="validation-error">{errors.commercialBasis}</span>}
                   </div>
                   <div className="form-group">
                     <label>Notice Period / Lead Time</label>
                     <select
                       value={formData.noticePeriod || ''}
-                      onChange={(e) => setFormData({ ...formData, noticePeriod: e.target.value })}
+                      onChange={(e) => handleFieldChange('noticePeriod', e.target.value)}
                     >
                       <option value="">Select Option</option>
                       <option value="Immediate">Immediate</option>
@@ -521,6 +542,7 @@ export const EditProfileModal = ({
                       <option value="2 Weeks">2 Weeks</option>
                       <option value="4 Weeks">4 Weeks</option>
                     </select>
+                    {errors.noticePeriod && <span className="validation-error">{errors.noticePeriod}</span>}
                   </div>
                 </div>
 
@@ -532,22 +554,28 @@ export const EditProfileModal = ({
                       value={isGigExpert ? (formData.portfolioUrl || '') : (formData.website || '')}
                       onChange={(e) => {
                         if (isGigExpert) {
-                          setFormData({ ...formData, portfolioUrl: e.target.value });
+                          handleFieldChange('portfolioUrl', e.target.value);
                         } else {
-                          setFormData({ ...formData, website: e.target.value });
+                          handleFieldChange('website', e.target.value);
                         }
                       }}
                       placeholder="https://mywebsite.com"
                     />
+                    {isGigExpert ? (
+                      errors.portfolioUrl && <span className="validation-error">{errors.portfolioUrl}</span>
+                    ) : (
+                      errors.website && <span className="validation-error">{errors.website}</span>
+                    )}
                   </div>
                   <div className="form-group">
                     <label>LinkedIn URL</label>
                     <input
                       type="url"
                       value={formData.linkedinUrl || ''}
-                      onChange={(e) => setFormData({ ...formData, linkedinUrl: e.target.value })}
+                      onChange={(e) => handleFieldChange('linkedinUrl', e.target.value)}
                       placeholder="https://linkedin.com/in/username"
                     />
+                    {errors.linkedinUrl && <span className="validation-error">{errors.linkedinUrl}</span>}
                   </div>
                 </div>
 
@@ -579,6 +607,13 @@ export const EditProfileModal = ({
                         onClick={() => {
                           setFormData({ ...formData, portfolioPdfUrl: '' });
                           setUploadedPdfName('');
+                          if (errors.portfolioPdfUrl) {
+                            setErrors((prev) => {
+                              const next = { ...prev };
+                              delete next.portfolioPdfUrl;
+                              return next;
+                            });
+                          }
                         }}
                         className="text-gray-500 hover:text-white bg-transparent border-none cursor-pointer flex items-center justify-center p-1"
                         title="Remove file"
@@ -587,6 +622,7 @@ export const EditProfileModal = ({
                       </button>
                     )}
                   </div>
+                  {errors.portfolioPdfUrl && <span className="validation-error">{errors.portfolioPdfUrl}</span>}
                   <p className="text-[11px] text-[#6c727f] mt-1.5 mb-0">Provide a link or upload a PDF (max 10MB allowed)</p>
                 </div>
               </>
@@ -601,19 +637,21 @@ export const EditProfileModal = ({
                       <input
                         type="text"
                         value={formData.legalNamePan || ''}
-                        onChange={(e) => setFormData({ ...formData, legalNamePan: e.target.value })}
+                        onChange={(e) => handleFieldChange('legalNamePan', e.target.value)}
                         placeholder="Full Name as per PAN document"
                       />
+                      {errors.legalNamePan && <span className="validation-error">{errors.legalNamePan}</span>}
                     </div>
                     <div className="form-group">
                       <label>Personal PAN Card *</label>
                       <input
                         type="text"
                         value={formData.personalPan || ''}
-                        onChange={(e) => setFormData({ ...formData, personalPan: e.target.value.toUpperCase() })}
+                        onChange={(e) => handleFieldChange('personalPan', e.target.value.toUpperCase())}
                         placeholder="10-digit PAN code"
                         maxLength={10}
                       />
+                      {errors.personalPan && <span className="validation-error">{errors.personalPan}</span>}
                     </div>
                   </div>
                   <div className="form-group">
@@ -621,9 +659,10 @@ export const EditProfileModal = ({
                     <input
                       type="url"
                       value={formData.resumeUrl || ''}
-                      onChange={(e) => setFormData({ ...formData, resumeUrl: e.target.value })}
+                      onChange={(e) => handleFieldChange('resumeUrl', e.target.value)}
                       placeholder="Link to uploaded Resume PDF"
                     />
+                    {errors.resumeUrl && <span className="validation-error">{errors.resumeUrl}</span>}
                   </div>
                 </>
               ) : (
@@ -634,20 +673,22 @@ export const EditProfileModal = ({
                       <input
                         type="text"
                         value={formData.companyPan || ''}
-                        onChange={(e) => setFormData({ ...formData, companyPan: e.target.value.toUpperCase() })}
+                        onChange={(e) => handleFieldChange('companyPan', e.target.value.toUpperCase())}
                         placeholder="10-digit Company PAN code"
                         maxLength={10}
                       />
+                      {errors.companyPan && <span className="validation-error">{errors.companyPan}</span>}
                     </div>
                     <div className="form-group">
                       <label>GST Number</label>
                       <input
                         type="text"
                         value={formData.gstNumber || ''}
-                        onChange={(e) => setFormData({ ...formData, gstNumber: e.target.value.toUpperCase() })}
+                        onChange={(e) => handleFieldChange('gstNumber', e.target.value.toUpperCase())}
                         placeholder="15-digit GST number"
                         maxLength={15}
                       />
+                      {errors.gstNumber && <span className="validation-error">{errors.gstNumber}</span>}
                     </div>
                   </div>
                   <div className="form-group">
@@ -655,10 +696,11 @@ export const EditProfileModal = ({
                     <input
                       type="text"
                       value={formData.cin || ''}
-                      onChange={(e) => setFormData({ ...formData, cin: e.target.value.toUpperCase() })}
+                      onChange={(e) => handleFieldChange('cin', e.target.value.toUpperCase())}
                       placeholder="21-character CIN code"
                       maxLength={21}
                     />
+                    {errors.cin && <span className="validation-error">{errors.cin}</span>}
                   </div>
                 </>
               )

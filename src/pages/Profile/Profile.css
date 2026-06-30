@@ -761,3 +761,24 @@ body.modal-open {
   padding: 2px 8px;
   border-radius: 4px;
 }
+
+/* Validation Error Styling */
+.validation-error {
+  color: #f87171; /* soft premium red */
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: 6px;
+  display: block;
+  animation: errorFadeIn 0.2s ease-out;
+}
+
+@keyframes errorFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

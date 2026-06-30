@@ -15,6 +15,8 @@ import { CapabilityCloud } from '../../components/Profile/CapabilityCloud';
 import { ServiceSpecs } from '../../components/Profile/ServiceSpecs';
 import { DocumentsList } from '../../components/Profile/DocumentsList';
 import { EditProfileModal } from '../../components/Profile/EditProfileModal';
+import { profileGigExpertSchema, profileAgencySchema } from '../../components/Profile/ProfileSchema';
+
 
 const getInitials = (name) => {
   if (!name) return 'U';
@@ -29,6 +31,34 @@ const SERVICE_LABELS = {
   Viz: '3D Visualisation',
 };
 
+const FIELD_TABS = {
+  title: 'basic',
+  availability: 'basic',
+  experienceYears: 'basic',
+  hourlyRate: 'basic',
+  bio: 'basic',
+  agencyName: 'basic',
+  industry: 'basic',
+  description: 'basic',
+  employeeCount: 'basic',
+  foundedYear: 'basic',
+  city: 'basic',
+  country: 'basic',
+  selectedServices: 'services',
+  commercialBasis: 'commercials',
+  noticePeriod: 'commercials',
+  portfolioUrl: 'commercials',
+  website: 'commercials',
+  linkedinUrl: 'commercials',
+  portfolioPdfUrl: 'commercials',
+  legalNamePan: 'legal',
+  personalPan: 'legal',
+  resumeUrl: 'legal',
+  companyPan: 'legal',
+  gstNumber: 'legal',
+  cin: 'legal'
+};
+
 export const Profile = () => {
   const user = useAuthStore((state) => state.user);
   const profile = useAuthStore((state) => state.profile);
@@ -41,7 +71,9 @@ export const Profile = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({});
   const [activeTab, setActiveTab] = useState('basic');
+  const [errors, setErrors] = useState({});
   const [documents, setDocuments] = useState([]);
+
 
   const fetchDocuments = async () => {
     try {
@@ -177,6 +209,7 @@ export const Profile = () => {
         logo: profile?.logo || '',
       });
     }
+    setErrors({});
     setIsEditModalOpen(true);
   };
 
@@ -187,6 +220,13 @@ export const Profile = () => {
       : [...currentSelected, serviceId];
     
     setFormData({ ...formData, selectedServices: newSelected });
+    if (errors.selectedServices) {
+      setErrors((prev) => {
+        const copy = { ...prev };
+        delete copy.selectedServices;
+        return copy;
+      });
+    }
   };
 
   const handlePhotoUpload = (e) => {
@@ -228,54 +268,41 @@ export const Profile = () => {
     e.preventDefault();
     setIsSaving(true);
     const isGigExpertRole = user?.role === 'gig_expert';
+
+    // Yup Validation
+    const schema = isGigExpertRole ? profileGigExpertSchema : profileAgencySchema;
+    try {
+      await schema.validate(formData, { abortEarly: false });
+      setErrors({});
+    } catch (err) {
+      if (err.inner) {
+        const newErrors = {};
+        err.inner.forEach((validationError) => {
+          newErrors[validationError.path] = validationError.message;
+        });
+        setErrors(newErrors);
+
+        // Switch to the tab containing the first error
+        const firstErrorField = err.inner[0].path;
+        const targetTab = FIELD_TABS[firstErrorField] || 'basic';
+        setActiveTab(targetTab);
+
+        toast.warning('Please correct form validation errors before saving.');
+      } else {
+        toast.error(err.message || 'Validation failed.');
+      }
+      setIsSaving(false);
+      return;
+    }
+
     let payload = { ...formData };
     
-    // Validate required fields
+    // Normalize and clean payload data
     if (isGigExpertRole) {
-      if (!formData.legalNamePan || !formData.legalNamePan.trim()) {
-        toast.error('Legal Name (as on PAN) is required.');
-        setActiveTab('legal');
-        setIsSaving(false);
-        return;
-      }
-      const pan = (formData.personalPan || '').trim().toUpperCase();
-      const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-      if (!pan) {
-        toast.error('Personal PAN Card is required.');
-        setActiveTab('legal');
-        setIsSaving(false);
-        return;
-      }
-      if (!panRegex.test(pan)) {
-        toast.error('Invalid Personal PAN Card format. Must be 10 characters (e.g. ABCDE1234F).');
-        setActiveTab('legal');
-        setIsSaving(false);
-        return;
-      }
-      payload.personalPan = pan;
-      payload.legalNamePan = formData.legalNamePan.trim();
+      payload.personalPan = (formData.personalPan || '').trim().toUpperCase();
+      payload.legalNamePan = (formData.legalNamePan || '').trim();
     } else {
-      if (!formData.agencyName || !formData.agencyName.trim()) {
-        toast.error('Agency Name is required.');
-        setActiveTab('basic');
-        setIsSaving(false);
-        return;
-      }
-      const pan = (formData.companyPan || '').trim().toUpperCase();
-      const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-      if (!pan) {
-        toast.error('Company PAN Card is required.');
-        setActiveTab('legal');
-        setIsSaving(false);
-        return;
-      }
-      if (!panRegex.test(pan)) {
-        toast.error('Invalid Company PAN Card format. Must be 10 characters (e.g. BBBBB2222B).');
-        setActiveTab('legal');
-        setIsSaving(false);
-        return;
-      }
-      payload.companyPan = pan;
+      payload.companyPan = (formData.companyPan || '').trim().toUpperCase();
     }
 
     const serviceDetails = {
@@ -297,8 +324,8 @@ export const Profile = () => {
       payload.experienceYears = parseInt(formData.experienceYears, 10) || 0;
       payload.hourlyRate = parseFloat(formData.hourlyRate) || 0;
     } else {
-      payload.employeeCount = parseInt(formData.employeeCount, 10) || 0;
-      payload.foundedYear = parseInt(formData.foundedYear, 10) || 2020;
+      payload.employeeCount = formData.employeeCount ? parseInt(formData.employeeCount, 10) : 0;
+      payload.foundedYear = formData.foundedYear ? parseInt(formData.foundedYear, 10) : 2020;
     }
     
     delete payload.selectedServices;
@@ -415,6 +442,8 @@ export const Profile = () => {
           isGigExpert={isGigExpert}
           formData={formData}
           setFormData={setFormData}
+          errors={errors}
+          setErrors={setErrors}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           isSaving={isSaving}

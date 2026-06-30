@@ -436,7 +436,7 @@ export default function AppLayout({ children, pageTitle }) {
           <span>
             {role === "admin"
               ? "Super Admin"
-              : role.charAt(0).toUpperCase() + role.slice(1)}
+              : role === "gig_expert" ? "Gig Expert" : role.charAt(0).toUpperCase() + role.slice(1)}
           </span>
         </div>
       )}
