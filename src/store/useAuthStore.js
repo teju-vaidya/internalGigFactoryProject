@@ -17,6 +17,8 @@ export const useAuthStore = create(
       sessionTimeoutMins: 60,
       platformName: 'GigFactory',
       supportEmail: 'support@gigfactory.com',
+      termsUrl: '',
+      privacyUrl: '',
 
       setMaintenance: (active, message) => {
         set({ maintenanceMode: active, maintenanceMessage: message || '' });
@@ -32,6 +34,8 @@ export const useAuthStore = create(
               set({
                 platformName: data.platformName,
                 supportEmail: data.supportEmail,
+                termsUrl: data.termsUrl || '',
+                privacyUrl: data.privacyUrl || '',
                 sessionTimeoutMins: data.sessionTimeoutMins,
                 maintenanceMode: data.maintenanceMode,
                 maintenanceMessage: data.maintenanceMessage,

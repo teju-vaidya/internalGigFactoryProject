@@ -180,6 +180,16 @@
   border-color: #70d64d;
 }
 
+.settings-input:disabled,
+.settings-textarea:disabled,
+.settings-select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: #0f0f14;
+  border-color: #1e1e26;
+}
+
+
 .settings-textarea {
   resize: vertical;
   min-height: 80px;

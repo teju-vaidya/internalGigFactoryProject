@@ -760,7 +760,7 @@ export default function AdminCommunication() {
 
       {/* History Slide-Over Panel */}
       {isHistoryOpen && (
-        <div className="fixed inset-0 z-50 overflow-hidden animate-fade-in">
+        <div className="fixed inset-0 z-[400] overflow-hidden animate-fade-in">
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
@@ -768,8 +768,8 @@ export default function AdminCommunication() {
           />
 
           {/* Drawer container */}
-          <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
-            <div className="w-screen max-w-[550px] bg-[#121215] border-l border-[#23232a] shadow-2xl flex flex-col h-full transform transition-all duration-300">
+          <div className="absolute inset-y-0 right-0 max-w-full flex pl-0 sm:pl-10">
+            <div className="w-full sm:w-[550px] bg-[#121215] border-l border-[#23232a] shadow-2xl flex flex-col h-full transform transition-all duration-300">
               
               {/* Drawer Header */}
               <div className="p-[24px] border-b border-[#23232a] flex flex-col gap-[16px]">
@@ -905,7 +905,7 @@ export default function AdminCommunication() {
 
       {/* Details View Modal */}
       {selectedHistoryItem && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-[16px] animate-fade-in">
+        <div className="fixed inset-0 z-[500] flex items-center justify-center p-[16px] animate-fade-in">
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/75 backdrop-blur-sm"

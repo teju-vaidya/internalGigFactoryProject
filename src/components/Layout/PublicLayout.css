@@ -139,6 +139,27 @@
   .public-header-inner {
     padding: 0 16px;
   }
+  .public-logo-img {
+    height: 30px;
+  }
+  .public-header-actions {
+    gap: 14px;
+  }
+  .public-nav-link {
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+  .public-login-btn {
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    justify-content: center;
+    gap: 0;
+  }
+  .public-login-btn .btn-text {
+    display: none;
+  }
   .public-content-inner {
     padding: 24px 16px;
   }
