@@ -13,13 +13,13 @@ import './AdminSettings.css';
 
 /* ── Tab definitions ──────────────────────────────────────────── */
 const TABS = [
-  { id: 'account',       label: 'My Account',         icon: User },
-  { id: 'platform',      label: 'Platform',            icon: Globe },
-  { id: 'smtp',          label: 'Email / SMTP',        icon: Mail },
-  { id: 'notifications', label: 'Notifications',       icon: Bell },
-  { id: 'registration',  label: 'Registration Rules',  icon: ClipboardList },
-  { id: 'security',      label: 'Security',            icon: Shield },
-  { id: 'system',        label: 'System',              icon: Wrench },
+  { id: 'account', label: 'My Account', icon: User },
+  { id: 'platform', label: 'Platform', icon: Globe },
+  { id: 'smtp', label: 'Email / SMTP', icon: Mail },
+  { id: 'notifications', label: 'Notifications', icon: Bell },
+  { id: 'registration', label: 'Registration Rules', icon: ClipboardList },
+  { id: 'security', label: 'Security', icon: Shield },
+  { id: 'system', label: 'System', icon: Wrench },
 ];
 
 /* ── Small reusable toggle switch ─────────────────────────────── */
@@ -94,13 +94,13 @@ export default function AdminSettings() {
   /* ── Fetch settings ── */
   const { data: settingsData, isLoading: settingsLoading } = useQuery({
     queryKey: ['admin-settings'],
-    queryFn:  () => api.get('/admin/settings'),
+    queryFn: () => api.get('/admin/settings'),
   });
 
   /* ── Fetch admin profile ── */
   const { data: profileData, isLoading: profileLoading } = useQuery({
     queryKey: ['admin-settings-me'],
-    queryFn:  () => api.get('/admin/settings/me'),
+    queryFn: () => api.get('/admin/settings/me'),
   });
 
   const settings = settingsData?.settings || {};
@@ -116,7 +116,7 @@ export default function AdminSettings() {
     type: 'confirm',
     variant: 'primary',
     confirmText: 'Confirm',
-    onConfirm: () => {},
+    onConfirm: () => { },
   });
 
   /* ── Change handlers with validation clearing ── */
@@ -344,32 +344,32 @@ export default function AdminSettings() {
   const [notif, setNotif] = useState({
     notif_new_registration_inapp: true,
     notif_new_registration_email: true,
-    notif_user_suspended_inapp:   true,
-    notif_user_suspended_email:   false,
-    notif_failed_login_inapp:     true,
-    notif_failed_login_email:     false,
-    notif_payment_inapp:          true,
-    notif_payment_email:          true,
+    notif_user_suspended_inapp: true,
+    notif_user_suspended_email: false,
+    notif_failed_login_inapp: true,
+    notif_failed_login_email: false,
+    notif_payment_inapp: true,
+    notif_payment_email: true,
   });
 
   const [registration, setRegistration] = useState({
     reg_default_cooldown_days: 30,
-    reg_max_attempts:          5,
-    reg_auto_approve:          false,
-    reg_require_email_verify:  false,
+    reg_max_attempts: 5,
+    reg_auto_approve: false,
+    reg_require_email_verify: false,
   });
 
   const [security, setSecurity] = useState({
-    sec_session_timeout_mins:  60,
-    sec_max_failed_logins:     5,
+    sec_session_timeout_mins: 60,
+    sec_max_failed_logins: 5,
     sec_lockout_duration_mins: 15,
     sec_inactivity_threshold_days: 30,
   });
 
   const [system, setSystem] = useState({
-    sys_maintenance_mode:    false,
+    sys_maintenance_mode: false,
     sys_maintenance_message: '',
-    sys_log_retention_days:  90,
+    sys_log_retention_days: 90,
   });
 
   /* ── Sync remote data → local state ── */
@@ -382,12 +382,12 @@ export default function AdminSettings() {
 
   useEffect(() => {
     if (!settings) return;
-    if (settings.platform)      setPlatform(settings.platform);
-    if (settings.smtp)          setSmtp(settings.smtp);
+    if (settings.platform) setPlatform(settings.platform);
+    if (settings.smtp) setSmtp(settings.smtp);
     if (settings.notifications) setNotif(settings.notifications);
-    if (settings.registration)  setRegistration(settings.registration);
-    if (settings.security)      setSecurity(settings.security);
-    if (settings.system)        setSystem(settings.system);
+    if (settings.registration) setRegistration(settings.registration);
+    if (settings.security) setSecurity(settings.security);
+    if (settings.system) setSystem(settings.system);
   }, [settings]);
 
   /* ── Save mutation (generic) ── */
@@ -670,9 +670,35 @@ export default function AdminSettings() {
                 <input id="acc-email" type="email" className="settings-input" value={account.email} disabled />
               </FormRow>
               <FormRow label="Mobile" id="acc-mobile">
-                <input id="acc-mobile" className="settings-input" value={account.mobile}
-                  onChange={e => handleAccountChange('mobile', e.target.value)}
-                  onBlur={e => validateField('mobile', e.target.value)} />
+                <input
+                  id="acc-mobile"
+                  className="settings-input"
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={10}
+                  value={account.mobile}
+                  onKeyDown={(e) => {
+                    const allowedKeys = [
+                      "Backspace",
+                      "Delete",
+                      "Tab",
+                      "ArrowLeft",
+                      "ArrowRight",
+                      "Home",
+                      "End",
+                    ];
+
+                    if (!/[0-9]/.test(e.key) && !allowedKeys.includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "").slice(0, 10);
+                    handleAccountChange("mobile", value);
+                  }}
+                  onBlur={(e) => validateField("mobile", e.target.value)}
+                />
+
                 {errors.mobile && <span className="text-[#f87171] text-[0.75rem] mt-1 block">{errors.mobile}</span>}
               </FormRow>
               <div className="settings-row-actions">
@@ -683,7 +709,7 @@ export default function AdminSettings() {
             <Section title="Change Password" description="Use a strong password with at least 8 characters.">
               {[
                 { key: 'currentPassword', label: 'Current Password', id: 'pwd-current', show: 'current' },
-                { key: 'newPassword',     label: 'New Password',     id: 'pwd-new',     show: 'new' },
+                { key: 'newPassword', label: 'New Password', id: 'pwd-new', show: 'new' },
                 { key: 'confirmPassword', label: 'Confirm Password', id: 'pwd-confirm', show: 'confirm' },
               ].map(({ key, label, id, show }) => (
                 <FormRow key={key} label={label} id={id}>
