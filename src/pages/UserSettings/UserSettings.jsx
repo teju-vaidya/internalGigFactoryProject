@@ -306,13 +306,32 @@ export default function UserSettings() {
                 <input
                   id="acc-mobile"
                   className="settings-input"
+                  type="tel"
+                  inputMode="numeric"
+
                   value={account.mobile}
-                  type="number"
-                  onChange={(e) =>
-                    e.target.value.length <= 10 &&
-                    setAccount((s) => ({ ...s, mobile: e.target.value }))
-                  }
+                  onKeyDown={(e) => {
+                    const allowedKeys = [
+                      "Backspace",
+                      "Delete",
+                      "Tab",
+                      "ArrowLeft",
+                      "ArrowRight",
+                      "Home",
+                      "End",
+                    ];
+
+                    if (!/[0-9]/.test(e.key) && !allowedKeys.includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "").slice(0, 10);
+                    handleAccountChange("mobile", value);
+                  }}
+                  onBlur={(e) => validateField("mobile", e.target.value)}
                 />
+
               </FormRow>
               <div className="settings-row-actions">
                 <SaveBtn
