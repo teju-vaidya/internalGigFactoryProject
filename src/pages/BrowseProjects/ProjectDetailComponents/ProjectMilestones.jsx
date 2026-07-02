@@ -353,7 +353,7 @@ export default function ProjectMilestones({
                                                       className="bg-[#70d64d]/15 text-[#70d64d] hover:bg-[#70d64d]/25 border border-[#70d64d]/30 hover:border-[#70d64d]/40 rounded-[4px] px-[8px] py-[4px] text-[10px] font-bold cursor-pointer transition-all flex items-center gap-[4px]"
                                                     >
                                                       <Download size={12} />
-                                                      Download Zip
+                                                  <span className="md:block hidden"> Download Zip</span>
                                                     </button>
                                                   </div>
                                                   <div className="flex flex-wrap gap-2">

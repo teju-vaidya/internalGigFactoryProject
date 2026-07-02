@@ -302,7 +302,7 @@ export const AdminUserProfile = () => {
               )}
 
               {/* Account Suspension Panel */}
-              <div className="bg-[#1c0c0e] border border-[#ef4444]/20 rounded-lg p-[18px] mt-5">
+              <div className="bg-[#1c0c0e] border border-[#ef4444]/20 rounded-lg p-[18px] mt-5 ">
                 <h4 className="text-[0.72rem] font-extrabold uppercase tracking-[0.6px] text-[#ef4444] mb-3.5 pb-1.5 border-b border-[#ef4444]/10 m-0">
                   Account Management (Admin Controls)
                 </h4>

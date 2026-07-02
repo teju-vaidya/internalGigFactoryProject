@@ -64,7 +64,7 @@ export default function ProjectHeader({
         </div>
 
         {/* Status indicator */}
-        <div className="text-left md:text-right shrink-0 mt-4 md:mt-0 flex flex-col items-start md:items-end gap-2">
+        <div className="text-left md:text-right shrink-0 mt-4 md:mt-0 flex md:flex-col items-start items-end gap-2 w-full md:w-auto">
           <div>
             <span className="text-gray-500 text-[0.68rem] font-bold uppercase tracking-wider block mb-2">
               Project Status

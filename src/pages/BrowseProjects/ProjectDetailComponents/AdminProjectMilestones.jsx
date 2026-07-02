@@ -86,7 +86,7 @@ export default function AdminProjectMilestones({
                       {ms.title}
                     </h4>
                   </div>
-                  <div className="text-right">
+                  <div className="md:text-right md:block  text-start flex flex-wrap gap-x-5 justify-between">
                     <span className="text-white font-bold text-[0.9rem]">
                       {ms.budget
                         ? `₹${Number(ms.budget).toLocaleString("en-IN")}`
@@ -162,7 +162,8 @@ export default function AdminProjectMilestones({
                                 className="bg-[#70d64d]/15 text-[#70d64d] hover:bg-[#70d64d]/25 border border-[#70d64d]/30 hover:border-[#70d64d]/40 rounded-[4px] px-[8px] py-[4px] text-[0.68rem] font-bold cursor-pointer transition-all flex items-center gap-[4px]"
                               >
                                 <Download size={12} />
-                                Download Zip
+                                <span className="md:block hidden"> Download Zip</span>
+                               
                               </button>
                             </div>
                             <div className="flex flex-wrap gap-2">
@@ -227,7 +228,7 @@ export default function AdminProjectMilestones({
                   </div>
                 )}
 
-                <div className="flex justify-between items-center flex-wrap gap-3 pt-1">
+                <div className="flex  justify-between items-center flex-wrap gap-3 pt-1">
                   <div className="flex gap-4 items-center">
                     <div className="text-[0.72rem]">
                       <span className="text-gray-500">Status: </span>
@@ -252,21 +253,27 @@ export default function AdminProjectMilestones({
                       </span>
                       {milestonePayment &&
                         milestonePayment.status === "paid" && (
-                          <div className="flex gap-1.5 items-center ml-1">
+                          <div className="flex  gap-1.5 items-center ml-1">
                             <button
                               onClick={() =>
                                 onViewReceipt(milestonePayment, ms.title)
                               }
                               className="bg-[#202024] hover:bg-[#2d2d34] border border-[#2d2d34] text-[#70d64d] rounded-[4px] px-[8px] py-[3px] text-[0.68rem] font-bold cursor-pointer transition-colors flex items-center gap-1 hover:border-[#70d64d]/40"
                             >
-                              <Wallet size={11} /> View Receipt
+                              <Wallet size={12} /> 
+                              <span className="md:block hidden">
+                                View Receipt
+                              </span>
                             </button>
                             {!isProjectCompleted && (
                               <button
                                 onClick={() => onEditPayment(milestonePayment)}
                                 className="bg-[#202024] hover:bg-[#2d2d34] border border-[#2d2d34] text-amber-500 rounded-[4px] px-[8px] py-[3px] text-[0.68rem] font-bold cursor-pointer transition-colors flex items-center gap-1 hover:border-amber-500/40"
                               >
-                                <Edit size={11} /> Edit Payment
+                                <Edit size={12} />
+                                <span className="md:block hidden">
+                                  Edit Payment
+                                </span>
                               </button>
                             )}
                           </div>

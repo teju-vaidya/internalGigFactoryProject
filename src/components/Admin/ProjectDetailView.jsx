@@ -457,10 +457,10 @@ export default function ProjectDetailView() {
         <AdminProjectHeader project={project} applications={applications} />
 
         {/* Main Grid Layout */}
-        <div className="grid gap-[20px] lg:grid-cols-[1.6fr_0.9fr] items-start">
+        <div className="grid gap-[20px] lg:grid-cols-[1.6fr_0.9fr] grid-cols-1 items-start">
           
           {/* Left Column content */}
-          <div className="flex flex-col gap-[20px]">
+          <div className="flex flex-col gap-[20px] ">
             {/* Admin No Dues Card Component - Rendered at top ONLY when project is completed */}
             {project.status === 'completed' && (
               <AdminNoDuesCard

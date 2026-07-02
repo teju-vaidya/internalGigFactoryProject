@@ -349,7 +349,7 @@ export default function MyApplications() {
                 >
                   <div className="flex items-center gap-4 min-w-0 flex-1">
                     {/* Circle Avatar */}
-                    <div className="w-11 h-11 bg-[#1c1c22] border border-[#23232a] rounded-full flex items-center justify-center text-white text-md font-bold shrink-0">
+                    <div className="w-11 h-11 bg-[#1c1c22] border border-[#23232a] rounded-full md:flex hidden items-center justify-center text-white text-md font-bold shrink-0">
                       {firstLetter}
                     </div>
                     
@@ -362,7 +362,7 @@ export default function MyApplications() {
                         <span className="font-semibold uppercase tracking-wider text-[0.7rem] text-gray-400">
                           Budget: <span className="text-white normal-case font-bold">{formattedBudget}</span>
                         </span>
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#23232a]" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#23232a] md:block hidden" />
                         <span className="font-semibold uppercase tracking-wider text-[0.7rem] text-gray-400">
                           Applied: <span className="text-white normal-case font-bold">{appliedDate}</span>
                         </span>

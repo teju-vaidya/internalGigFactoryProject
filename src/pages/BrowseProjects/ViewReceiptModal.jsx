@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Calendar, Wallet, CheckCircle, FileText, Download } from 'lucide-react';
+import { X, Calendar, Wallet, CheckCircle, FileText, Download, Paperclip } from 'lucide-react';
 
 const fmtDate = (d) => d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
 
@@ -77,23 +77,48 @@ export default function ViewReceiptModal({ milestone, payment, onClose }) {
             <div className="space-y-2">
               <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Receipt &amp; Proof Document</span>
               <div className="flex flex-col gap-2">
-                {proofs.map((proof) => (
-                  <a 
-                    key={proof.id} 
-                    href={proof.file_url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="bg-[#121215] border border-[#23232a] hover:border-gray-500 rounded-[6px] p-3 flex items-center justify-between transition-all duration-150 text-decoration-none cursor-pointer group"
-                  >
-                    <div className="flex items-center gap-2 min-w-0 pr-4">
-                      <FileText size={14} className="text-gray-400 shrink-0" />
-                      <span className="text-xs text-gray-200 group-hover:text-[#70d64d] transition-colors truncate font-semibold">
-                        {proof.file_name || 'payment_proof.pdf'}
-                      </span>
+                {proofs.map((proof) => {
+                const isImg =
+                    proof.file_type?.startsWith("image/") ||
+                    ["png", "jpg", "jpeg", "gif", "webp"].includes(
+                      proof.file_name.split(".").pop().toLowerCase(),
+                    );
+                  return (
+                    <div
+                      key={proof.id}
+                      className="flex flex-col gap-2 bg-[#0c0c0e] border border-[#23232a] p-3 rounded-[8px]"
+                    >
+                      <div className="flex justify-between items-center gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Paperclip size={14} className="text-gray-500 shrink-0" />
+                          <span
+                            className="text-white text-[0.8rem] font-semibold truncate"
+                            title={proof.file_name}
+                          >
+                            {proof.file_name}
+                          </span>
+                        </div>
+                        <a
+                          href={proof.file_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-[#202024] hover:bg-[#2d2d34] border border-[#2d2d34] text-gray-300 hover:text-white rounded-[6px] px-3 py-1.5 text-[0.7rem] font-bold cursor-pointer transition-colors no-underline shrink-0"
+                        >
+                          View File
+                        </a>
+                      </div>
+                      {isImg && (
+                        <div className="mt-1 border border-[#23232a] rounded-[6px] overflow-hidden bg-[#000] flex justify-center max-h-[180px]">
+                          <img
+                            src={proof.file_url}
+                            alt={proof.file_name}
+                            className="object-contain max-w-full max-h-[180px]"
+                          />
+                        </div>
+                      )}
                     </div>
-                    <Download size={14} className="text-gray-400 group-hover:text-white shrink-0" />
-                  </a>
-                ))}
+                  );
+              })}
               </div>
             </div>
           )}
