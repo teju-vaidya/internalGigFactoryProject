@@ -138,7 +138,7 @@ export default function MilestoneModal({ milestone = null, onClose, onSave, proj
               >
                 <option value="pending">Pending</option>
                 <option value="in_progress">In Progress</option>
-                <option value="completed">Completed</option>
+                <option value="completed" className='cursor-not-allowed text-gray-500' disabled title='to mark milestone as completed use mark as complete cta on milestone card'>Completed</option>
               </select>
             </div>
 

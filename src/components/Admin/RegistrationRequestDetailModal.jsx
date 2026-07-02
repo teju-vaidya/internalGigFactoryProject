@@ -7,17 +7,17 @@ const fmtDate = (d) =>
 
 const ROLE_STYLES = {
   gig_expert: { bg: '#1e293b', color: '#38bdf8' },
-  agency:     { bg: '#2e1065', color: '#c084fc' },
+  agency: { bg: '#2e1065', color: '#c084fc' },
 };
 
 function RoleChip({ role }) {
   const r = ROLE_STYLES[role] || ROLE_STYLES.gig_expert;
   return (
-    <span 
-      style={{ background: r.bg, color: r.color }} 
+    <span
+      style={{ background: r.bg, color: r.color }}
       className="text-[0.68rem] font-bold px-[8px] py-[3px] rounded-[4px]"
     >
-      {role?.toUpperCase()}
+      {role === 'gig_expert' ? 'GIG EXPERT' : role?.toUpperCase()}
     </span>
   );
 }
@@ -64,8 +64,8 @@ export const RegistrationRequestDetailModal = ({ request, historyData, isLoading
   return (
     <>
       <div onClick={onClose} className="fixed inset-0 bg-black/75 backdrop-blur-[4px] z-[600]" />
-      <div 
-        style={{ animation: 'modalIn 0.2s ease-out' }} 
+      <div
+        style={{ animation: 'modalIn 0.2s ease-out' }}
         className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[800px] bg-[#181818] border border-[#2c2c2c] rounded-[12px] overflow-hidden z-[601] shadow-[0_20px_60px_rgba(0,0,0,0.8)]"
       >
         <div className="flex items-start justify-between padding-[24px] p-[24px] border-b border-[#2c2c2c]">
@@ -74,7 +74,7 @@ export const RegistrationRequestDetailModal = ({ request, historyData, isLoading
               {request.full_name}
             </h2>
             <div className="flex gap-[8px] flex-wrap">
-              <RoleChip role={request.role} />
+              <RoleChip role={request.role === 'gig_expert' ? 'GIG EXPERT' : request.role} />
               <StatusBadge status={request.status} />
               {request.status === 'rejected' && request.can_reapply_at && (
                 <span className="text-[0.72rem] bg-[#3b2314] text-[#f59e0b] px-[8px] py-[3px] rounded-[4px] font-semibold">
@@ -83,8 +83,8 @@ export const RegistrationRequestDetailModal = ({ request, historyData, isLoading
               )}
             </div>
           </div>
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="bg-transparent border border-[#2c2c2c] text-[#8a8a8a] rounded-[6px] px-[8px] py-[6px] cursor-pointer flex items-center"
           >
             <X size={16} />
@@ -125,8 +125,8 @@ export const RegistrationRequestDetailModal = ({ request, historyData, isLoading
                   {request.role === 'agency' && <div className="flex justify-between text-[0.82rem] border-b border-[#1e1e1e] py-[5px]"><strong>Team Size:</strong> <span>{app.teamSize || 'N/A'} employees</span></div>}
                   <div className="flex justify-between text-[0.82rem] border-b border-[#1e1e1e] py-[5px]"><strong>Signee:</strong> <span>{app.signatureName || 'N/A'}</span></div>
                   <div className="flex justify-between text-[0.82rem] border-b border-[#1e1e1e] py-[5px]">
-                    <strong>Declaration:</strong> 
-                    <span 
+                    <strong>Declaration:</strong>
+                    <span
                       className="font-semibold"
                       style={{ color: app.declarationAccepted ? '#70d64d' : '#ef4444' }}
                     >
@@ -194,8 +194,8 @@ export const RegistrationRequestDetailModal = ({ request, historyData, isLoading
                   <div className="flex justify-between text-[0.82rem] border-b border-[#1e1e1e] py-[5px]"><strong>Current State:</strong> <span>{request.status?.toUpperCase()}</span></div>
                   {request.status === 'rejected' && <div className="mt-[8px] text-[0.8rem] text-[#ef4444]"><strong>Not Selected Reason:</strong> {request.rejection_reason || 'None.'}</div>}
                   <div className="mt-[16px] flex justify-end">
-                    <button 
-                      onClick={handleOpenEditDecision} 
+                    <button
+                      onClick={handleOpenEditDecision}
                       className="inline-flex items-center gap-[5px] rounded-[5px] text-[0.8rem] font-bold cursor-pointer border border-[#70d64d] text-[#70d64d] bg-transparent px-[14px] py-[7px] transition-opacity duration-150"
                     >
                       Change Decision / Cooldown
@@ -220,7 +220,7 @@ export const RegistrationRequestDetailModal = ({ request, historyData, isLoading
                   <div>
                     <label className="text-gray-500 text-[0.75rem] font-semibold uppercase block mb-[6px]">Cooldown Period</label>
                     <select value={cooldownOption} onChange={e => setCooldownOption(e.target.value)} className={selectClass}>
-                      {[['7','7 Days'],['14','14 Days'],['30','30 Days (Standard)'],['90','90 Days'],['none','No Cooldown'],['custom','Custom Date']].map(([v,l]) => <option key={v} value={v}>{l}</option>)}
+                      {[['7', '7 Days'], ['14', '14 Days'], ['30', '30 Days (Standard)'], ['90', '90 Days'], ['none', 'No Cooldown'], ['custom', 'Custom Date']].map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                     </select>
                   </div>
                   {cooldownOption === 'custom' && (

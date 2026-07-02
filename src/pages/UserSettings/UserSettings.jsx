@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'react-toastify';
-import { User, Lock, Bell, Save, Eye, EyeOff, Loader } from 'lucide-react';
-import { api, resolveAttachmentUrl } from '../../utils/api';
-import { useAuthStore } from '../../store/useAuthStore';
-import './UserSettings.css';
+import React, { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { User, Lock, Bell, Save, Eye, EyeOff, Loader } from "lucide-react";
+import { api, resolveAttachmentUrl } from "../../utils/api";
+import { useAuthStore } from "../../store/useAuthStore";
+import "./UserSettings.css";
 
 const TABS = [
-  { id: 'account',       label: 'My Account',         icon: User },
-  { id: 'notifications', label: 'Notifications',       icon: Bell },
+  { id: "account", label: "My Account", icon: User },
+  { id: "notifications", label: "Notifications", icon: Bell },
 ];
 
 function Toggle({ checked, onChange, id }) {
@@ -18,7 +18,7 @@ function Toggle({ checked, onChange, id }) {
       type="button"
       role="switch"
       aria-checked={checked}
-      className={`settings-toggle ${checked ? 'on' : 'off'}`}
+      className={`settings-toggle ${checked ? "on" : "off"}`}
       onClick={() => onChange(!checked)}
     >
       <span className="toggle-thumb" />
@@ -32,7 +32,9 @@ function Section({ title, description, children }) {
       {(title || description) && (
         <div className="settings-section-header">
           {title && <h3 className="settings-section-title">{title}</h3>}
-          {description && <p className="settings-section-desc">{description}</p>}
+          {description && (
+            <p className="settings-section-desc">{description}</p>
+          )}
         </div>
       )}
       {children}
@@ -44,7 +46,9 @@ function FormRow({ label, hint, children, id }) {
   return (
     <div className="settings-form-row">
       <div className="settings-label-col">
-        <label htmlFor={id} className="settings-label">{label}</label>
+        <label htmlFor={id} className="settings-label">
+          {label}
+        </label>
         {hint && <span className="settings-hint">{hint}</span>}
       </div>
       <div className="settings-input-col">{children}</div>
@@ -73,21 +77,34 @@ function NotifRow({ label, desc, inApp, email, onInApp, onEmail, id }) {
 
 export default function UserSettings() {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState('account');
-  const updateStoreUser = useAuthStore(state => state.updateUser);
+  const [activeTab, setActiveTab] = useState("account");
+  const updateStoreUser = useAuthStore((state) => state.updateUser);
 
   // Fetch settings
   const { data: settingsData, isLoading: settingsLoading } = useQuery({
-    queryKey: ['user-settings'],
-    queryFn:  () => api.get('/settings'),
+    queryKey: ["user-settings"],
+    queryFn: () => api.get("/settings"),
   });
 
   const settings = settingsData?.settings || {};
 
   // Form states
-  const [account, setAccount] = useState({ full_name: '', email: '', mobile: '', saved_signature_url: '' });
-  const [password, setPassword] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
-  const [showPwd, setShowPwd] = useState({ current: false, new: false, confirm: false });
+  const [account, setAccount] = useState({
+    full_name: "",
+    email: "",
+    mobile: "",
+    saved_signature_url: "",
+  });
+  const [password, setPassword] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [showPwd, setShowPwd] = useState({
+    current: false,
+    new: false,
+    confirm: false,
+  });
   const [notif, setNotif] = useState({
     notif_payment_inapp: true,
     notif_payment_email: true,
@@ -99,10 +116,10 @@ export default function UserSettings() {
   useEffect(() => {
     if (settings.profile) {
       setAccount({
-        full_name: settings.profile.full_name || '',
-        email: settings.profile.email || '',
-        mobile: settings.profile.mobile || '',
-        saved_signature_url: settings.profile.saved_signature_url || '',
+        full_name: settings.profile.full_name || "",
+        email: settings.profile.email || "",
+        mobile: settings.profile.mobile || "",
+        saved_signature_url: settings.profile.saved_signature_url || "",
       });
     }
     if (settings.notifications) {
@@ -112,11 +129,11 @@ export default function UserSettings() {
 
   // Mutation
   const saveMutation = useMutation({
-    mutationFn: ({ section, data }) => api.put('/settings', { section, data }),
+    mutationFn: ({ section, data }) => api.put("/settings", { section, data }),
     onSuccess: (res, variables) => {
-      toast.success('Settings saved successfully.');
-      queryClient.invalidateQueries({ queryKey: ['user-settings'] });
-      if (variables.section === 'profile') {
+      toast.success("Settings saved successfully.");
+      queryClient.invalidateQueries({ queryKey: ["user-settings"] });
+      if (variables.section === "profile") {
         updateStoreUser({
           full_name: variables.data.full_name,
           fullName: variables.data.full_name,
@@ -125,24 +142,30 @@ export default function UserSettings() {
         });
       }
     },
-    onError: (err) => toast.error(err?.message || 'Failed to save settings.'),
+    onError: (err) => toast.error(err?.message || "Failed to save settings."),
   });
 
   const passwordMutation = useMutation({
-    mutationFn: (data) => api.put('/settings/password', data),
+    mutationFn: (data) => api.put("/settings/password", data),
     onSuccess: () => {
-      toast.success('Password changed successfully.');
-      setPassword({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      toast.success("Password changed successfully.");
+      setPassword({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
     },
-    onError: (err) => toast.error(err?.message || 'Failed to change password.'),
+    onError: (err) => toast.error(err?.message || "Failed to change password."),
   });
 
-  const handleSaveAccount = () => saveMutation.mutate({ section: 'profile', data: account });
-  const handleSaveNotif = () => saveMutation.mutate({ section: 'notifications', data: notif });
+  const handleSaveAccount = () =>
+    saveMutation.mutate({ section: "profile", data: account });
+  const handleSaveNotif = () =>
+    saveMutation.mutate({ section: "notifications", data: notif });
 
   const handleChangePassword = () => {
     if (password.newPassword !== password.confirmPassword) {
-      return toast.error('New passwords do not match.');
+      return toast.error("New passwords do not match.");
     }
     passwordMutation.mutate({
       currentPassword: password.currentPassword,
@@ -154,56 +177,62 @@ export default function UserSettings() {
     const file = e.target.files[0];
     if (!file) return;
 
-    const allowed = ['image/png', 'image/jpeg', 'image/jpg'];
+    const allowed = ["image/png", "image/jpeg", "image/jpg"];
     if (!allowed.includes(file.type)) {
-      return toast.error('Only PNG, JPG, and JPEG files are allowed.');
+      return toast.error("Only PNG, JPG, and JPEG files are allowed.");
     }
     if (file.size > 5 * 1024 * 1024) {
-      return toast.error('File size must be less than 5MB.');
+      return toast.error("File size must be less than 5MB.");
     }
 
     const formData = new FormData();
-    formData.append('signature', file);
+    formData.append("signature", file);
 
     try {
-      const res = await api.putFile('/settings/signature', formData);
+      const res = await api.putFile("/settings/signature", formData);
       if (res.success) {
-        toast.success('Signature uploaded successfully.');
-        queryClient.invalidateQueries({ queryKey: ['user-settings'] });
+        toast.success("Signature uploaded successfully.");
+        queryClient.invalidateQueries({ queryKey: ["user-settings"] });
       } else {
-        toast.error(res.message || 'Failed to upload signature.');
+        toast.error(res.message || "Failed to upload signature.");
       }
     } catch (err) {
-      toast.error(err?.message || 'Failed to upload signature.');
+      toast.error(err?.message || "Failed to upload signature.");
     }
   };
 
   const handleDeleteSignature = async () => {
-    if (!window.confirm('Are you sure you want to remove your saved signature?')) return;
+    if (
+      !window.confirm("Are you sure you want to remove your saved signature?")
+    )
+      return;
     try {
-      const res = await api.delete('/settings/signature');
+      const res = await api.delete("/settings/signature");
       if (res.success) {
-        toast.success('Signature removed successfully.');
-        queryClient.invalidateQueries({ queryKey: ['user-settings'] });
+        toast.success("Signature removed successfully.");
+        queryClient.invalidateQueries({ queryKey: ["user-settings"] });
       } else {
-        toast.error(res.message || 'Failed to remove signature.');
+        toast.error(res.message || "Failed to remove signature.");
       }
     } catch (err) {
-      toast.error(err?.message || 'Failed to remove signature.');
+      toast.error(err?.message || "Failed to remove signature.");
     }
   };
 
-
   const isSaving = saveMutation.isPending || passwordMutation.isPending;
 
-  const SaveBtn = ({ onClick, label = 'Save Changes', loading }) => (
+  const SaveBtn = ({ onClick, label = "Save Changes", loading }) => (
     <button
       type="button"
       className="settings-save-btn"
       onClick={onClick}
       disabled={loading || isSaving}
     >
-      {(loading || isSaving) ? <Loader size={14} className="spin" /> : <Save size={14} />}
+      {loading || isSaving ? (
+        <Loader size={14} className="spin" />
+      ) : (
+        <Save size={14} />
+      )}
       {label}
     </button>
   );
@@ -221,10 +250,10 @@ export default function UserSettings() {
     <div className="settings-shell">
       {/* Horizontal Navigation Tabs */}
       <nav className="settings-tab-nav-horizontal">
-        {TABS.map(tab => (
+        {TABS.map((tab) => (
           <button
             key={tab.id}
-            className={`settings-tab-btn-horizontal ${activeTab === tab.id ? 'active' : ''}`}
+            className={`settings-tab-btn-horizontal ${activeTab === tab.id ? "active" : ""}`}
             onClick={() => setActiveTab(tab.id)}
           >
             <tab.icon size={16} />
@@ -236,49 +265,88 @@ export default function UserSettings() {
       {/* Content area */}
       <div className="settings-content">
         {/* MY ACCOUNT */}
-        {activeTab === 'account' && (
+        {activeTab === "account" && (
           <div className="settings-pane">
             <div className="settings-pane-header">
               <h2>My Account</h2>
               <p>Update your personal details and change your password.</p>
             </div>
 
-            <Section title="Profile Details" description="This is how your name appears across the platform.">
+            <Section
+              title="Profile Details"
+              description="This is how your name appears across the platform."
+            >
               <FormRow label="Full Name" id="acc-name">
-                <input id="acc-name" className="settings-input" value={account.full_name}
-                  onChange={e => setAccount(s => ({ ...s, full_name: e.target.value }))} />
+                <input
+                  id="acc-name"
+                  className="settings-input"
+                  value={account.full_name}
+                  onChange={(e) =>
+                    setAccount((s) => ({ ...s, full_name: e.target.value }))
+                  }
+                />
               </FormRow>
-              <FormRow label="Email Address" id="acc-email" hint="Used for login and communications">
-                <input id="acc-email" type="email" className="settings-input" value={account.email}
-                  onChange={e => setAccount(s => ({ ...s, email: e.target.value }))} />
+              <FormRow
+                label="Email Address"
+                id="acc-email"
+                hint="Used for login and communications"
+              >
+                <input
+                  id="acc-email"
+                  type="email"
+                  className="settings-input"
+                  value={account.email}
+                  // onChange={(e) =>
+                  //   setAccount((s) => ({ ...s, email: e.target.value }))
+                  // }
+                  disabled
+                />
               </FormRow>
               <FormRow label="Mobile" id="acc-mobile">
-                <input id="acc-mobile" className="settings-input" value={account.mobile}
-                  onChange={e => setAccount(s => ({ ...s, mobile: e.target.value }))} />
+                <input
+                  id="acc-mobile"
+                  className="settings-input"
+                  value={account.mobile}
+                  type="number"
+                  onChange={(e) =>
+                    e.target.value.length <= 10 &&
+                    setAccount((s) => ({ ...s, mobile: e.target.value }))
+                  }
+                />
               </FormRow>
               <div className="settings-row-actions">
-                <SaveBtn onClick={handleSaveAccount} loading={saveMutation.isPending} />
+                <SaveBtn
+                  onClick={handleSaveAccount}
+                  loading={saveMutation.isPending}
+                />
               </div>
             </Section>
 
-            <Section title="Saved Signature" description="Securely store your signature for fast document signing. Only PNG, JPG, and JPEG files are allowed.">
+            <Section
+              title="Saved Signature"
+              description="Securely store your signature for fast document signing. Only PNG, JPG, and JPEG files are allowed."
+            >
               <div className="settings-form-row settings-signature-row">
                 <div className="settings-label-col">
                   <span className="settings-label">Your Signature</span>
-                  <span className="settings-hint">Used for signing certificates and project approvals.</span>
+                  <span className="settings-hint">
+                    Used for signing certificates and project approvals.
+                  </span>
                 </div>
                 <div className="settings-input-col">
                   {account.saved_signature_url ? (
                     <div className="settings-signature-container">
                       <div className="settings-signature-preview-wrap">
-                        <img 
-                          src={resolveAttachmentUrl(account.saved_signature_url)} 
-                          alt="Saved Signature" 
+                        <img
+                          src={resolveAttachmentUrl(
+                            account.saved_signature_url,
+                          )}
+                          alt="Saved Signature"
                           className="settings-signature-preview"
                         />
                       </div>
-                      <button 
-                        type="button" 
+                      <button
+                        type="button"
                         className="settings-signature-delete-btn"
                         onClick={handleDeleteSignature}
                         disabled={isSaving}
@@ -292,55 +360,91 @@ export default function UserSettings() {
                         type="file"
                         id="signature-file-upload"
                         accept=".png,.jpg,.jpeg"
-                        style={{ display: 'none' }}
+                        style={{ display: "none" }}
                         onChange={handleUploadSignature}
                       />
                       <button
                         type="button"
                         className="settings-signature-upload-btn"
-                        onClick={() => document.getElementById('signature-file-upload').click()}
+                        onClick={() =>
+                          document
+                            .getElementById("signature-file-upload")
+                            .click()
+                        }
                         disabled={isSaving}
                       >
                         Upload Signature Image
                       </button>
-                      <span className="settings-hint mt-2">Recommended: PNG transparent background, max 5MB.</span>
+                      <span className="settings-hint mt-2">
+                        Recommended: PNG transparent background, max 5MB.
+                      </span>
                     </div>
                   )}
                 </div>
               </div>
             </Section>
 
-            <Section title="Change Password" description="Use a strong password with at least 8 characters.">
+            <Section
+              title="Change Password"
+              description="Use a strong password with at least 8 characters."
+            >
               {[
-                { key: 'currentPassword', label: 'Current Password', id: 'pwd-current', show: 'current' },
-                { key: 'newPassword',     label: 'New Password',     id: 'pwd-new',     show: 'new' },
-                { key: 'confirmPassword', label: 'Confirm Password', id: 'pwd-confirm', show: 'confirm' },
+                {
+                  key: "currentPassword",
+                  label: "Current Password",
+                  id: "pwd-current",
+                  show: "current",
+                },
+                {
+                  key: "newPassword",
+                  label: "New Password",
+                  id: "pwd-new",
+                  show: "new",
+                },
+                {
+                  key: "confirmPassword",
+                  label: "Confirm Password",
+                  id: "pwd-confirm",
+                  show: "confirm",
+                },
               ].map(({ key, label, id, show }) => (
                 <FormRow key={key} label={label} id={id}>
                   <div className="settings-input-icon-wrap">
                     <input
                       id={id}
-                      type={showPwd[show] ? 'text' : 'password'}
+                      type={showPwd[show] ? "text" : "password"}
                       className="settings-input"
                       value={password[key]}
-                      onChange={e => setPassword(s => ({ ...s, [key]: e.target.value }))}
+                      onChange={(e) =>
+                        setPassword((s) => ({ ...s, [key]: e.target.value }))
+                      }
                       autoComplete="new-password"
                     />
-                    <button type="button" className="pwd-toggle" onClick={() => setShowPwd(s => ({ ...s, [show]: !s[show] }))}>
+                    <button
+                      type="button"
+                      className="pwd-toggle"
+                      onClick={() =>
+                        setShowPwd((s) => ({ ...s, [show]: !s[show] }))
+                      }
+                    >
                       {showPwd[show] ? <EyeOff size={15} /> : <Eye size={15} />}
                     </button>
                   </div>
                 </FormRow>
               ))}
               <div className="settings-row-actions">
-                <SaveBtn onClick={handleChangePassword} label="Change Password" loading={passwordMutation.isPending} />
+                <SaveBtn
+                  onClick={handleChangePassword}
+                  label="Change Password"
+                  loading={passwordMutation.isPending}
+                />
               </div>
             </Section>
           </div>
         )}
 
         {/* NOTIFICATIONS */}
-        {activeTab === 'notifications' && (
+        {activeTab === "notifications" && (
           <div className="settings-pane">
             <div className="settings-pane-header">
               <h2>Notification Preferences</h2>
@@ -362,8 +466,12 @@ export default function UserSettings() {
                 desc="When a payment is processed or invoice is generated"
                 inApp={notif.notif_payment_inapp}
                 email={notif.notif_payment_email}
-                onInApp={v => setNotif(s => ({ ...s, notif_payment_inapp: v }))}
-                onEmail={v => setNotif(s => ({ ...s, notif_payment_email: v }))}
+                onInApp={(v) =>
+                  setNotif((s) => ({ ...s, notif_payment_inapp: v }))
+                }
+                onEmail={(v) =>
+                  setNotif((s) => ({ ...s, notif_payment_email: v }))
+                }
               />
               <NotifRow
                 id="notif-proj"
@@ -371,8 +479,12 @@ export default function UserSettings() {
                 desc="When you are assigned to a new project or milestone status changes"
                 inApp={notif.notif_project_inapp}
                 email={notif.notif_project_email}
-                onInApp={v => setNotif(s => ({ ...s, notif_project_inapp: v }))}
-                onEmail={v => setNotif(s => ({ ...s, notif_project_email: v }))}
+                onInApp={(v) =>
+                  setNotif((s) => ({ ...s, notif_project_inapp: v }))
+                }
+                onEmail={(v) =>
+                  setNotif((s) => ({ ...s, notif_project_email: v }))
+                }
               />
 
               <div className="settings-row-actions">

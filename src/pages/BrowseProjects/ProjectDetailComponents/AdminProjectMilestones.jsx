@@ -27,7 +27,9 @@ export default function AdminProjectMilestones({
 
   const handleDownloadZip = (milestoneId, deliverableId) => {
     try {
-      const downloadUrl = api.getDownloadUrl(`/projects/milestones/deliverables/${deliverableId}/zip`);
+      const downloadUrl = api.getDownloadUrl(
+        `/projects/milestones/deliverables/${deliverableId}/zip`,
+      );
       const link = document.createElement("a");
       link.href = downloadUrl;
       link.setAttribute("download", "");
@@ -90,8 +92,16 @@ export default function AdminProjectMilestones({
                         ? `₹${Number(ms.budget).toLocaleString("en-IN")}`
                         : "₹0"}
                     </span>
+                    <span className="text-xs text-gray-500 block">
+                      Weight:{" "}
+                      <strong className="text-white font-semibold">
+                        {Number(ms.weight_percentage)}%
+                      </strong>
+                    </span>
                     <span className="text-[#8a8a8a] text-[0.68rem] block mt-1">
-                      Due: {fmtDate(ms.due_date)}
+                      Start: {ms.start_date ? fmtDate(ms.start_date) : "TBD"}
+                      &nbsp;|&nbsp; Due:{" "}
+                      {ms.due_date ? fmtDate(ms.due_date) : "TBD"}
                     </span>
                   </div>
                 </div>
@@ -141,7 +151,10 @@ export default function AdminProjectMilestones({
                           <div className="flex flex-col gap-2 mt-2">
                             <div className="flex justify-between items-center bg-[#18181b] border border-[#27272a] rounded-[6px] px-[10px] py-[6px]">
                               <span className="text-gray-400 text-[0.7rem] font-bold flex items-center gap-1.5">
-                                <FileArchive size={14} className="text-gray-400" />
+                                <FileArchive
+                                  size={14}
+                                  className="text-gray-400"
+                                />
                                 Submitted Files ({del.files.length})
                               </span>
                               <button
@@ -182,7 +195,9 @@ export default function AdminProjectMilestones({
                                     : "text-amber-400"
                                 }`}
                             >
-                              {del.status === 'rejected' ? 'not selected' : del.status}
+                              {del.status === "rejected"
+                                ? "not selected"
+                                : del.status}
                             </span>
                           </div>
 
@@ -235,29 +250,32 @@ export default function AdminProjectMilestones({
                       >
                         {ms.payment_status}
                       </span>
-                      {milestonePayment && milestonePayment.status === "paid" && (
-                        <div className="flex gap-1.5 items-center ml-1">
-                          <button
-                            onClick={() => onViewReceipt(milestonePayment, ms.title)}
-                            className="bg-[#202024] hover:bg-[#2d2d34] border border-[#2d2d34] text-[#70d64d] rounded-[4px] px-[8px] py-[3px] text-[0.68rem] font-bold cursor-pointer transition-colors flex items-center gap-1 hover:border-[#70d64d]/40"
-                          >
-                            <Wallet size={11} /> View Receipt
-                          </button>
-                          {!isProjectCompleted && (
+                      {milestonePayment &&
+                        milestonePayment.status === "paid" && (
+                          <div className="flex gap-1.5 items-center ml-1">
                             <button
-                              onClick={() => onEditPayment(milestonePayment)}
-                              className="bg-[#202024] hover:bg-[#2d2d34] border border-[#2d2d34] text-amber-500 rounded-[4px] px-[8px] py-[3px] text-[0.68rem] font-bold cursor-pointer transition-colors flex items-center gap-1 hover:border-amber-500/40"
+                              onClick={() =>
+                                onViewReceipt(milestonePayment, ms.title)
+                              }
+                              className="bg-[#202024] hover:bg-[#2d2d34] border border-[#2d2d34] text-[#70d64d] rounded-[4px] px-[8px] py-[3px] text-[0.68rem] font-bold cursor-pointer transition-colors flex items-center gap-1 hover:border-[#70d64d]/40"
                             >
-                              <Edit size={11} /> Edit Payment
+                              <Wallet size={11} /> View Receipt
                             </button>
-                          )}
-                        </div>
-                      )}
+                            {!isProjectCompleted && (
+                              <button
+                                onClick={() => onEditPayment(milestonePayment)}
+                                className="bg-[#202024] hover:bg-[#2d2d34] border border-[#2d2d34] text-amber-500 rounded-[4px] px-[8px] py-[3px] text-[0.68rem] font-bold cursor-pointer transition-colors flex items-center gap-1 hover:border-amber-500/40"
+                              >
+                                <Edit size={11} /> Edit Payment
+                              </button>
+                            )}
+                          </div>
+                        )}
                     </div>
                   </div>
 
                   <div className="flex gap-2">
-                    {!isProjectCompleted && (
+                    {
                       <>
                         <button
                           onClick={() => onEditMilestone(ms)}
@@ -272,10 +290,9 @@ export default function AdminProjectMilestones({
                           Delete
                         </button>
                       </>
-                    )}
+                    }
 
-                    {!isProjectCompleted &&
-                      project.status === "assigned" &&
+                    {project.status === "assigned" &&
                       ms.status !== "completed" && (
                         <button
                           onClick={() => onCompleteMilestone(ms.id)}
@@ -285,9 +302,10 @@ export default function AdminProjectMilestones({
                         </button>
                       )}
 
-                    {!isProjectCompleted &&
+                    {
                       milestonePayment &&
-                      milestonePayment.status === "pending" && (
+                      milestonePayment.status === "pending" &&
+                      ms.payment_status !== "paid" && (
                         <button
                           onClick={() => onRecordPayment(milestonePayment)}
                           className="bg-amber-500 text-black border-none font-bold rounded-[6px] px-[12px] py-[5px] text-[0.72rem] cursor-pointer hover:bg-amber-600 transition-colors"
