@@ -89,7 +89,11 @@ const ForgotPassword = () => {
 
   useEffect(() => {
     if (sendOtpQuery.data) {
-      toast.success(sendOtpQuery.data.message || 'OTP sent to your email.');
+      let msg = sendOtpQuery.data.message || 'OTP sent to your email.';
+      if (sendOtpQuery.data.otp) {
+        msg += ` (Development OTP: ${sendOtpQuery.data.otp})`;
+      }
+      toast.success(msg);
       setIsOtpSent(true);
       setTimer(30);
       setOtpEmail(null);
