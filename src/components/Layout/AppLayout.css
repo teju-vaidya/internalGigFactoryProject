@@ -308,6 +308,11 @@
   align-items: flex-end;
   text-align: right;
 }
+@media (max-width: 768px) {
+  .topbar-profile-info {
+    display: none;
+  }
+}
 
 .topbar-name {
   font-size: 0.88rem;

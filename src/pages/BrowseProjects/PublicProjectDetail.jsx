@@ -6,6 +6,8 @@ import { toast } from "react-toastify";
 import { api } from "../../utils/api";
 import ProjectHeader from "./ProjectDetailComponents/ProjectHeader";
 import ProjectDescription from "./ProjectDetailComponents/ProjectDescription";
+import { useMetaTags } from "../../hooks/useMetaTags";
+import { stripHtml } from "../../utils/text";
 
 export default function PublicProjectDetail() {
   const { id } = useParams();
@@ -25,6 +27,70 @@ export default function PublicProjectDetail() {
   const project = detailData?.project;
   const milestones = project?.milestones || [];
   const files = project?.files || [];
+
+  const formattedBudget = project?.budget
+    ? `₹${Number(project.budget).toLocaleString("en-IN")}`
+    : "Undisclosed";
+
+  const formattedStartDate = project?.start_date
+    ? new Date(project.start_date).toLocaleDateString("en-IN", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+    : "TBD";
+
+  const formattedHours = project?.estimated_hours
+    ? `${Number(project.estimated_hours)} hrs`
+    : "TBD";
+
+  const formattedDeadline = project?.end_date
+    ? new Date(project.end_date).toLocaleDateString("en-IN", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+    : "TBD";
+
+  // Generate JobPosting Schema.org JSON-LD structured data for rich results and LLM indexes
+  const jobSchema = project ? {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    "title": project.title,
+    "description": project.description ? stripHtml(project.description) : "GigFactory project opportunity",
+    "datePosted": project.created_at || new Date().toISOString(),
+    "validThrough": project.end_date || undefined,
+    "employmentType": "CONTRACTOR",
+    "hiringOrganization": {
+      "@type": "Organization",
+      "name": "GigFactory Client Partner",
+      "logo": `${window.location.origin}/favicon.png`
+    },
+    "jobLocation": {
+      "@type": "Place",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "IN"
+      }
+    },
+    "baseSalary": project.budget ? {
+      "@type": "MonetaryAmount",
+      "currency": "INR",
+      "value": {
+        "@type": "QuantitativeValue",
+        "value": Number(project.budget),
+        "unitText": "PROJECT"
+      }
+    } : undefined,
+    "skills": project.project_skills?.map(s => s.skill_name).join(', ') || undefined
+  } : null;
+
+  useMetaTags({
+    title: project ? `${project.title} - Project Opportunity` : "Project Details",
+    description: project ? `Apply for "${project.title}" on GigFactory. Category: ${project.category || 'General'}. Budget: ${formattedBudget}. Dynamic milestones & deliverables configured.` : "View project specifications and details.",
+    keywords: project ? `${project.title}, ${project.category}, freelance contracts, milestones, gig work, ${project.project_skills?.map(s => s.skill_name).join(', ') || ''}` : "project specifications, gig details",
+    jsonLd: jobSchema
+  });
 
   if (isLoading) {
     return (
@@ -50,30 +116,6 @@ export default function PublicProjectDetail() {
       </div>
     );
   }
-
-  const formattedBudget = project.budget
-    ? `₹${Number(project.budget).toLocaleString("en-IN")}`
-    : "Undisclosed";
-
-  const formattedStartDate = project.start_date
-    ? new Date(project.start_date).toLocaleDateString("en-IN", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      })
-    : "TBD";
-
-  const formattedHours = project.estimated_hours
-    ? `${Number(project.estimated_hours)} hrs`
-    : "TBD";
-
-  const formattedDeadline = project.end_date
-    ? new Date(project.end_date).toLocaleDateString("en-IN", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      })
-    : "TBD";
 
   return (
     <div className="flex flex-col gap-6">

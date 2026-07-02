@@ -338,10 +338,10 @@ export const Profile = () => {
     const res = await updateProfile(payload);
     setIsSaving(false);
     if (res && res.success) {
-      toast.success('Settings updated successfully!');
+      toast.success('Profile updated successfully!');
       setIsEditModalOpen(false);
     } else {
-      toast.error(res?.error || 'Failed to update settings.');
+      toast.error(res?.error || 'Failed to update profile.');
     }
   };
 
@@ -372,9 +372,61 @@ export const Profile = () => {
     ? (profile?.gig_expert_skills || [])
     : (profile?.service_details?.selectedServices || []).map(code => ({ skill_name: SERVICE_LABELS[code] || code }));
   
-  return (
+  const isIncomplete = profile && (profile.profile_completion ?? 0) <= 70;
 
+  return (
     <div className="profile-workspace-view animate-fade-in">
+      {isIncomplete && (
+        <div className="bg-gradient-to-r from-[rgba(181,255,20,0.06)] to-[rgba(18,18,21,0.95)] border border-[rgba(181,255,20,0.3)] rounded-xl p-6 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 shadow-xl relative overflow-hidden backdrop-blur-md">
+          {/* Decorative glow effect */}
+          <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-[#b5ff14] opacity-[0.03] blur-[80px] pointer-events-none rounded-full" />
+          
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="flex h-3 w-3 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#b5ff14] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-[#b5ff14]"></span>
+              </span>
+              <h3 className="text-white font-extrabold text-[1.1rem] tracking-wide m-0">
+                Action Required: Complete Your Profile ({profile.profile_completion ?? 0}%)
+              </h3>
+            </div>
+            
+            <p className="text-gray-300 text-[0.88rem] leading-relaxed mb-4 max-w-4xl">
+              Your profile is currently only <strong>{profile.profile_completion ?? 0}%</strong> complete. To gain full access to the GigFactory platform and apply for active gigs or view projects, you must complete at least <strong>70%</strong> of your profile.
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+              <div className="bg-[#121215] border border-[#23232a] rounded-lg p-3">
+                <h4 className="text-white font-bold text-[0.8rem] mb-1">🚀 Visibility & Gigs</h4>
+                <p className="text-gray-500 text-[0.75rem] leading-snug">
+                  Complete profiles rank higher in search algorithms. Clients and admins prioritize candidates with fully defined skills.
+                </p>
+              </div>
+              <div className="bg-[#121215] border border-[#23232a] rounded-lg p-3">
+                <h4 className="text-white font-bold text-[0.8rem] mb-1">🤝 Trust & Bid Success</h4>
+                <p className="text-gray-500 text-[0.75rem] leading-snug">
+                  Adding experience, portfolio links, and bio builds client trust, making you 5x more likely to win active proposals.
+                </p>
+              </div>
+              <div className="bg-[#121215] border border-[#23232a] rounded-lg p-3">
+                <h4 className="text-white font-bold text-[0.8rem] mb-1">📋 Legal Compliance</h4>
+                <p className="text-gray-500 text-[0.75rem] leading-snug">
+                  Verified documents (such as PAN cards and resumes) are mandatory to qualify for legal contracts and payout processing.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <button
+            onClick={handleEditClick}
+            className="whitespace-nowrap bg-[#b5ff14] text-black font-extrabold text-[0.85rem] px-6 py-3 rounded-lg cursor-pointer hover:bg-[#a2e60c] transition-all duration-200 shadow-[0_0_15px_rgba(181,255,20,0.25)] hover:scale-[1.02]"
+          >
+            Complete Profile Now
+          </button>
+        </div>
+      )}
+
       <ProfileHeader
         
         isGigExpert={isGigExpert}

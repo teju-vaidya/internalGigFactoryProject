@@ -339,7 +339,8 @@
 /* --- Profile Module Media Breaks Scaling Queries --- */
 @media (max-width: 992px) {
   .profile-details-split-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
   }
 }
 

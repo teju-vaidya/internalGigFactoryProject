@@ -216,7 +216,7 @@ export default function ProjectDetail() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 pb-20 lg:pb-0">
       {/* Back button */}
       <div>
         <button
@@ -323,6 +323,22 @@ export default function ProjectDetail() {
             setSelectedPaymentForReceipt(null);
           }}
         />
+      )}
+
+      {/* Sticky bottom CTA bar for mobile/tablet */}
+      {!isAssigned && !myApplication && !isProjectCompleted && userRole !== 'admin' && (
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] bg-[#121215]/95 backdrop-blur border-t border-[#23232a] p-4 shadow-[0_-8px_30px_rgba(0,0,0,0.5)] flex items-center justify-between gap-4">
+          <div className="flex flex-col">
+            <span className="text-[0.65rem] text-gray-400 font-bold uppercase tracking-[1.5px] mb-0.5">Submit Proposal</span>
+            <span className="text-white text-xs font-semibold line-clamp-1">Apply for this active gig</span>
+          </div>
+          <button
+            onClick={() => handleApplyTrigger(userRole)}
+            className="bg-[#70d64d] hover:bg-[#8ee67b] text-black border-none py-[10px] px-5 rounded-[6px] text-[0.8rem] font-extrabold cursor-pointer transition-colors duration-150 shadow-[0_4px_12px_rgba(112,214,77,0.15)] whitespace-nowrap"
+          >
+            Apply Now
+          </button>
+        </div>
       )}
     </div>
   );

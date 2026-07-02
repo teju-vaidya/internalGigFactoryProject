@@ -1,0 +1,22 @@
+# GigFactory
+
+GigFactory is a premium internal collaboration and freelance services gig marketplace. GigFactory list project specifications, milestones, and required skill profiles, enabling Gig Experts and Agencies to apply, deliver milestones, and get paid.
+
+## Public Pages
+
+- [Login / Homepage](/) - Access portal for admins, gig experts, and agencies.
+- [Forgot Password](/forgot-password) - Password recovery page.
+- [Open Opportunities Catalog](/public-projects) - Directory of all open projects available for collaboration. Supports search, category filtering, and sorting.
+- [Public Project Detail](/public-projects/{id}) - Detailed view of specific public opportunities, including milestones, scope, due dates, estimated hours, and budget.
+
+## Public Integration APIs
+
+Search engines and LLM crawlers can retrieve raw project details in JSON format directly:
+
+- **Get List of Open Projects**: `GET /api/projects/public?page={page}&limit={limit}&search={query}&category={category}&sort={sort}`
+- **Get Dynamic Categories**: `GET /api/projects/public-meta/categories`
+- **Get Project Details**: `GET /api/projects/public/{id}`
+
+## Structured Schemas
+
+Public project detail pages embed `JobPosting` structured JSON-LD schemas mapping categories, skills, budgets, start/end dates, and milestones.

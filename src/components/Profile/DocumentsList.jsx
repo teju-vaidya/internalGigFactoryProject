@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, FileText, Edit2, Trash2, Download, ExternalLink, X, Loader2 } from 'lucide-react';
+import { Plus, FileText, Edit2, Trash2, Download, ExternalLink, X, Loader2, MoreVertical } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 export const DocumentsList = ({
@@ -16,9 +16,27 @@ export const DocumentsList = ({
 }) => {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showRenameModal, setShowRenameModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteDocTarget, setDeleteDocTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [activeMenuId, setActiveMenuId] = useState(null);
+
+  const toggleMenu = (docId) => {
+    setActiveMenuId((prev) => (prev === docId ? null : docId));
+  };
 
   useEffect(() => {
-    if (showUploadModal || showRenameModal) {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.doc-menu-container')) {
+        setActiveMenuId(null);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (showUploadModal || showRenameModal || showDeleteModal) {
       document.body.classList.add('modal-open');
     } else {
       document.body.classList.remove('modal-open');
@@ -26,7 +44,7 @@ export const DocumentsList = ({
     return () => {
       document.body.classList.remove('modal-open');
     };
-  }, [showUploadModal, showRenameModal]);
+  }, [showUploadModal, showRenameModal, showDeleteModal]);
   
   // Upload form state
   const [selectedFile, setSelectedFile] = useState(null);
@@ -137,13 +155,22 @@ export const DocumentsList = ({
     }
   };
 
-  const handleDeleteClick = async (doc) => {
-    if (window.confirm(`Are you sure you want to delete the document "${doc.file_name}"?`)) {
-      try {
-        await onDelete(doc.id);
-      } catch (err) {
-        toast.error(err.message || 'Failed to delete document.');
-      }
+  const handleDeleteClick = (doc) => {
+    setDeleteDocTarget(doc);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteSubmit = async () => {
+    if (!deleteDocTarget) return;
+    setIsDeleting(true);
+    try {
+      await onDelete(deleteDocTarget.id);
+      setShowDeleteModal(false);
+      setDeleteDocTarget(null);
+    } catch (err) {
+      toast.error(err.message || 'Failed to delete document.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -166,7 +193,7 @@ export const DocumentsList = ({
       <div className="flex flex-col gap-4 mt-4">
         {/* Legacy Resume/CV display for Gig Expert */}
         {isGigExpert && resumeUrl && (
-          <div className="border-b border-white/5 pb-3">
+          <div className="border-b border-white/5 pb-3 ">
             <div className="flex items-center justify-between">
               <span className="text-[0.85rem] text-[#70d64d] font-semibold flex items-center gap-2">
                 <FileText size={16} /> Resume Document (Primary)
@@ -196,7 +223,8 @@ export const DocumentsList = ({
                 rel="noreferrer" 
                 className="text-[0.78rem] text-white hover:text-[#70d64d] flex items-center gap-1 bg-[#1c1c22] border border-[#23232a] px-2 py-1 rounded"
               >
-                <Download size={12} /> View Portfolio
+                <Download size={16} /> 
+                <span className='hidden sm:block'>View Portfolio</span>
               </a>
             </div>
           </div>
@@ -224,48 +252,113 @@ export const DocumentsList = ({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 ml-3">
-                  <a
-                    href={doc.file_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-1.5 text-[#8a8f98] hover:text-white bg-transparent border-none cursor-pointer transition-colors"
-                    title="Open in new tab"
-                  >
-                    <ExternalLink size={14} />
-                  </a>
-                  <a
-                    href={doc.file_url}
-                    download
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-1.5 text-[#8a8f98] hover:text-white bg-transparent border-none cursor-pointer transition-colors"
-                    title="Download Document"
-                  >
-                    <Download size={14} />
-                  </a>
+                 {/* Desktop view actions */}
+                 <div className="hidden md:flex items-center gap-2 ml-3">
+                   <a
+                     href={doc.file_url}
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     className="p-1.5 text-[#8a8f98] hover:text-white bg-transparent border-none cursor-pointer transition-colors"
+                     title="Open in new tab"
+                   >
+                     <ExternalLink size={14} />
+                   </a>
+                   <a
+                     href={doc.file_url}
+                     download
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     className="p-1.5 text-[#8a8f98] hover:text-white bg-transparent border-none cursor-pointer transition-colors"
+                     title="Download Document"
+                   >
+                     <Download size={14} />
+                   </a>
 
-                  {!isAdmin && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => handleRenameClick(doc)}
-                        className="p-1.5 text-[#8a8f98] hover:text-[#b5ff14] bg-transparent border-none cursor-pointer transition-colors"
-                        title="Rename Document"
-                      >
-                        <Edit2 size={14} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteClick(doc)}
-                        className="p-1.5 text-[#8a8f98] hover:text-[#ef4444] bg-transparent border-none cursor-pointer transition-colors"
-                        title="Delete Document"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </>
-                  )}
-                </div>
+                   {!isAdmin && (
+                     <>
+                       <button
+                         type="button"
+                         onClick={() => handleRenameClick(doc)}
+                         className="p-1.5 text-[#8a8f98] hover:text-[#b5ff14] bg-transparent border-none cursor-pointer transition-colors"
+                         title="Rename Document"
+                       >
+                         <Edit2 size={14} />
+                       </button>
+                       <button
+                         type="button"
+                         onClick={() => handleDeleteClick(doc)}
+                         className="p-1.5 text-[#8a8f98] hover:text-[#ef4444] bg-transparent border-none cursor-pointer transition-colors"
+                         title="Delete Document"
+                       >
+                         <Trash2 size={14} />
+                       </button>
+                     </>
+                   )}
+                 </div>
+
+                 {/* Mobile view action: 3-dot dropdown menu */}
+                 <div className="md:hidden block relative doc-menu-container ml-3">
+                   <button
+                     type="button"
+                     onClick={(e) => {
+                       e.stopPropagation();
+                       toggleMenu(doc.id);
+                     }}
+                     className="p-2 text-[#8a8f98] hover:text-white bg-transparent border-none cursor-pointer transition-colors flex items-center justify-center"
+                     title="Actions"
+                   >
+                     <MoreVertical size={16} />
+                   </button>
+
+                   {activeMenuId === doc.id && (
+                     <div className="absolute right-0 top-8 bg-[#121215] border border-[#23232a] rounded-lg shadow-xl py-1.5 w-40 z-[100] animate-fade-in">
+                       <a
+                         href={doc.file_url}
+                         target="_blank"
+                         rel="noopener noreferrer"
+                         className="flex items-center gap-2.5 px-3 py-2 text-[0.82rem] text-[#8a8f98] hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                         onClick={() => setActiveMenuId(null)}
+                       >
+                         <ExternalLink size={14} /> Open
+                       </a>
+                       <a
+                         href={doc.file_url}
+                         download
+                         target="_blank"
+                         rel="noopener noreferrer"
+                         className="flex items-center gap-2.5 px-3 py-2 text-[0.82rem] text-[#8a8f98] hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                         onClick={() => setActiveMenuId(null)}
+                       >
+                         <Download size={14} /> Download
+                       </a>
+                       {!isAdmin && (
+                         <>
+                           <div className="h-[1px] bg-white/5 my-1" />
+                           <button
+                             type="button"
+                             onClick={() => {
+                               setActiveMenuId(null);
+                               handleRenameClick(doc);
+                             }}
+                             className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-[0.82rem] text-[#8a8f98] hover:text-[#b5ff14] hover:bg-white/5 transition-colors border-none bg-transparent cursor-pointer"
+                           >
+                             <Edit2 size={14} /> Rename
+                           </button>
+                           <button
+                             type="button"
+                             onClick={() => {
+                               setActiveMenuId(null);
+                               handleDeleteClick(doc);
+                             }}
+                             className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-[0.82rem] text-[#ef4444] hover:bg-white/5 transition-colors border-none bg-transparent cursor-pointer"
+                           >
+                             <Trash2 size={14} /> Delete
+                           </button>
+                         </>
+                       )}
+                     </div>
+                   )}
+                 </div>
               </div>
             ))}
           </div>
@@ -467,6 +560,68 @@ export const DocumentsList = ({
                     </>
                   ) : (
                     'Save Changes'
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && deleteDocTarget && createPortal(
+        <div className="profile-modal-overlay">
+          <div className="profile-modal-card max-w-[400px]">
+            <div className="profile-modal-header border-none pb-0">
+              <h2>Confirm Deletion</h2>
+              <button 
+                type="button" 
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setDeleteDocTarget(null);
+                }} 
+                className="profile-modal-close-btn"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleDeleteSubmit();
+              }} 
+              className="profile-modal-form"
+            >
+              <div className="profile-modal-scroll-area" style={{ maxHeight: 'none', overflowY: 'visible' }}>
+                <p className="text-gray-300 text-[0.88rem] leading-relaxed mb-6">
+                  Are you sure you want to delete the document <strong>"{deleteDocTarget.file_name}"</strong>? This action cannot be undone.
+                </p>
+              </div>
+
+              <div className="profile-modal-footer border-none pt-0 gap-3 justify-end flex">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setDeleteDocTarget(null);
+                  }}
+                  className="btn-cancel"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isDeleting}
+                  className="bg-[#ef4444] hover:bg-[#dc2626] text-white border-none rounded-md px-4 py-[10px] text-[0.88rem] font-bold cursor-pointer transition-colors flex items-center justify-center gap-1.5"
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="animate-spin" size={16} /> Deleting...
+                    </>
+                  ) : (
+                    'Delete'
                   )}
                 </button>
               </div>

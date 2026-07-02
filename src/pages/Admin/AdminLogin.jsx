@@ -137,7 +137,7 @@ const AdminLogin = () => {
                 <input
                   id="admin-email"
                   type="email"
-                  placeholder="admin@gigfactory.com"
+                  placeholder="admin@gigfactory.in"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   className="w-full bg-[#1f1f1f] border border-[#2c2c2c] rounded-md text-white text-[0.88rem] py-[11px] pr-3 pl-[42px] outline-none"

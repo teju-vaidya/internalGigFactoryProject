@@ -16,11 +16,10 @@ function StatCard({ label, value, Icon, accent, sub, onClick }) {
   return (
     <div
       onClick={onClick}
-      className={`rounded-[12px] p-[24px] flex flex-col gap-[12px] transition-all duration-150 ${
-        accent
-          ? 'bg-gradient-to-br from-[#121215] to-[#16220a] border border-[#374f05]'
-          : 'bg-[#121215] border border-[#23232a]'
-      } ${onClick ? 'cursor-pointer hover:-translate-y-[2px] hover:shadow-lg' : 'cursor-default'}`}
+      className={`rounded-[12px] p-[24px] flex flex-col gap-[12px] transition-all duration-150 ${accent
+        ? 'bg-gradient-to-br from-[#121215] to-[#16220a] border border-[#374f05]'
+        : 'bg-[#121215] border border-[#23232a]'
+        } ${onClick ? 'cursor-pointer hover:-translate-y-[2px] hover:shadow-lg' : 'cursor-default'}`}
     >
       <div className="flex justify-between items-start">
         <div>
@@ -31,9 +30,8 @@ function StatCard({ label, value, Icon, accent, sub, onClick }) {
             {value ?? <span className="skeleton-pulse inline-block w-[50px] h-[36px] rounded-[6px]" />}
           </p>
         </div>
-        <div className={`w-[44px] h-[44px] rounded-[10px] flex items-center justify-center border ${
-          accent ? 'bg-[rgba(112,214,77,0.12)] border-[rgba(112,214,77,0.25)]' : 'bg-[rgba(255,255,255,0.04)] border-[#23232a]'
-        }`}>
+        <div className={`w-[44px] h-[44px] rounded-[10px] flex items-center justify-center border ${accent ? 'bg-[rgba(112,214,77,0.12)] border-[rgba(112,214,77,0.25)]' : 'bg-[rgba(255,255,255,0.04)] border-[#23232a]'
+          }`}>
           <Icon size={20} color={accent ? '#70d64d' : '#6b7280'} />
         </div>
       </div>
@@ -56,8 +54,8 @@ function QuickLink({ icon: Icon, label, desc, to, color }) {
       onMouseEnter={e => { e.currentTarget.style.borderColor = color; }}
       onMouseLeave={e => { e.currentTarget.style.borderColor = '#23232a'; }}
     >
-      <div 
-        style={{ background: `${color}18`, borderColor: `${color}40` }} 
+      <div
+        style={{ background: `${color}18`, borderColor: `${color}40` }}
         className="w-[44px] h-[44px] rounded-[10px] border flex items-center justify-center shrink-0"
       >
         <Icon size={20} color={color} />
@@ -193,8 +191,8 @@ export default function AdminOverview() {
                         onClick={() => navigate(`/admin/requests?id=${req.id}`)}
                         className="flex items-center gap-[12px] px-[8px] py-[10px] border-b border-[#1a1a22] cursor-pointer rounded-[6px] transition-colors duration-200 hover:bg-[#181820]"
                       >
-                        <div 
-                          style={{ background: `${roleColor}18`, borderColor: `${roleColor}40`, color: roleColor }} 
+                        <div
+                          style={{ background: `${roleColor}18`, borderColor: `${roleColor}40`, color: roleColor }}
                           className="w-[36px] h-[36px] rounded-full border flex items-center justify-center font-extrabold text-[0.75rem] shrink-0"
                         >
                           {req.full_name?.charAt(0).toUpperCase() || '?'}
@@ -204,11 +202,11 @@ export default function AdminOverview() {
                             <span className="text-white font-semibold text-[0.85rem] whitespace-nowrap overflow-hidden text-ellipsis">
                               {req.full_name}
                             </span>
-                            <span 
-                              style={{ background: `${roleColor}18`, color: roleColor }} 
+                            <span
+                              style={{ background: `${roleColor}18`, color: roleColor }}
                               className="text-[0.62rem] font-bold px-[6px] py-[2px] rounded-[4px] shrink-0"
                             >
-                              {req.role?.toUpperCase()}
+                              {req.role === "freelancer" ? "GIG EXPERT" : req.role?.toUpperCase()}
                             </span>
                           </div>
                           <p className="text-gray-500 text-[0.75rem] m-0 mt-[2px] whitespace-nowrap overflow-hidden text-ellipsis">
@@ -216,8 +214,8 @@ export default function AdminOverview() {
                           </p>
                         </div>
                         <div className="flex flex-col items-end gap-[4px] shrink-0">
-                          <span 
-                            style={{ background: `${statusColor}18`, color: statusColor }} 
+                          <span
+                            style={{ background: `${statusColor}18`, color: statusColor }}
                             className="text-[0.62rem] font-bold px-[7px] py-[2px] rounded-[4px]"
                           >
                             {req.status === 'rejected' ? 'NOT SELECTED' : req.status?.toUpperCase()}
@@ -268,15 +266,15 @@ export default function AdminOverview() {
                     const roleColor = role === 'agency' ? '#c084fc' : '#38bdf8';
                     const statusColor = bid.status === 'accepted' ? '#70d64d' : bid.status === 'rejected' ? '#ef4444' : '#f59e0b';
                     const proj = bid.project || {};
-                    
+
                     return (
                       <div
                         key={bid.id}
                         onClick={() => navigate(`/admin/projects/${proj.id}`)}
                         className="flex items-center gap-[12px] px-[8px] py-[10px] border-b border-[#1a1a22] cursor-pointer rounded-[6px] transition-colors duration-200 hover:bg-[#181820]"
                       >
-                        <div 
-                          style={{ background: `${roleColor}18`, borderColor: `${roleColor}40`, color: roleColor }} 
+                        <div
+                          style={{ background: `${roleColor}18`, borderColor: `${roleColor}40`, color: roleColor }}
                           className="w-[36px] h-[36px] rounded-full border flex items-center justify-center font-extrabold text-[0.75rem] shrink-0"
                         >
                           {bidderName.charAt(0).toUpperCase()}
@@ -286,11 +284,11 @@ export default function AdminOverview() {
                             <span className="text-white font-semibold text-[0.85rem] whitespace-nowrap overflow-hidden text-ellipsis">
                               {bidderName}
                             </span>
-                            <span 
-                              style={{ background: `${roleColor}18`, color: roleColor }} 
+                            <span
+                              style={{ background: `${roleColor}18`, color: roleColor }}
                               className="text-[0.62rem] font-bold px-[6px] py-[2px] rounded-[4px] shrink-0"
                             >
-                              {role.toUpperCase()}
+                              {role === "freelancer" ? "GIG EXPERT" : role.toUpperCase()}
                             </span>
                           </div>
                           <p className="text-gray-500 text-[0.75rem] m-0 mt-[2px] whitespace-nowrap overflow-hidden text-ellipsis">
@@ -298,8 +296,8 @@ export default function AdminOverview() {
                           </p>
                         </div>
                         <div className="flex flex-col items-end gap-[4px] shrink-0">
-                          <span 
-                            style={{ background: `${statusColor}18`, color: statusColor }} 
+                          <span
+                            style={{ background: `${statusColor}18`, color: statusColor }}
                             className="text-[0.62rem] font-bold px-[7px] py-[2px] rounded-[4px]"
                           >
                             {bid.status === 'rejected' ? 'NOT SELECTED' : bid.status?.toUpperCase()}
@@ -318,14 +316,13 @@ export default function AdminOverview() {
         {/* Quick links */}
         <div className="flex flex-col gap-[12px]">
           <h2 className="text-white text-[1rem] font-extrabold m-0 mb-[4px]">Quick Access</h2>
-          <QuickLink icon={FileSearch}  label="Reg. Requests" desc="Review & approve applications" to="/admin/requests"    color="#f59e0b" />
-          <QuickLink icon={Users}       label="Gig Experts"    desc="Manage gigExpert accounts"    to="/admin/gigExperts" color="#38bdf8" />
-          <QuickLink icon={Building2}   label="Agencies"       desc="Manage agency accounts"        to="/admin/agencies"    color="#c084fc" />
-          <QuickLink icon={TrendingUp}  label="Analytics"      desc="Platform performance metrics"  to="/admin/analytics"   color="#70d64d" />
-          
+          <QuickLink icon={FileSearch} label="Reg. Requests" desc="Review & approve applications" to="/admin/requests" color="#f59e0b" />
+          <QuickLink icon={Users} label="Gig Experts" desc="Manage gigExpert accounts" to="/admin/gigExperts" color="#38bdf8" />
+          <QuickLink icon={Building2} label="Agencies" desc="Manage agency accounts" to="/admin/agencies" color="#c084fc" />
+          <QuickLink icon={TrendingUp} label="Analytics" desc="Platform performance metrics" to="/admin/analytics" color="#70d64d" />
+
           <h2 className="text-white text-[1rem] font-extrabold mt-[12px] mb-[4px] mx-0">Communications</h2>
-          <div
-            onClick={() => setIsSenderOpen(true)}
+          <div onClick={() => setIsSenderOpen(true)}
             className="bg-gradient-to-br from-[#121215] to-[#16220a] border border-[#23232a] rounded-[10px] p-[20px] cursor-pointer flex items-center gap-[16px] transition-colors duration-150 hover:border-[#70d64d]"
           >
             <div className="w-[44px] h-[44px] rounded-[10px] bg-[rgba(112,214,77,0.08)] border border-[rgba(112,214,77,0.25)] flex items-center justify-center shrink-0">
@@ -341,9 +338,9 @@ export default function AdminOverview() {
       </div>
 
       {isSenderOpen && (
-        <SendManualNotificationModal 
-          onClose={() => setIsSenderOpen(false)} 
-          usersList={usersList} 
+        <SendManualNotificationModal
+          onClose={() => setIsSenderOpen(false)}
+          usersList={usersList}
         />
       )}
     </div>
@@ -391,7 +388,7 @@ function SendManualNotificationModal({ onClose, usersList }) {
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-[8px] flex items-center justify-center z-[1000]" onClick={onClose}>
       <div className="bg-[#121215] border border-[#23232a] rounded-[16px] w-[580px] max-w-[95vw] p-[30px] text-white shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] flex flex-col gap-[20px]" onClick={e => e.stopPropagation()}>
-        
+
         {/* Header */}
         <div className="flex justify-between items-center border-b border-[#23232a] pb-[16px]">
           <div className="flex items-center gap-[10px]">
@@ -405,12 +402,12 @@ function SendManualNotificationModal({ onClose, usersList }) {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-[16px]">
-          
+
           {/* Recipient */}
           <div className="flex flex-col gap-[6px]">
             <label className="text-gray-500 text-[0.7rem] font-bold uppercase tracking-[0.5px]">Recipient</label>
-            <select 
-              value={targetUserId} 
+            <select
+              value={targetUserId}
               onChange={e => setTargetUserId(e.target.value)}
               className="bg-[#1c1c20] border border-[#2c2c35] rounded-[8px] p-[10px] text-white text-[0.85rem] focus:outline-none"
             >
@@ -425,8 +422,8 @@ function SendManualNotificationModal({ onClose, usersList }) {
           <div className="grid grid-cols-[1fr_150px] gap-[12px]">
             <div className="flex flex-col gap-[6px]">
               <label className="text-gray-500 text-[0.7rem] font-bold uppercase tracking-[0.5px]">Title</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 placeholder="e.g. Schedule Update"
@@ -435,8 +432,8 @@ function SendManualNotificationModal({ onClose, usersList }) {
             </div>
             <div className="flex flex-col gap-[6px]">
               <label className="text-gray-500 text-[0.7rem] font-bold uppercase tracking-[0.5px]">Type</label>
-              <select 
-                value={type} 
+              <select
+                value={type}
                 onChange={e => setType(e.target.value)}
                 className="bg-[#1c1c20] border border-[#2c2c35] rounded-[8px] p-[10px] text-white text-[0.85rem] focus:outline-none"
               >
@@ -453,7 +450,7 @@ function SendManualNotificationModal({ onClose, usersList }) {
           {/* Message */}
           <div className="flex flex-col gap-[6px]">
             <label className="text-gray-500 text-[0.7rem] font-bold uppercase tracking-[0.5px]">Message Body</label>
-            <textarea 
+            <textarea
               rows={3}
               value={message}
               onChange={e => setMessage(e.target.value)}
@@ -464,10 +461,10 @@ function SendManualNotificationModal({ onClose, usersList }) {
 
           {/* Send Email Toggle */}
           <div className="flex items-center gap-[8px] py-[4px]">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               id="sendEmailCheckbox"
-              checked={sendEmail} 
+              checked={sendEmail}
               onChange={e => setSendEmail(e.target.checked)}
               className="accent-[#70d64d] w-[16px] h-[16px] cursor-pointer"
             />
@@ -481,8 +478,8 @@ function SendManualNotificationModal({ onClose, usersList }) {
             <div className="bg-white/[0.02] border border-dashed border-[#2c2c35] rounded-[10px] p-[16px] flex flex-col gap-[12px]">
               <div className="flex flex-col gap-[6px]">
                 <label className="text-gray-500 text-[0.65rem] font-bold uppercase tracking-[0.5px]">Custom Email Subject (Optional)</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={emailSubject}
                   onChange={e => setEmailSubject(e.target.value)}
                   placeholder="Defaults to notification title"
@@ -491,7 +488,7 @@ function SendManualNotificationModal({ onClose, usersList }) {
               </div>
               <div className="flex flex-col gap-[6px]">
                 <label className="text-gray-500 text-[0.65rem] font-bold uppercase tracking-[0.5px]">Custom Email HTML body (Optional)</label>
-                <textarea 
+                <textarea
                   rows={2}
                   value={emailHtml}
                   onChange={e => setEmailHtml(e.target.value)}
@@ -504,14 +501,14 @@ function SendManualNotificationModal({ onClose, usersList }) {
 
           {/* Footer Buttons */}
           <div className="flex justify-end gap-[10px] border-t border-[#23232a] pt-[16px] mt-[10px]">
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={onClose}
               className="bg-transparent border border-[#2c2c35] text-[#a1a1aa] rounded-[8px] px-[16px] py-[10px] text-[0.85rem] font-semibold cursor-pointer"
             >
               Cancel
             </button>
-            <button 
+            <button
               type="submit"
               disabled={sendMutation.isPending}
               className={`bg-[#70d64d] text-black border-none rounded-[8px] px-[22px] py-[10px] text-[0.85rem] font-bold cursor-pointer transition-opacity ${sendMutation.isPending ? 'opacity-60' : 'opacity-100'}`}

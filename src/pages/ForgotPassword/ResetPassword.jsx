@@ -6,6 +6,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../../utils/api';
 import './ResetPassword.css';
 import gigfactoryLogo from '../../assets/logo.png';
+import { useMetaTags } from '../../hooks/useMetaTags';
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
@@ -17,6 +18,12 @@ const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
+
+  useMetaTags({
+    title: "Reset Password | GigFactory",
+    description: "Enter your new credentials to securely reset your password.",
+    robots: "noindex, follow"
+  });
 
   const [resetParams, setResetParams] = useState(null);
   const resetPasswordQuery = useQuery({

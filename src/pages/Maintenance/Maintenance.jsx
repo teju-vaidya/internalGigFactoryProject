@@ -5,7 +5,7 @@ import './Maintenance.css';
 
 export default function Maintenance() {
   const platformName = useAuthStore(state => state.platformName) || 'GigFactory';
-  const supportEmail = useAuthStore(state => state.supportEmail) || 'support@gigfactory.com';
+  const supportEmail = useAuthStore(state => state.supportEmail) || 'support@gigfactory.in';
   const maintenanceMessage = useAuthStore(state => state.maintenanceMessage) || "We're performing scheduled maintenance. We'll be back shortly.";
   const fetchPublicSettings = useAuthStore(state => state.fetchPublicSettings);
   const [checking, setChecking] = useState(false);

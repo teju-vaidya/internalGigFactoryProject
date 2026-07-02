@@ -16,7 +16,7 @@ export const useAuthStore = create(
       maintenanceMessage: '',
       sessionTimeoutMins: 60,
       platformName: 'GigFactory',
-      supportEmail: 'support@gigfactory.com',
+      supportEmail: 'support@gigfactory.in',
       termsUrl: '',
       privacyUrl: '',
 
@@ -99,20 +99,17 @@ export const useAuthStore = create(
         if (!user) return;
         const role = user.role || 'gig_expert';
         
-        set({ isProfileLoading: true, profileError: null });
         try {
           const { api } = await import('../utils/api');
           const response = await api.put(`/profiles/${role}`, profileData);
           if (response && response.success) {
-            set({ profile: response.profile, isProfileLoading: false });
+            set({ profile: response.profile });
             return { success: true };
           } else {
-            set({ isProfileLoading: false, profileError: 'Failed to update profile.' });
             return { success: false, error: 'Failed to update profile.' };
           }
         } catch (error) {
           const errMsg = error.message || 'Error updating profile.';
-          set({ isProfileLoading: false, profileError: errMsg });
           return { success: false, error: errMsg };
         }
       },

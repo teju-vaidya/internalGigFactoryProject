@@ -7,19 +7,19 @@ const fmtDate = (d) =>
 
 const ROLE_STYLES = {
   gig_expert: { bg: '#1e293b', color: '#38bdf8' },
-  agency:     { bg: '#2e1065', color: '#c084fc' },
+  agency: { bg: '#2e1065', color: '#c084fc' },
 };
 
 function RoleChip({ role }) {
   const r = ROLE_STYLES[role] || ROLE_STYLES.gig_expert;
   return (
-    <span 
-      style={{ background: r.bg, color: r.color }} 
+    <span
+      style={{ background: r.bg, color: r.color }}
       className="text-[0.68rem] font-bold px-[8px] py-[3px] rounded-[4px]"
     >
-      { role === "freelancer"
-    ? "GIG EXPERT"
-    : role?.toUpperCase() }
+      {role === "freelancer"
+        ? "GIG EXPERT"
+        : role?.toUpperCase()}
     </span>
   );
 }
@@ -57,46 +57,43 @@ export const RegistrationRequestsTable = ({ pageItems, isLoading, onSelectReq, o
               </td>
             </tr>
           ) : pageItems.map(req => (
-            <tr 
-              key={req.id} 
-              className="transition-colors duration-100 hover:bg-[#181818]"
-            >
+            <tr key={req.id} className="transition-colors duration-100 hover:bg-[#181818]" >
               <td className="p-[14px] border-b border-[#1a1a22] align-middle">
                 <strong className="text-white text-[0.88rem]">{req.full_name}</strong>
               </td>
               <td className="p-[14px] border-b border-[#1a1a22] text-[#8a8a8a] text-[0.83rem] align-middle">{req.email}</td>
               <td className="p-[14px] border-b border-[#1a1a22] text-[#8a8a8a] text-[0.83rem] align-middle">{req.mobile}</td>
-              <td className="p-[14px] border-b border-[#1a1a22] align-middle"><RoleChip role={req.role} /></td>
+              <td className="p-[14px] border-b border-[#1a1a22] align-middle"><RoleChip role={req.role ? req.role === "gig_expert" ? "GIG EXPERT" : "AGENCY" : "ADMIN"} /></td>
               <td className="p-[14px] border-b border-[#1a1a22] align-middle"><StatusBadge status={req.status} /></td>
               <td className="p-[14px] border-b border-[#1a1a22] text-[#6b6b6b] text-[0.8rem] align-middle">{fmtDate(req.created_at)}</td>
               <td className="p-[14px] border-b border-[#1a1a22] align-middle">
                 <div className="flex gap-[6px] items-center">
-                  <button 
-                    onClick={() => onSelectReq(req)} 
-                    className={`${btnBaseClass} bg-transparent border border-[#23232a] text-[#8a8a8a] px-[8px] py-[5px]`} 
+                  <button
+                    onClick={() => onSelectReq(req)}
+                    className={`${btnBaseClass} bg-transparent border border-[#23232a] text-[#8a8a8a] px-[8px] py-[5px]`}
                     title="View details"
                   >
                     <Eye size={13} />
                   </button>
                   {req.status === 'pending' && (<>
-                    <button 
-                      onClick={() => onApprove(req.id)} 
-                      disabled={reviewQueryFetching} 
+                    <button
+                      onClick={() => onApprove(req.id)}
+                      disabled={reviewQueryFetching}
                       className={`${btnBaseClass} bg-[rgba(112,214,77,0.1)] text-[#70d64d] border border-[rgba(112,214,77,0.3)] px-[9px] py-[5px]`}
                     >
                       <Check size={12} /> Approve
                     </button>
-                    <button 
-                      onClick={() => onReject(req)} 
-                      disabled={reviewQueryFetching} 
+                    <button
+                      onClick={() => onReject(req)}
+                      disabled={reviewQueryFetching}
                       className={`${btnBaseClass} bg-[rgba(239,68,68,0.08)] text-[#ef4444] border border-[rgba(239,68,68,0.25)] px-[9px] py-[5px]`}
                     >
                       <X size={12} /> Not Select
                     </button>
                   </>)}
                   {req.status !== 'pending' && (
-                    <button 
-                      onClick={() => onSelectReq(req)} 
+                    <button
+                      onClick={() => onSelectReq(req)}
                       className={`${btnBaseClass} bg-transparent border border-[#70d64d] text-[#70d64d] px-[9px] py-[4px] text-[0.72rem]`}
                     >
                       Change Decision

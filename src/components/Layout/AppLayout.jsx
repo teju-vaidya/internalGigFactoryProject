@@ -576,7 +576,7 @@ export default function AppLayout({ children, pageTitle }) {
                   }}
                   aria-label="Profile menu"
                 >
-                  <div className="topbar-profile-info">
+                  <div className="topbar-profile-info ">
                     <span className="topbar-name capitalize">
                       {userName?.split(" ")[0]}
                     </span>

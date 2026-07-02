@@ -141,7 +141,7 @@ const AuthStatusModal = ({ isOpen, onClose, statusData, email, onRegisterTrigger
               <>
                 <p className="text-[var(--text-muted)] text-[0.85rem] leading-[1.6] mb-4">
                   No account is registered under{' '}
-                  <span className="text-[var(--accent-lime)] font-semibold break-all">{email}</span>.
+                  <span className="text-[var(--accent-lime)] font-semibold break-words">{email}</span>.
                   {' '}Join GigFactory to unlock premium gig opportunities!
                 </p>
 

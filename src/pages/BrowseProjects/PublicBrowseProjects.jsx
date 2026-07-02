@@ -6,6 +6,8 @@ import { toast } from 'react-toastify';
 import { ShareButton } from 'react-share-utilities';
 import { api } from '../../utils/api';
 import { Pagination, PageSizeSelector } from '../../components/AdminShared';
+import { useMetaTags } from '../../hooks/useMetaTags';
+import { stripHtml } from '../../utils/text';
 
 const renderWithTbdTooltip = (val, tooltipText) => {
   if (val === 'TBD') {
@@ -80,6 +82,27 @@ export default function PublicBrowseProjects() {
   const totalPages = projectsData?.totalPages || 1;
   const categoriesList = categoriesData?.categories || [];
 
+  // Generate ItemList JSON-LD Schema for search engines and LLM context extraction
+  const itemListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "numberOfItems": projects.length,
+    "itemListElement": projects.map((proj, idx) => ({
+      "@type": "ListItem",
+      "position": idx + 1,
+      "url": `${window.location.origin}/public-projects/${proj.id}`,
+      "name": proj.title,
+      "description": proj.description ? stripHtml(proj.description).substring(0, 150) + "..." : "Open project opportunity on GigFactory"
+    }))
+  };
+
+  useMetaTags({
+    title: "Open Opportunities & Gigs | GigFactory",
+    description: "Explore open project specifications and freelance opportunities on GigFactory. Find client-sponsored developer, design, marketing, and engineering gigs.",
+    keywords: "freelance jobs, developer gigs, design contracts, remote client projects, GigFactory opportunities, gig search engine",
+    jsonLd: projects.length > 0 ? itemListSchema : null
+  });
+
   const handleClearFilters = () => {
     setSearchTerm('');
     setSelectedCategory('');
@@ -97,7 +120,7 @@ export default function PublicBrowseProjects() {
       {/* Header Block */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="space-y-1">
-          <h2 className="text-white font-extrabold text-[1.6rem] m-0">Open Opportunities</h2>
+          <h1 className="text-white font-extrabold text-[1.6rem] m-0">Open Opportunities</h1>
           <p className="text-gray-500 text-[0.85rem] m-0">Discover projects and apply to start collaborating with GigFactory clients.</p>
         </div>
         
@@ -265,7 +288,7 @@ export default function PublicBrowseProjects() {
 
                   {/* Description Paragraph */}
                   <p className="text-[#a1a1aa] text-[0.85rem] leading-relaxed mb-4 break-words">
-                    {project.description || 'No detailed description provided for this project.'}
+                    {stripHtml(project.description) || 'No detailed description provided for this project.'}
                   </p>
 
                   {/* Skill and Deliverable Tags Lists */}

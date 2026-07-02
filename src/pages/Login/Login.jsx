@@ -9,6 +9,7 @@ import './Login.css';
 import gigfactoryLogo from '../../assets/logo.png'; 
 import AuthStatusModal from './AuthStatusModal';
 import RegisterModal from '../Register/RegisterModal';
+import { useMetaTags } from '../../hooks/useMetaTags';
 
 const Login = () => {
   const [authMethod, setAuthMethod] = useState('otp'); // 'password' or 'otp'
@@ -26,6 +27,22 @@ const Login = () => {
   const setAuth = useAuthStore((state) => state.setAuth);
   const token = useAuthStore((state) => state.token);
   const user = useAuthStore((state) => state.user);
+
+  const orgSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "GigFactory",
+    "url": window.location.origin,
+    "logo": `${window.location.origin}/favicon.png`,
+    "description": "Premium internal collaboration and freelance client services marketplace. Connecting Gig Experts and Agencies to projects."
+  };
+
+  useMetaTags({
+    title: "Login & Collaboration Portal | GigFactory",
+    description: "Welcome to GigFactory. Log in to your workspace, bid on open project specifications, submit milestone deliverables, and collaborate with client partners.",
+    keywords: "GigFactory login, freelance portal, collaborate, project management, client billing, gig expert portal",
+    jsonLd: orgSchema
+  });
 
   const [geoInfo, setGeoInfo] = useState({ ip: '', location: '' });
 

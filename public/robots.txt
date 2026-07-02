@@ -1,0 +1,20 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+
+# Allow public pages and catalog
+Allow: /
+Allow: /public-projects
+Allow: /public-projects/*
+
+# Disallow private user routes and admin views
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /settings
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /applications
+Disallow: /activeProject
+Disallow: /team
+
+# Sitemap Location (dynamic sitemap proxied by Vite/served by web server)
+Sitemap: /sitemap.xml

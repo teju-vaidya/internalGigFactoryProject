@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { ShareButton } from 'react-share-utilities';
 import { CompletionBar } from '../AdminShared';
 import { ProjectStatusBadge } from './ProjectTable';
+import { stripHtml } from '../../utils/text';
 
 const fmtDate = (d) =>
   d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
@@ -96,7 +97,7 @@ export const ProjectCard = ({
       {/* Description */}
       {project.description && (
         <p className="text-gray-400 text-[0.78rem] m-0 line-clamp-2 leading-relaxed">
-          {project.description.replace(/<[^>]*>/g, '')}
+          {stripHtml(project.description)}
         </p>
       )}
 

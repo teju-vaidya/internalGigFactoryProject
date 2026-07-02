@@ -8,6 +8,7 @@ import { useAuthStore } from '../../store/useAuthStore';
 import './ForgotPassword.css';
 import gigfactoryLogo from '../../assets/logo.png';
 import AuthStatusModal from '../Login/AuthStatusModal';
+import { useMetaTags } from '../../hooks/useMetaTags';
 
 const ForgotPassword = () => {
   const [option, setOption] = useState('reset_link'); // 'reset_link' or 'otp_login'
@@ -20,6 +21,12 @@ const ForgotPassword = () => {
 
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
+
+  useMetaTags({
+    title: "Forgot Password | GigFactory",
+    description: "Request a password reset link or login via OTP code.",
+    robots: "noindex, follow"
+  });
 
   // Modal states for registration status error handling
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);

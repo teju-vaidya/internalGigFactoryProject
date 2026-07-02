@@ -69,7 +69,7 @@ function AnalyticCard({ label, value, Icon, subText, accentColor = '#70d64d', is
   return (
     <div className="bg-[#121215] border border-[#23232a] rounded-[12px] p-[24px] flex flex-col gap-[12px] relative overflow-hidden group hover:border-[#2f2f38] transition-all duration-300">
       {/* Decorative gradient overlay */}
-      <div 
+      <div
         className="absolute top-0 right-0 w-[80px] h-[80px] opacity-[0.03] rounded-full blur-[20px] group-hover:opacity-[0.06] transition-all duration-300"
         style={{ backgroundColor: accentColor }}
       />
@@ -86,11 +86,11 @@ function AnalyticCard({ label, value, Icon, subText, accentColor = '#70d64d', is
             )}
           </p>
         </div>
-        <div 
+        <div
           className="w-[44px] h-[44px] rounded-[10px] flex items-center justify-center border transition-all duration-300"
-          style={{ 
-            backgroundColor: `${accentColor}08`, 
-            borderColor: `${accentColor}20` 
+          style={{
+            backgroundColor: `${accentColor}08`,
+            borderColor: `${accentColor}20`
           }}
         >
           <Icon size={20} color={accentColor} />
@@ -281,14 +281,27 @@ function LeafletMap({ locations, selectedLocation, onSelectLocation }) {
   }, [selectedLocation]);
 
   return (
-    <div 
-      ref={mapContainerRef} 
-      style={{ width: '100%', height: '100%', borderRadius: '8px' }} 
+    <div
+      ref={mapContainerRef}
+      style={{ width: '100%', height: '100%', borderRadius: '8px' }}
     />
   );
 }
 
 export default function AdminAnalytics() {
+  const [rangeType, setRangeType] = useState('daily');
+
+  const [customStart, setCustomStart] = useState('');
+  const [customEnd, setCustomEnd] = useState('');
+
+  const [appliedFilters, setAppliedFilters] = useState({
+    rangeType: 'daily',
+    startDate: '',
+    endDate: '',
+  });
+
+  const [selectedLocation, setSelectedLocation] = useState(null);
+
   const { data: analyticsResponse, isLoading, refetch, isFetching } = useQuery({
     queryKey: ['admin-analytics', appliedFilters],
     queryFn: () => {
@@ -316,10 +329,10 @@ export default function AdminAnalytics() {
         const today = new Date();
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(today.getDate() - 30);
-        
+
         const todayStr = today.toISOString().split('T')[0];
         const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0];
-        
+
         setCustomStart(thirtyDaysAgoStr);
         setCustomEnd(todayStr);
       }
@@ -407,17 +420,16 @@ export default function AdminAnalytics() {
             <Calendar size={16} className="text-[#70d64d]" />
             <span className="text-white text-[0.85rem] font-semibold">Time Range:</span>
           </div>
-          
+
           <div className="flex bg-[#0c0c0e] border border-[#23232a] rounded-[8px] p-[2px]">
             {['daily', 'weekly', 'monthly', 'custom'].map((type) => (
               <button
                 key={type}
                 onClick={() => handleRangeTypeChange(type)}
-                className={`px-[12px] py-[6px] rounded-[6px] text-[0.75rem] font-medium transition-all ${
-                  rangeType === type
-                    ? 'bg-[#70d64d] text-[#0c0c0e] font-bold'
-                    : 'text-gray-400 hover:text-white bg-transparent'
-                }`}
+                className={`px-[12px] py-[6px] rounded-[6px] text-[0.75rem] font-medium transition-all ${rangeType === type
+                  ? 'bg-[#70d64d] text-[#0c0c0e] font-bold'
+                  : 'text-gray-400 hover:text-white bg-transparent'
+                  }`}
               >
                 {type.charAt(0).toUpperCase() + type.slice(1)}
               </button>
@@ -506,7 +518,8 @@ export default function AdminAnalytics() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-[24px]">
           {/* Map Column (spans 2 on large screens) */}
           <div className="lg:col-span-2 bg-[#0c0c0e] border border-[#1e1e24] rounded-[10px] min-h-[350px] relative overflow-hidden flex flex-col">
-            <style dangerouslySetInnerHTML={{ __html: `
+            <style dangerouslySetInnerHTML={{
+              __html: `
               .leaflet-tooltip-dark {
                 background-color: #121215 !important;
                 border: 1px solid #23232a !important;
@@ -531,7 +544,7 @@ export default function AdminAnalytics() {
                 }
               }
             `}} />
-            
+
             {isLoading ? (
               <div className="flex-1 flex flex-col items-center justify-center gap-[12px]">
                 <div className="w-[36px] h-[36px] border-[3px] border-[rgba(112,214,77,0.1)] border-t-[#70d64d] rounded-full animate-spin" />
@@ -539,10 +552,10 @@ export default function AdminAnalytics() {
               </div>
             ) : (
               <div className="flex-1 w-full h-full min-h-[350px] z-10">
-                <LeafletMap 
-                  locations={loginTrendsMap} 
-                  selectedLocation={selectedLocation} 
-                  onSelectLocation={setSelectedLocation} 
+                <LeafletMap
+                  locations={loginTrendsMap}
+                  selectedLocation={selectedLocation}
+                  onSelectLocation={setSelectedLocation}
                 />
               </div>
             )}
@@ -565,7 +578,7 @@ export default function AdminAnalytics() {
                     </h4>
                     <p className="text-[0.68rem] text-gray-500 m-0 mt-[2px]">{selectedLocation.count} users recorded</p>
                   </div>
-                  <button 
+                  <button
                     onClick={() => setSelectedLocation(null)}
                     className="bg-transparent border border-[#23232a] text-gray-400 hover:text-white cursor-pointer text-[0.68rem] font-medium py-1 px-2 hover:bg-[#1a1a22] rounded transition-colors"
                   >
@@ -575,30 +588,30 @@ export default function AdminAnalytics() {
 
                 {/* Logins List */}
                 <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-[8px] custom-scrollbar">
-                   {(selectedLocation.users || []).map((usr) => {
-                     const roleColor = usr.userRole === 'admin' ? COLORS.amber : usr.userRole === 'agency' ? COLORS.purple : COLORS.blue;
-                     const dateStr = usr.loginAt ? new Date(usr.loginAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) + ' ' + new Date(usr.loginAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—';
-                     return (
-                       <div key={usr.id} className="bg-[#121215] border border-[#1e1e24] rounded-[6px] p-[10px] flex flex-col gap-[4px] hover:border-[#2f2f38] transition-colors">
-                         <div className="flex justify-between items-center">
-                           <span className="text-white text-[0.78rem] font-bold truncate max-w-[140px]">{usr.userName}</span>
-                           <span 
-                             style={{ backgroundColor: `${roleColor}15`, color: roleColor }}
-                             className="text-[0.58rem] font-bold px-[4px] py-[1px] rounded uppercase shrink-0"
-                           >
-                             {usr.userRole}
-                           </span>
-                         </div>
-                         <div className="text-[0.7rem] text-gray-400 truncate">{usr.userEmail}</div>
-                         <div className="flex justify-between items-center text-[0.62rem] text-gray-500 mt-[2px] border-t border-[#1a1a22] pt-[4px]">
-                           <span className="truncate max-w-[120px]">{usr.browser} on {usr.device}</span>
-                           <span className="text-[#70d64d] shrink-0">{dateStr}</span>
-                         </div>
-                         <div className="text-[0.58rem] text-gray-600">IP: {usr.ipAddress}</div>
-                       </div>
-                     );
-                   })}
-                 </div>
+                  {(selectedLocation.users || []).map((usr) => {
+                    const roleColor = usr.userRole === 'admin' ? COLORS.amber : usr.userRole === 'agency' ? COLORS.purple : COLORS.blue;
+                    const dateStr = usr.loginAt ? new Date(usr.loginAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) + ' ' + new Date(usr.loginAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—';
+                    return (
+                      <div key={usr.id} className="bg-[#121215] border border-[#1e1e24] rounded-[6px] p-[10px] flex flex-col gap-[4px] hover:border-[#2f2f38] transition-colors">
+                        <div className="flex justify-between items-center">
+                          <span className="text-white text-[0.78rem] font-bold truncate max-w-[140px]">{usr.userName}</span>
+                          <span
+                            style={{ backgroundColor: `${roleColor}15`, color: roleColor }}
+                            className="text-[0.58rem] font-bold px-[4px] py-[1px] rounded uppercase shrink-0"
+                          >
+                            {usr.userRole}
+                          </span>
+                        </div>
+                        <div className="text-[0.7rem] text-gray-400 truncate">{usr.userEmail}</div>
+                        <div className="flex justify-between items-center text-[0.62rem] text-gray-500 mt-[2px] border-t border-[#1a1a22] pt-[4px]">
+                          <span className="truncate max-w-[120px]">{usr.browser} on {usr.device}</span>
+                          <span className="text-[#70d64d] shrink-0">{dateStr}</span>
+                        </div>
+                        <div className="text-[0.58rem] text-gray-600">IP: {usr.ipAddress}</div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             ) : (
               /* Top Locations state */
@@ -606,7 +619,7 @@ export default function AdminAnalytics() {
                 <h4 className="text-white text-[0.85rem] font-bold m-0 border-b border-[#23232a] pb-[12px] mb-[12px] shrink-0">
                   Top Login Locations
                 </h4>
-                
+
                 {loginTrendsMap.length === 0 ? (
                   <div className="flex-1 flex items-center justify-center text-gray-500 text-[0.75rem]">
                     No login data recorded.
@@ -619,7 +632,7 @@ export default function AdminAnalytics() {
                       return sortedLocs.map((loc) => {
                         const pct = (loc.count / maxCount) * 100;
                         return (
-                          <div 
+                          <div
                             key={loc.name}
                             onClick={() => setSelectedLocation(loc)}
                             className="group cursor-pointer flex flex-col gap-[3px] hover:bg-[#121215] p-[4px] rounded transition-colors"
@@ -631,7 +644,7 @@ export default function AdminAnalytics() {
                               <span className="text-white font-bold">{loc.count}</span>
                             </div>
                             <div className="w-full bg-[#181820] h-[4px] rounded-full overflow-hidden">
-                              <div 
+                              <div
                                 className="bg-gradient-to-r from-[#38bdf8] to-[#70d64d] h-full rounded-full transition-all duration-500"
                                 style={{ width: `${pct}%` }}
                               />
@@ -663,51 +676,51 @@ export default function AdminAnalytics() {
           >
             <defs>
               <linearGradient id="colorActive" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={COLORS.green} stopOpacity={0.2}/>
-                <stop offset="95%" stopColor={COLORS.green} stopOpacity={0}/>
+                <stop offset="5%" stopColor={COLORS.green} stopOpacity={0.2} />
+                <stop offset="95%" stopColor={COLORS.green} stopOpacity={0} />
               </linearGradient>
               <linearGradient id="colorInactive" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={COLORS.gray} stopOpacity={0.2}/>
-                <stop offset="95%" stopColor={COLORS.gray} stopOpacity={0}/>
+                <stop offset="5%" stopColor={COLORS.gray} stopOpacity={0.2} />
+                <stop offset="95%" stopColor={COLORS.gray} stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid stroke="#23232a" strokeDasharray="3 3" vertical={false} />
-            <XAxis 
-              dataKey="name" 
-              stroke="#4b5563" 
-              fontSize={11} 
-              tickLine={false} 
+            <XAxis
+              dataKey="name"
+              stroke="#4b5563"
+              fontSize={11}
+              tickLine={false}
               axisLine={false}
             />
-            <YAxis 
-              stroke="#4b5563" 
-              fontSize={11} 
-              tickLine={false} 
-              axisLine={false} 
+            <YAxis
+              stroke="#4b5563"
+              fontSize={11}
+              tickLine={false}
+              axisLine={false}
             />
             <Tooltip content={<CustomTooltip />} />
-            <Legend 
-              verticalAlign="top" 
-              height={36} 
+            <Legend
+              verticalAlign="top"
+              height={36}
               iconType="circle"
               iconSize={8}
               wrapperStyle={{ fontSize: '11px', color: '#9ca3af' }}
             />
-            <Area 
-              type="monotone" 
-              dataKey="Active" 
-              stroke={COLORS.green} 
+            <Area
+              type="monotone"
+              dataKey="Active"
+              stroke={COLORS.green}
               strokeWidth={2}
-              fillOpacity={1} 
-              fill="url(#colorActive)" 
+              fillOpacity={1}
+              fill="url(#colorActive)"
             />
-            <Area 
-              type="monotone" 
-              dataKey="Inactive" 
-              stroke={COLORS.gray} 
+            <Area
+              type="monotone"
+              dataKey="Inactive"
+              stroke={COLORS.gray}
               strokeWidth={2}
-              fillOpacity={1} 
-              fill="url(#colorInactive)" 
+              fillOpacity={1}
+              fill="url(#colorInactive)"
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -715,7 +728,7 @@ export default function AdminAnalytics() {
 
       {/* Grid containing major charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-[24px]">
-        
+
         {/* 2. User Registration Trends (Area Chart - spans 2 cols) */}
         <div className="lg:col-span-2">
           <ChartCard
@@ -732,51 +745,51 @@ export default function AdminAnalytics() {
               >
                 <defs>
                   <linearGradient id="colorFreelancers" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={COLORS.green} stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor={COLORS.green} stopOpacity={0}/>
+                    <stop offset="5%" stopColor={COLORS.green} stopOpacity={0.2} />
+                    <stop offset="95%" stopColor={COLORS.green} stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="colorAgencies" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={COLORS.blue} stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor={COLORS.blue} stopOpacity={0}/>
+                    <stop offset="5%" stopColor={COLORS.blue} stopOpacity={0.2} />
+                    <stop offset="95%" stopColor={COLORS.blue} stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid stroke="#23232a" strokeDasharray="3 3" vertical={false} />
-                <XAxis 
-                  dataKey="name" 
-                  stroke="#4b5563" 
-                  fontSize={11} 
-                  tickLine={false} 
+                <XAxis
+                  dataKey="name"
+                  stroke="#4b5563"
+                  fontSize={11}
+                  tickLine={false}
                   axisLine={false}
                 />
-                <YAxis 
-                  stroke="#4b5563" 
-                  fontSize={11} 
-                  tickLine={false} 
-                  axisLine={false} 
+                <YAxis
+                  stroke="#4b5563"
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
                 />
                 <Tooltip content={<CustomTooltip />} />
-                <Legend 
-                  verticalAlign="top" 
-                  height={36} 
+                <Legend
+                  verticalAlign="top"
+                  height={36}
                   iconType="circle"
                   iconSize={8}
                   wrapperStyle={{ fontSize: '11px', color: '#9ca3af' }}
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="Gig Experts" 
-                  stroke={COLORS.green} 
+                <Area
+                  type="monotone"
+                  dataKey="Gig Experts"
+                  stroke={COLORS.green}
                   strokeWidth={2}
-                  fillOpacity={1} 
-                  fill="url(#colorFreelancers)" 
+                  fillOpacity={1}
+                  fill="url(#colorFreelancers)"
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="Agencies" 
-                  stroke={COLORS.blue} 
+                <Area
+                  type="monotone"
+                  dataKey="Agencies"
+                  stroke={COLORS.blue}
                   strokeWidth={2}
-                  fillOpacity={1} 
-                  fill="url(#colorAgencies)" 
+                  fillOpacity={1}
+                  fill="url(#colorAgencies)"
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -808,9 +821,9 @@ export default function AdminAnalytics() {
                   ))}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
-                <Legend 
-                  verticalAlign="bottom" 
-                  height={36} 
+                <Legend
+                  verticalAlign="bottom"
+                  height={36}
                   iconType="circle"
                   iconSize={8}
                   wrapperStyle={{ fontSize: '11px' }}
@@ -835,18 +848,18 @@ export default function AdminAnalytics() {
                 margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
               >
                 <CartesianGrid stroke="#23232a" strokeDasharray="3 3" vertical={false} />
-                <XAxis 
-                  dataKey="name" 
-                  stroke="#4b5563" 
-                  fontSize={11} 
-                  tickLine={false} 
+                <XAxis
+                  dataKey="name"
+                  stroke="#4b5563"
+                  fontSize={11}
+                  tickLine={false}
                   axisLine={false}
                 />
-                <YAxis 
-                  stroke="#4b5563" 
-                  fontSize={11} 
-                  tickLine={false} 
-                  axisLine={false} 
+                <YAxis
+                  stroke="#4b5563"
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="Projects" fill={COLORS.purple} radius={[4, 4, 0, 0]} barSize={20} />
@@ -870,59 +883,59 @@ export default function AdminAnalytics() {
                 margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
               >
                 <CartesianGrid stroke="#23232a" strokeDasharray="3 3" vertical={false} />
-                <XAxis 
-                  dataKey="name" 
-                  stroke="#4b5563" 
-                  fontSize={11} 
-                  tickLine={false} 
+                <XAxis
+                  dataKey="name"
+                  stroke="#4b5563"
+                  fontSize={11}
+                  tickLine={false}
                   axisLine={false}
                 />
-                <YAxis 
-                  stroke="#4b5563" 
-                  fontSize={11} 
-                  tickLine={false} 
-                  axisLine={false} 
+                <YAxis
+                  stroke="#4b5563"
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
                 />
                 <Tooltip content={<CustomTooltip />} />
-                <Legend 
-                  verticalAlign="top" 
-                  height={36} 
+                <Legend
+                  verticalAlign="top"
+                  height={36}
                   iconType="circle"
                   iconSize={8}
                   wrapperStyle={{ fontSize: '11px' }}
                 />
-                <Area 
-                  type="monotone" 
+                <Area
+                  type="monotone"
                   stackId="1"
-                  dataKey="Accepted" 
-                  stroke={COLORS.green} 
+                  dataKey="Accepted"
+                  stroke={COLORS.green}
                   fill={COLORS.green}
                   fillOpacity={0.15}
                   strokeWidth={2}
                 />
-                <Area 
-                  type="monotone" 
+                <Area
+                  type="monotone"
                   stackId="1"
-                  dataKey="Pending" 
-                  stroke={COLORS.amber} 
+                  dataKey="Pending"
+                  stroke={COLORS.amber}
                   fill={COLORS.amber}
                   fillOpacity={0.15}
                   strokeWidth={2}
                 />
-                <Area 
-                  type="monotone" 
+                <Area
+                  type="monotone"
                   stackId="1"
-                  dataKey="Rejected" 
-                  stroke={COLORS.red} 
+                  dataKey="Rejected"
+                  stroke={COLORS.red}
                   fill={COLORS.red}
                   fillOpacity={0.15}
                   strokeWidth={2}
                 />
-                <Area 
-                  type="monotone" 
+                <Area
+                  type="monotone"
                   stackId="1"
-                  dataKey="Applied" 
-                  stroke={COLORS.blue} 
+                  dataKey="Applied"
+                  stroke={COLORS.blue}
                   fill={COLORS.blue}
                   fillOpacity={0.15}
                   strokeWidth={2}
@@ -947,17 +960,17 @@ export default function AdminAnalytics() {
                 margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
               >
                 <CartesianGrid stroke="#23232a" strokeDasharray="3 3" vertical={false} />
-                <XAxis 
-                  dataKey="name" 
-                  stroke="#4b5563" 
-                  fontSize={11} 
-                  tickLine={false} 
+                <XAxis
+                  dataKey="name"
+                  stroke="#4b5563"
+                  fontSize={11}
+                  tickLine={false}
                   axisLine={false}
                 />
-                <YAxis 
-                  stroke="#4b5563" 
-                  fontSize={11} 
-                  tickLine={false} 
+                <YAxis
+                  stroke="#4b5563"
+                  fontSize={11}
+                  tickLine={false}
                   axisLine={false}
                   tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`}
                 />
@@ -993,9 +1006,9 @@ export default function AdminAnalytics() {
                   ))}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
-                <Legend 
-                  verticalAlign="bottom" 
-                  height={36} 
+                <Legend
+                  verticalAlign="bottom"
+                  height={36}
                   iconType="circle"
                   iconSize={8}
                   wrapperStyle={{ fontSize: '11px' }}
@@ -1021,19 +1034,19 @@ export default function AdminAnalytics() {
                 margin={{ top: 10, right: 20, left: 30, bottom: 5 }}
               >
                 <CartesianGrid stroke="#23232a" strokeDasharray="3 3" horizontal={false} />
-                <XAxis 
-                  type="number" 
-                  stroke="#4b5563" 
-                  fontSize={11} 
-                  tickLine={false} 
+                <XAxis
+                  type="number"
+                  stroke="#4b5563"
+                  fontSize={11}
+                  tickLine={false}
                   axisLine={false}
                 />
-                <YAxis 
-                  type="category" 
-                  dataKey="name" 
-                  stroke="#e5e7eb" 
-                  fontSize={11} 
-                  tickLine={false} 
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  stroke="#e5e7eb"
+                  fontSize={11}
+                  tickLine={false}
                   axisLine={false}
                   width={90}
                 />
@@ -1060,19 +1073,19 @@ export default function AdminAnalytics() {
                 margin={{ top: 10, right: 20, left: 20, bottom: 5 }}
               >
                 <CartesianGrid stroke="#23232a" strokeDasharray="3 3" horizontal={false} />
-                <XAxis 
-                  type="number" 
-                  stroke="#4b5563" 
-                  fontSize={11} 
-                  tickLine={false} 
+                <XAxis
+                  type="number"
+                  stroke="#4b5563"
+                  fontSize={11}
+                  tickLine={false}
                   axisLine={false}
                 />
-                <YAxis 
-                  type="category" 
-                  dataKey="name" 
-                  stroke="#e5e7eb" 
-                  fontSize={11} 
-                  tickLine={false} 
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  stroke="#e5e7eb"
+                  fontSize={11}
+                  tickLine={false}
                   axisLine={false}
                   width={80}
                 />

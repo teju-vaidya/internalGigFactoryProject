@@ -675,7 +675,7 @@ export default function AdminSettings() {
                   className="settings-input"
                   type="tel"
                   inputMode="numeric"
-                  maxLength={10}
+
                   value={account.mobile}
                   onKeyDown={(e) => {
                     const allowedKeys = [
@@ -832,7 +832,7 @@ export default function AdminSettings() {
               </FormRow>
               <FormRow label="From Email" id="smtp-from-email" hint="Sender email address">
                 <input id="smtp-from-email" type="email" className="settings-input" value={smtp.smtp_from_email}
-                  onChange={e => handleSmtpChange('smtp_from_email', e.target.value)} placeholder="no-reply@gigfactory.com"
+                  onChange={e => handleSmtpChange('smtp_from_email', e.target.value)} placeholder="no-reply@gigfactory.in"
                   onBlur={e => validateField('smtp_from_email', e.target.value)} />
                 {errors.smtp_from_email && <span className="text-[#f87171] text-[0.75rem] mt-1 block">{errors.smtp_from_email}</span>}
               </FormRow>

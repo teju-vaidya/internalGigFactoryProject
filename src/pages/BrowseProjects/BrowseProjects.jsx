@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { ShareButton } from 'react-share-utilities';
 import { api } from '../../utils/api';
 import { Pagination, PageSizeSelector } from '../../components/AdminShared';
+import { stripHtml } from '../../utils/text';
 
 const renderWithTbdTooltip = (val, tooltipText) => {
   if (val === 'TBD') {
@@ -267,7 +268,7 @@ export default function BrowseProjects() {
 
                   {/* Description Paragraph */}
                   <p className="text-[#a1a1aa] text-[0.85rem] leading-relaxed mb-4 break-words">
-                    {project.description || 'No detailed description provided for this project.'}
+                    {stripHtml(project.description) || 'No detailed description provided for this project.'}
                   </p>
 
                   {/* Skill and Deliverable Tags Lists */}
