@@ -223,7 +223,7 @@ export default function MyApplications() {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="bg-[#0c0c0e] border border-[#23232a] text-white rounded-[6px] px-[12px] py-[7px] text-[0.8rem] outline-none cursor-pointer focus:border-[#70d64d] transition-all flex-1 min-[500px]:flex-initial text-right min-[500px]:text-left"
           >
-            <option value="all">All Statuses</option>
+            <option value="all">All Status</option>
             <option value="pending">Pending / Applied</option>
             <option value="accepted">Selected / Approved</option>
             <option value="rejected">Not Selected</option>

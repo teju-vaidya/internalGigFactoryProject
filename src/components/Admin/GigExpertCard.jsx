@@ -24,7 +24,44 @@ function Avatar({ name, photo, size = 40 }) {
   );
 }
 
-export const GigExpertCard = ({ gigExperts, isLoading, onSelectGigExpert, status }) => {
+const getMatchReasons = (f, query) => {
+  if (!query || !query.trim()) return [];
+  const q = query.trim().toLowerCase();
+  const reasons = [];
+
+  const fullName = f.full_name?.toLowerCase() || '';
+  const email = f.email?.toLowerCase() || '';
+  const mobile = f.mobile || '';
+  const title = f.gig_expert_profile?.title?.toLowerCase() || '';
+  const bio = f.gig_expert_profile?.bio?.toLowerCase() || '';
+  const skills = f.gig_expert_profile?.gig_expert_skills?.map(s => s.skill_name?.toLowerCase() || '') || [];
+
+  const SERVICE_LABELS = {
+    BIM: 'bim & 2d drafting',
+    Audit: 'as-built audit',
+    Peer: 'peer review',
+    BOQ: 'boq creation',
+    Viz: '3d visualisation',
+  };
+  const selectedServices = f.gig_expert_profile?.service_details?.selectedServices || [];
+  const servicesTexts = selectedServices.map(srv => {
+    const code = srv?.toLowerCase() || '';
+    const label = SERVICE_LABELS[srv]?.toLowerCase() || '';
+    return [code, label];
+  }).flat();
+
+  if (fullName.includes(q)) reasons.push('Name Match');
+  if (email.includes(q)) reasons.push('Email Match');
+  if (mobile.includes(q)) reasons.push('Mobile Match');
+  if (title.includes(q)) reasons.push('Title Match');
+  if (bio.includes(q)) reasons.push('Bio Match');
+  if (skills.some(s => s.includes(q))) reasons.push('Skill Match');
+  if (servicesTexts.some(s => s.includes(q))) reasons.push('Expertise Match');
+
+  return reasons;
+};
+
+export const GigExpertCard = ({ gigExperts, isLoading, onSelectGigExpert, status, searchQuery }) => {
   if (isLoading) {
     return (
       <div className="grid grid-cols-[repeat(auto-fill,minmax(290px,1fr))] gap-[16px]">
@@ -65,16 +102,32 @@ export const GigExpertCard = ({ gigExperts, isLoading, onSelectGigExpert, status
       {gigExperts.map(f => {
         const fp = f.gig_expert_profile;
         const skills = fp?.gig_expert_skills?.slice(0, 3).map(s => s.skill_name) || [];
+        const matchReasons = getMatchReasons(f, searchQuery);
         return (
           <div
             key={f.id}
             onClick={() => onSelectGigExpert(f)}
-            className="bg-[#121215] border border-[#23232a] rounded-[10px] p-[20px] flex flex-col gap-[14px] relative cursor-pointer transition-all duration-200 hover:-translate-y-[2px] hover:border-[#70d64d]"
+            className="group bg-[#121215] border border-[#23232a] rounded-[10px] p-[20px] flex flex-col gap-[14px] relative cursor-pointer transition-all duration-200 hover:-translate-y-[2px] hover:border-[#70d64d]"
           >
             {/* Status Badge top right */}
             <div className="absolute top-[20px] right-[20px]">
               <StatusBadge status={f.account_status} />
             </div>
+
+            {/* Match Reason Overlay on Hover */}
+            {searchQuery && matchReasons.length > 0 && (
+              <div className="absolute inset-0 bg-[#0c0c0e]/95 backdrop-blur-sm rounded-[10px] p-[20px] flex flex-col justify-center items-center gap-[10px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 text-center">
+                <span className="text-gray-500 text-[0.7rem] uppercase tracking-wider font-bold">Query Match Details</span>
+                <div className="flex flex-wrap gap-[6px] justify-center max-w-full">
+                  {matchReasons.map(r => (
+                    <span key={r} className="bg-[#70d64d]/10 text-[#70d64d] border border-[#70d64d]/30 text-[0.72rem] font-semibold px-[10px] py-[4px] rounded-[6px]">
+                      {r}
+                    </span>
+                  ))}
+                </div>
+                <span className="text-gray-500 text-[0.68rem] mt-[10px]">Click card to view profile</span>
+              </div>
+            )}
 
             {/* Profile header */}
             <div className="flex items-center gap-[12px]">

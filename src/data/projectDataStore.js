@@ -27,6 +27,7 @@ const ensureSeed = () => {
 ensureSeed();
 
 export function getProjects() {
+  
   return readJson(PROJECTS_KEY, initialProjects);
 }
 
@@ -36,6 +37,7 @@ export function getProjectById(id) {
 
 export function saveProjects(projects) {
   writeJson(PROJECTS_KEY, projects);
+  return projects;
 }
 
 export function getApplications() {

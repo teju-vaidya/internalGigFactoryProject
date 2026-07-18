@@ -47,6 +47,69 @@ const recalculateMilestoneWeights = (list) => {
   }
 };
 
+const adjustMilestoneWeightsOnAdd = (existingMilestones) => {
+  const sum = existingMilestones.reduce((acc, m) => acc + (parseFloat(m.weight_percentage) || 0), 0);
+  if (sum < 100) {
+    const remainder = Math.round((100 - sum) * 10) / 10;
+    return {
+      updatedExisting: existingMilestones,
+      newWeight: remainder > 0 ? remainder : 0
+    };
+  } else {
+    const n = existingMilestones.length;
+    const newWeight = Math.round((100 / (n + 1)) * 10) / 10;
+    const scaleFactor = (100 - newWeight) / sum;
+    
+    let tempSum = 0;
+    const updatedExisting = existingMilestones.map((m, idx) => {
+      const w = parseFloat(m.weight_percentage) || 0;
+      const newW = Math.round((w * scaleFactor) * 10) / 10;
+      tempSum += newW;
+      return { ...m, weight_percentage: newW };
+    });
+    
+    if (updatedExisting.length > 0) {
+      const lastIdx = updatedExisting.length - 1;
+      const finalWeight = Math.round((100 - newWeight - (tempSum - updatedExisting[lastIdx].weight_percentage)) * 10) / 10;
+      updatedExisting[lastIdx].weight_percentage = finalWeight > 0 ? finalWeight : 0;
+    }
+    
+    return {
+      updatedExisting,
+      newWeight
+    };
+  }
+};
+
+const normalizeWeights = (milestoneList) => {
+  if (milestoneList.length === 0) return milestoneList;
+  const total = milestoneList.reduce((sum, m) => sum + (parseFloat(m.weight_percentage) || 0), 0);
+  if (total === 0) {
+    const evenWeight = Math.round((100 / milestoneList.length) * 10) / 10;
+    let tempSum = 0;
+    return milestoneList.map((m, idx) => {
+      if (idx === milestoneList.length - 1) {
+        return { ...m, weight_percentage: Math.round((100 - tempSum) * 10) / 10 };
+      }
+      tempSum += evenWeight;
+      return { ...m, weight_percentage: evenWeight };
+    });
+  }
+  
+  let tempSum = 0;
+  const scaled = milestoneList.map((m, idx) => {
+    const w = parseFloat(m.weight_percentage) || 0;
+    const newW = Math.round((w / total * 100) * 10) / 10;
+    tempSum += newW;
+    return { ...m, weight_percentage: newW };
+  });
+  
+  const lastIdx = scaled.length - 1;
+  scaled[lastIdx].weight_percentage = Math.round((100 - (tempSum - scaled[lastIdx].weight_percentage)) * 10) / 10;
+  return scaled;
+};
+
+
 // ─── Yup Validation Schema ───────────────────────────────────────────────────
 const projectSchema = yup.object().shape({
   title: yup.string().required('Project title is required').min(3, 'Title must be at least 3 characters'),
@@ -97,9 +160,9 @@ const projectSchema = yup.object().shape({
     const sum = (milestonesValue || []).reduce((acc, m) => acc + (parseFloat(m.budget) || 0), 0);
     return sum <= parentBudget;
   })
-  .test('sum-of-weights', 'Total milestone weight must be exactly 100%', function(milestonesValue) {
+  .test('sum-of-weights', 'Total milestone weight cannot exceed 100%', function(milestonesValue) {
     const sum = (milestonesValue || []).reduce((acc, m) => acc + (parseFloat(m.weight_percentage) || 0), 0);
-    return Math.abs(sum - 100) < 0.1;
+    return sum <= 100.1;
   })
 });
 
@@ -216,6 +279,10 @@ export default function ProjectFormModal({ project, onClose, onCreate, onSave })
     return initialList;
   });
 
+  const sumWeights = milestones.reduce((sum, m) => sum + (parseFloat(m.weight_percentage) || 0), 0);
+  const sumBudgets = milestones.reduce((sum, m) => sum + (parseFloat(m.budget) || 0), 0);
+  const projBudget = parseFloat(budget) || 0;
+
   // ── Suggestion lists ──────────────────────────────────────────────────────
   const [allSkills, setAllSkills] = useState([]);
   const [allDeliverables, setAllDeliverables] = useState([]);
@@ -269,8 +336,21 @@ export default function ProjectFormModal({ project, onClose, onCreate, onSave })
   }, [isEdit, project?.id]);
 
   // ── Milestone helpers ─────────────────────────────────────────────────────
-  const addMilestone = () =>
-    setMilestones(prev => [...prev, defaultMilestone(prev.length + 1)]);
+  const addMilestone = () => {
+    setMilestones(prev => {
+      const { updatedExisting, newWeight } = adjustMilestoneWeightsOnAdd(prev);
+      const newMs = {
+        ...defaultMilestone(prev.length + 1),
+        weight_percentage: newWeight,
+      };
+      return [...updatedExisting, newMs];
+    });
+  };
+
+  const handleNormalizeWeights = () => {
+    setMilestones(prev => normalizeWeights(prev));
+    toast.success('Milestone weights auto-balanced to sum to exactly 100%!');
+  };
 
   const updateMilestone = (index, field, value) =>
     setMilestones(prev => {
@@ -479,7 +559,7 @@ export default function ProjectFormModal({ project, onClose, onCreate, onSave })
               />
               {errors.title && <span className="text-red-400 text-xs mt-1 block">{errors.title}</span>}
             </div>
-            <div className={`mt-2 ${isProjectCompleted ? 'pointer-events-none opacity-60' : ''}`}>
+            <div className={` ${isProjectCompleted ? 'pointer-events-none opacity-60' : ''}`}>
               <SingleAutocomplete
                 label="Category"
                 value={category}
@@ -732,10 +812,57 @@ export default function ProjectFormModal({ project, onClose, onCreate, onSave })
                 </p>
               </div>
               {!isProjectCompleted && (
-                <button type="button" onClick={addMilestone}
-                  className="inline-flex items-center gap-2 rounded-[6px] bg-[#70d64d] px-4 py-2 text-black font-extrabold text-[0.8rem] border-none cursor-pointer hover:bg-[#8ee67b] transition-colors">
-                  <Plus size={14} /> Add Milestone
-                </button>
+                <div className="flex gap-2">
+                  <button type="button" onClick={handleNormalizeWeights}
+                    className="inline-flex items-center gap-2 rounded-[6px] border border-[#23232a] bg-[#0c0c0e] px-4 py-2 text-gray-300 hover:text-white font-extrabold text-[0.8rem] cursor-pointer transition-colors">
+                    Auto-Balance Weights
+                  </button>
+                  <button type="button" onClick={addMilestone}
+                    className="inline-flex items-center gap-2 rounded-[6px] bg-[#70d64d] px-4 py-2 text-black font-extrabold text-[0.8rem] border-none cursor-pointer hover:bg-[#8ee67b] transition-colors">
+                    <Plus size={14} /> Add Milestone
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Real-time Calculation Panel */}
+            <div className="bg-[#121215] border border-[#23232a] rounded-[8px] p-4 text-[0.8rem] space-y-2">
+              <div className="flex justify-between items-center text-gray-300">
+                <span>Total Milestone Weight:</span>
+                <span className={`font-bold ${Math.abs(sumWeights - 100) < 0.1 ? 'text-[#70d64d]' : sumWeights > 100 ? 'text-red-400' : 'text-amber-400'}`}>
+                  {sumWeights.toFixed(1)}% / 100%
+                </span>
+              </div>
+              
+              <div className="flex justify-between items-center text-gray-300">
+                <span>Total Milestone Budget:</span>
+                <span className={`font-bold ${sumBudgets <= projBudget ? 'text-white' : 'text-red-400'}`}>
+                  {sumBudgets.toLocaleString()} of {projBudget.toLocaleString()}
+                </span>
+              </div>
+
+              {sumBudgets > projBudget && (
+                <div className="text-red-400 text-[0.75rem] font-medium bg-red-400/5 p-2 rounded border border-red-400/10 mt-1">
+                  ⚠️ Milestone budgets exceed project budget.
+                </div>
+              )}
+
+              {sumWeights > 100.1 && (
+                <div className="text-red-400 text-[0.75rem] font-medium bg-red-400/5 p-2 rounded border border-red-400/10 mt-1">
+                  ⚠️ Milestone weights exceed 100%. Please adjust them or click &quot;Auto-Balance Weights&quot;.
+                </div>
+              )}
+              
+              {sumWeights < 99.9 && (
+                <div className="text-amber-400 text-[0.75rem] font-medium bg-amber-400/5 p-2 rounded border border-amber-400/10 mt-1">
+                  💡 Note: Milestone weights are at {sumWeights.toFixed(1)}%. You can save now or add more milestones up to 100%. Click &quot;Auto-Balance Weights&quot; to scale them up.
+                </div>
+              )}
+
+              {Math.abs(sumWeights - 100) < 0.1 && (
+                <div className="text-[#70d64d] text-[0.75rem] font-medium bg-[#70d64d]/5 p-2 rounded border border-[#70d64d]/10 mt-1">
+                  ✅ Milestone weights sum up to exactly 100%.
+                </div>
               )}
             </div>
 

@@ -208,7 +208,7 @@ export const TeamStructure = ({ teamMembers = [], employeeCount }) => {
     <div className="pane-content-card">
       {/* Header */}
       <h3 className="flex justify-between items-center mb-[14px]">
-        <span><Layers size={18} /> Agency Team Structure</span>
+        <span className='flex flex-row gap-2 justify-center items-center'><Layers size={18} /> Agency Team Structure</span>
         <span className="text-[0.72rem] font-bold text-gray-500 bg-[#1c1c20] px-[10px] py-[3px] rounded-[4px]">
           {teamMembers.length} ADDED
         </span>

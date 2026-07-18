@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import { Upload, X, Loader } from 'lucide-react';
+import { Upload, X, Loader, Pencil, Folder, Paperclip, Save } from 'lucide-react';
 import { api } from '../../utils/api';
 
-export default function ApplyModal({ project, onClose, defaultRole = 'gig_expert', onApplied }) {
-  const [bidAmount, setBidAmount] = useState('');
-  const [estimatedDays, setEstimatedDays] = useState('');
-  const [proposal, setProposal] = useState('');
-  const [coverLetter, setCoverLetter] = useState('');
+export default function ApplyModal({ project, onClose, defaultRole = 'gig_expert', onApplied, existingApplication }) {
+  const isEditMode = !!existingApplication;
+
+  const [bidAmount, setBidAmount] = useState(isEditMode ? String(existingApplication.bid_amount) : '');
+  const [estimatedDays, setEstimatedDays] = useState(isEditMode ? String(existingApplication.estimated_days) : '');
+  const [proposal, setProposal] = useState(isEditMode ? (existingApplication.proposal || '') : '');
+  const [coverLetter, setCoverLetter] = useState(isEditMode ? (existingApplication.cover_letter || '') : '');
   
   // Validation Errors State
   const [errors, setErrors] = useState({ bidAmount: '', estimatedDays: '', proposal: '' });
@@ -15,6 +17,9 @@ export default function ApplyModal({ project, onClose, defaultRole = 'gig_expert
   // File Upload State
   const [file, setFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  // Track if user wants to remove the existing attachment
+  const [removeExistingAttachment, setRemoveExistingAttachment] = useState(false);
+
 
   const handleBidAmountBlur = () => {
     if (!bidAmount) {
@@ -111,19 +116,22 @@ export default function ApplyModal({ project, onClose, defaultRole = 'gig_expert
       formData.append('bid_amount', bidAmount);
       formData.append('estimated_days', estimatedDays);
       formData.append('proposal', proposal);
-      if (coverLetter) {
-        formData.append('cover_letter', coverLetter);
-      }
-      if (file) {
-        formData.append('attachment', file);
+      if (coverLetter) formData.append('cover_letter', coverLetter);
+      if (file) formData.append('attachment', file);
+      // Signal to backend to clear attachment if user removed it
+      if (isEditMode && removeExistingAttachment && !file) {
+        formData.append('attachment_url', '');
       }
 
-      await api.postFile(`/projects/${project.id}/applications`, formData);
-      toast.success('Your application/bid has been submitted successfully!');
-      
-      if (onApplied) {
-        onApplied();
+      if (isEditMode) {
+        await api.putFile(`/projects/applications/${existingApplication.id}/edit`, formData);
+        toast.success('Your proposal has been updated successfully!');
+      } else {
+        await api.postFile(`/projects/${project.id}/applications`, formData);
+        toast.success('Your application/bid has been submitted successfully!');
       }
+      
+      if (onApplied) onApplied();
       onClose();
     } catch (err) {
       toast.error(err.message || 'Failed to submit bid/proposal.');
@@ -131,6 +139,7 @@ export default function ApplyModal({ project, onClose, defaultRole = 'gig_expert
       setSubmitting(false);
     }
   };
+
 
   return (
     <>
@@ -144,8 +153,18 @@ export default function ApplyModal({ project, onClose, defaultRole = 'gig_expert
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-lg bg-[#0c0c0e] border border-[#23232a] rounded-[10px] p-6 md:p-8 z-[9999] shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto">
         <header className="flex justify-between items-start mb-6">
           <div className="space-y-1 min-w-0 pr-6">
-            <h3 className="text-lg font-bold text-white tracking-tight">Submit Bid Proposal</h3>
+            <div className="flex items-center gap-2">
+              {isEditMode && <Pencil size={14} className="text-[#70d64d] shrink-0" />}
+              <h3 className="text-lg font-bold text-white tracking-tight">
+                {isEditMode ? 'Edit Proposal' : 'Submit Bid Proposal'}
+              </h3>
+            </div>
             <p className="text-xs text-gray-500 truncate">{project.title} ({project.project_code})</p>
+            {isEditMode && (
+              <p className="text-[10.5px] text-amber-400/80 font-medium">
+                ⚠️ Editing is only allowed while your proposal is under initial review.
+              </p>
+            )}
           </div>
           <button 
             onClick={onClose} 
@@ -155,6 +174,7 @@ export default function ApplyModal({ project, onClose, defaultRole = 'gig_expert
             <X size={16} />
           </button>
         </header>
+
 
         <form onSubmit={handleSubmit} className="space-y-5">
           
@@ -233,7 +253,35 @@ export default function ApplyModal({ project, onClose, defaultRole = 'gig_expert
           {/* Document Attachment Upload */}
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-gray-400">Supporting Attachment (Optional)</label>
-            {!file ? (
+            
+            {/* Show existing attachment in edit mode */}
+            {isEditMode && existingApplication.attachment_url && !removeExistingAttachment && !file && (
+              <div className="bg-[#121214] border border-[#1e1e24] rounded-[6px] p-3 flex items-center justify-between mb-1">
+                <div className="flex items-center gap-2 min-w-0 pr-4">
+                  
+                  <Paperclip className="text-[#70d64d]" size={18} />
+                  <a
+                    href={existingApplication.attachment_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-[#70d64d] font-semibold hover:underline truncate"
+                  >
+                    Current Attachment
+                  </a>
+                  <span className="text-[10px] text-gray-500 shrink-0">(existing)</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setRemoveExistingAttachment(true)}
+                  className="text-gray-500 hover:text-red-400 p-1 transition bg-transparent border-none cursor-pointer"
+                  aria-label="Remove existing attachment"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            )}
+
+            {(!isEditMode || !existingApplication?.attachment_url || removeExistingAttachment) && !file ? (
               <div 
                 className={`dropzone-container border border-dashed rounded-[6px] p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center min-h-[110px] ${
                   isDragActive ? 'border-[#70d64d] bg-[#70d64d]/5' : 'border-[#23232a] bg-[#121214] hover:border-white/20'
@@ -253,11 +301,11 @@ export default function ApplyModal({ project, onClose, defaultRole = 'gig_expert
                 />
                 <Upload size={20} className="text-[#70d64d] mb-1" />
                 <span className="text-xs text-gray-400">
-                  Drag &amp; drop file here, or <span className="text-[#70d64d] font-semibold hover:underline">browse</span>
+                  {(isEditMode && removeExistingAttachment) ? 'Upload a replacement file' : 'Drag & drop file here, or'} <span className="text-[#70d64d] font-semibold hover:underline">browse</span>
                 </span>
                 <span className="text-[10px] text-gray-500 mt-1">PDF, Word, or Zip up to 25MB</span>
               </div>
-            ) : (
+            ) : file ? (
               <div className="bg-[#121214] border border-[#1e1e24] rounded-[6px] p-3 flex items-center justify-between">
                 <div className="flex items-center gap-2 min-w-0 pr-4">
                   <span className="text-lg shrink-0">📄</span>
@@ -273,7 +321,8 @@ export default function ApplyModal({ project, onClose, defaultRole = 'gig_expert
                   <X size={14} />
                 </button>
               </div>
-            )}
+            ) : null}
+
           </div>
 
           <div className="flex justify-end items-center gap-3 pt-3 border-t border-[#1e1e24]">
@@ -292,8 +341,10 @@ export default function ApplyModal({ project, onClose, defaultRole = 'gig_expert
             >
               {submitting ? (
                 <>
-                  <Loader size={14} className="animate-spin" /> Submitting...
+                  <Loader size={14} className="animate-spin" /> {isEditMode ? 'Updating...' : 'Submitting...'}
                 </>
+              ) : isEditMode ? (
+                <><Save size={13} /> Update Proposal</>
               ) : 'Submit Proposal'}
             </button>
           </div>

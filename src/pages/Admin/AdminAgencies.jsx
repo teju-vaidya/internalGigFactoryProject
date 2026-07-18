@@ -80,7 +80,6 @@ export default function AdminAgencies() {
           <RefreshCw size={13} className={isFetching ? 'spin' : ''} /> Refresh
         </button>
       </div>
-
       {/* Controls */}
       <div className="flex gap-[10px] flex-wrap items-center">
         {/* Search */}
@@ -88,12 +87,13 @@ export default function AdminAgencies() {
           <Search size={14} className="absolute left-[12px] top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
           <input
             type="text"
-            placeholder="Search by name, email, agency name…"
+            placeholder="Search by agency capabilities, bio, industry, name,  email, or mobile…"
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full bg-[#0c0c0e] border border-[#23232a] rounded-[6px] text-white text-[0.85rem] pl-[36px] pr-[12px] py-[9px] outline-none box-border"
           />
         </div>
+
         {/* Status filter */}
         <div className="flex gap-[5px] items-center flex-wrap">
           <Filter size={12} color="#6b7280" />
@@ -147,6 +147,7 @@ export default function AdminAgencies() {
           isLoading={isLoading}
           onSelectAgency={(agency) => navigate(`/admin/users/${agency.id}/profile`)}
           status={status}
+          searchQuery={dSearch}
         />
       ) : (
         <AgencyCard
@@ -154,6 +155,7 @@ export default function AdminAgencies() {
           isLoading={isLoading}
           onSelectAgency={(agency) => navigate(`/admin/users/${agency.id}/profile`)}
           status={status}
+          searchQuery={dSearch}
         />
       )}
 

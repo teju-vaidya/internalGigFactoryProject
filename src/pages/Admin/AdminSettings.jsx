@@ -336,7 +336,7 @@ export default function AdminSettings() {
   });
 
   const [smtp, setSmtp] = useState({
-    smtp_host: '', smtp_port: '465', smtp_user: '', smtp_pass: '', smtp_from_name: '', smtp_from_email: '',
+    smtp_host: '', smtp_port: '465', smtp_user: '', smtp_pass: '', smtp_from_name: '', smtp_from_email: '', smtp_ignore_tls: false,
   });
   const [smtpTestStatus, setSmtpTestStatus] = useState(null); // null | 'loading' | 'ok' | 'error'
   const [smtpTestMsg, setSmtpTestMsg] = useState('');
@@ -812,14 +812,18 @@ export default function AdminSettings() {
                 <div className="settings-input-icon-wrap">
                   <input id="smtp-pass" type={showPwd.smtp ? 'text' : 'password'} className="settings-input"
                     value={smtp.smtp_pass}
-                    onChange={e => handleSmtpChange('smtp_pass', e.target.value)}
-                    placeholder="Leave as ●●●●●●●● to keep existing"
-                    onBlur={e => validateField('smtp_pass', e.target.value)} />
+                    onChange={e => setSmtp(s => ({ ...s, smtp_pass: e.target.value }))}
+                    placeholder="Enter SMTP Password" />
                   <button type="button" className="pwd-toggle" onClick={() => setShowPwd(s => ({ ...s, smtp: !s.smtp }))}>
                     {showPwd.smtp ? <EyeOff size={15} /> : <Eye size={15} />}
                   </button>
                 </div>
-                {errors.smtp_pass && <span className="text-[#f87171] text-[0.75rem] mt-1 block">{errors.smtp_pass}</span>}
+              </FormRow>
+              <FormRow label="Ignore TLS Errors" id="smtp-ignore-tls" hint="Ignore SSL/TLS certificate verification errors (useful on some hosting environments)">
+                <div className="flex items-center gap-3">
+                  <Toggle id="smtp-ignore-tls" checked={smtp.smtp_ignore_tls}
+                    onChange={v => setSmtp(s => ({ ...s, smtp_ignore_tls: v }))} />
+                </div>
               </FormRow>
             </Section>
 

@@ -106,7 +106,7 @@ export const useAuthStore = create(
             set({ profile: response.profile });
             return { success: true };
           } else {
-            return { success: false, error: 'Failed to update profile.' };
+            return { success: false, error: response?.message || 'Failed to update profile.' };
           }
         } catch (error) {
           const errMsg = error.message || 'Error updating profile.';

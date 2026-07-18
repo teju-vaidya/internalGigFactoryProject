@@ -1,5 +1,6 @@
 import React from 'react';
 import { Mail, MapPin, Phone, Globe, Calendar, Edit2 } from 'lucide-react';
+import './ProfileHeader.css';
 
 export const ProfileHeader = ({
   role,
@@ -17,9 +18,9 @@ export const ProfileHeader = ({
   handleEditClick,
   hideEditButton
 }) => {
-  
+
   return (
-    
+
     <header className="profile-identity-banner">
       <div className="profile-identity-main">
         <div className="profile-large-avatar p-0 overflow-hidden">
@@ -33,9 +34,15 @@ export const ProfileHeader = ({
         <div className="profile-title-details">
           <div className="profile-name-row">
             <h1>{name || 'No Name Found'}</h1>
-            <span className="availability-chip">
-              {isGigExpert ? (availability || 'AVAILABLE') : 'ACTIVE PORTAL'}
-            </span>
+            <div className="availability-tooltip">
+              <span className="availability-chip " >
+                {isGigExpert ? (availability || 'AVAILABLE') : 'ACTIVE PORTAL'}
+              </span>
+
+              <div className="tooltip-content">
+                {availability === "full-time" ? 'Available for the entire 10 hours' : 'Available for working hours'}
+              </div>
+            </div>
           </div>
 
           <p className="profile-subtitle-text">{subtitle}</p>

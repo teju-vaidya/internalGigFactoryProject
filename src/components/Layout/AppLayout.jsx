@@ -33,6 +33,7 @@ import {
   User,
   FileCheck,
   Shield,
+  ShieldAlert,
   ChevronDown,
   FileSearch,
   Handshake,
@@ -300,6 +301,7 @@ export default function AppLayout({ children, pageTitle }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [showCompletionPopup, setShowCompletionPopup] = useState(false);
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 1024px)");
@@ -308,6 +310,16 @@ export default function AppLayout({ children, pageTitle }) {
     media.addEventListener("change", listener);
     return () => media.removeEventListener("change", listener);
   }, []);
+
+  useEffect(() => {
+    if (role !== 'admin' && profile && location.pathname !== '/profile') {
+      const completion = profile.profile_completion ?? 0;
+      const hasDismissed = sessionStorage.getItem('hasSeenProfileCompletionWarning');
+      if (completion < 90 && !hasDismissed) {
+        setShowCompletionPopup(true);
+      }
+    }
+  }, [role, profile, location.pathname]);
 
   const effectiveCollapsed = isMobile ? false : collapsed;
 
@@ -618,6 +630,126 @@ export default function AppLayout({ children, pageTitle }) {
           <main className="app-content">{children}</main>
         </div>
       </div>
+
+      {showCompletionPopup && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 99999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            backdropFilter: 'blur(4px)',
+          }}
+          className="animate-fade-in"
+        >
+          <div 
+            style={{
+              backgroundColor: '#121215',
+              border: '1px solid #23232a',
+              width: '100%',
+              maxWidth: '480px',
+              padding: '24px',
+              borderRadius: '12px',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4)',
+              textAlign: 'left',
+              margin: '0 16px',
+            }}
+            className="animate-scale-in"
+          >
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <div style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)', padding: '10px', borderRadius: '8px', color: '#f59e0b', display: 'flex' }}>
+                <ShieldAlert size={24} />
+              </div>
+              <div>
+                <h3 style={{ color: 'white', fontWeight: 800, fontSize: '1.2rem', margin: 0 }}>Complete Your Profile</h3>
+                <p style={{ color: '#8a8f98', fontSize: '0.78rem', margin: '2px 0 0 0' }}>Action required to unlock platform features</p>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <p style={{ color: '#d1d5db', fontSize: '0.88rem', lineHeight: '1.5', margin: 0 }}>
+                Your profile completion is currently at <strong style={{ color: '#f59e0b', fontWeight: 800 }}>{profile?.profile_completion ?? 0}%</strong>. 
+                We require a minimum of <strong style={{ color: 'white' }}>90% completion</strong> before you can bid on active projects and represent your skills.
+              </p>
+              
+              <div style={{ backgroundColor: '#0c0c0e', border: '1px solid #23232a', borderRadius: '8px', padding: '12px' }}>
+                <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: 'white', margin: '0 0 8px 0' }}>Priority Sections Needed:</h4>
+                <ul style={{ listStyleType: 'disc', paddingLeft: '18px', margin: 0, display: 'flex', flexDirection: 'column', gap: '4px', color: '#8a8f98', fontSize: '0.78rem' }}>
+                  <li>Personal/Company PAN Card verification</li>
+                  <li>Legal Name matching PAN details</li>
+                  <li>Professional Documents (Resume, Portfolio showcase files)</li>
+                </ul>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'end', gap: '12px', marginTop: '24px' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  sessionStorage.setItem('hasSeenProfileCompletionWarning', 'true');
+                  setShowCompletionPopup(false);
+                }}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#1c1c20',
+                  color: '#9ca3af',
+                  border: '1px solid #23232a',
+                  borderRadius: '6px',
+                  fontSize: '0.82rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#23232a';
+                  e.currentTarget.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#1c1c20';
+                  e.currentTarget.style.color = '#9ca3af';
+                }}
+              >
+                Remind Me Later
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  sessionStorage.setItem('hasSeenProfileCompletionWarning', 'true');
+                  setShowCompletionPopup(false);
+                  navigate('/profile');
+                }}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#70d64d',
+                  color: 'black',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontSize: '0.82rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#5cb83d';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#70d64d';
+                }}
+              >
+                Complete Profile
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
     </LayoutContext.Provider>
   );
 }

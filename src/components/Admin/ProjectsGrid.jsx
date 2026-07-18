@@ -13,6 +13,7 @@ const ProjectsGrid = ({
   onSimApply,
   viewMode,
   isLoading,
+  searchQuery,
 }) => {
   const isList = viewMode === 'list';
 
@@ -76,6 +77,7 @@ const ProjectsGrid = ({
           onMilestones={onMilestones}
           onApplications={onApplications}
           onSimApply={onSimApply}
+          searchQuery={searchQuery}
         />
       ))}
     </div>

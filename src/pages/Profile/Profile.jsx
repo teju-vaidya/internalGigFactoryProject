@@ -51,6 +51,7 @@ const FIELD_TABS = {
   website: 'commercials',
   linkedinUrl: 'commercials',
   portfolioPdfUrl: 'commercials',
+  baseRate: 'commercials',
   legalNamePan: 'legal',
   personalPan: 'legal',
   resumeUrl: 'legal',
@@ -73,6 +74,8 @@ export const Profile = () => {
   const [activeTab, setActiveTab] = useState('basic');
   const [errors, setErrors] = useState({});
   const [documents, setDocuments] = useState([]);
+  const [portfolioPdfFile, setPortfolioPdfFile] = useState(null);
+  const [uploadedPdfName, setUploadedPdfName] = useState('');
 
 
   const fetchDocuments = async () => {
@@ -118,6 +121,23 @@ export const Profile = () => {
 
   const handleDeleteDocument = async (id) => {
     try {
+      if (id === 'legacy-resume') {
+        const res = await updateProfile({ resumeUrl: '' });
+        if (res && res.success) {
+          toast.success('Resume deleted successfully!');
+          return true;
+        }
+        return false;
+      }
+      if (id === 'legacy-portfolio') {
+        const res = await updateProfile({ portfolioPdfUrl: '' });
+        if (res && res.success) {
+          toast.success('Portfolio deleted successfully!');
+          return true;
+        }
+        return false;
+      }
+
       const res = await api.delete(`/profiles/documents/${id}`);
       if (res && res.success) {
         toast.success('Document deleted successfully!');
@@ -158,6 +178,8 @@ export const Profile = () => {
     const peerReviewDetails = profile?.service_details?.peerReviewDetails || { teamExperience: '', specialisation: '' };
     const boqDetails = profile?.service_details?.boqDetails || { measurementStandards: '', estimationSoftware: '' };
     const vizDetails = profile?.service_details?.vizDetails || { renderingEngines: '', hardwareCapacity: '', animationCapability: 'No' };
+    setPortfolioPdfFile(null);
+    setUploadedPdfName(profile?.portfolio_pdf_url ? 'Portfolio uploaded (PDF)' : '');
     
     if (isGigExpertRole) {
       setFormData({
@@ -174,6 +196,8 @@ export const Profile = () => {
         personalPan: profile?.personal_pan || '',
         commercialBasis: profile?.commercial_basis || '',
         noticePeriod: profile?.notice_period || '',
+        city: profile?.city || '',
+        country: profile?.country || '',
         selectedServices: initialSelectedServices,
         skillsList: (profile?.gig_expert_skills || []).map(s => s.skill_name).join(', '),
         bimDetails,
@@ -190,6 +214,7 @@ export const Profile = () => {
         gstNumber: profile?.gst_number || '',
         website: profile?.website || '',
         portfolioPdfUrl: profile?.portfolio_pdf_url || '',
+        baseRate: profile?.service_details?.baseRate || '',
         employeeCount: profile?.employee_count || 0,
         foundedYear: profile?.founded_year || 2020,
         industry: profile?.industry || '',
@@ -214,12 +239,13 @@ export const Profile = () => {
   };
 
   const handleServiceToggle = (serviceId) => {
-    const currentSelected = formData.selectedServices || [];
-    const newSelected = currentSelected.includes(serviceId)
-      ? currentSelected.filter(id => id !== serviceId)
-      : [...currentSelected, serviceId];
-    
-    setFormData({ ...formData, selectedServices: newSelected });
+    setFormData((prev) => {
+      const currentSelected = prev.selectedServices || [];
+      const newSelected = currentSelected.includes(serviceId)
+        ? currentSelected.filter(id => id !== serviceId)
+        : [...currentSelected, serviceId];
+      return { ...prev, selectedServices: newSelected };
+    });
     if (errors.selectedServices) {
       setErrors((prev) => {
         const copy = { ...prev };
@@ -301,8 +327,27 @@ export const Profile = () => {
     if (isGigExpertRole) {
       payload.personalPan = (formData.personalPan || '').trim().toUpperCase();
       payload.legalNamePan = (formData.legalNamePan || '').trim();
+      payload.city = (formData.city || '').trim();
+      payload.country = (formData.country || '').trim();
     } else {
       payload.companyPan = (formData.companyPan || '').trim().toUpperCase();
+    }
+
+    if (portfolioPdfFile) {
+      try {
+        const fileFormData = new FormData();
+        fileFormData.append('file', portfolioPdfFile);
+        fileFormData.append('documentName', 'Portfolio (PDF)');
+        const uploadRes = await api.postFile('/profiles/documents', fileFormData);
+        if (uploadRes && uploadRes.success && uploadRes.file) {
+          payload.portfolioPdfUrl = uploadRes.file.file_url;
+        } else {
+          toast.error('Failed to upload portfolio PDF. Proceeding with other updates.');
+        }
+      } catch (uploadErr) {
+        console.error('Portfolio PDF upload failed:', uploadErr);
+        toast.error('Failed to upload portfolio PDF. Proceeding with other updates.');
+      }
     }
 
     const serviceDetails = {
@@ -311,7 +356,8 @@ export const Profile = () => {
       auditDetails: formData.auditDetails || { equipmentOwned: '', serviceRadius: '' },
       peerReviewDetails: formData.peerReviewDetails || { teamExperience: '', specialisation: '' },
       boqDetails: formData.boqDetails || { measurementStandards: '', estimationSoftware: '' },
-      vizDetails: formData.vizDetails || { renderingEngines: '', hardwareCapacity: '', animationCapability: 'No' }
+      vizDetails: formData.vizDetails || { renderingEngines: '', hardwareCapacity: '', animationCapability: 'No' },
+      baseRate: !isGigExpertRole && formData.baseRate ? parseFloat(formData.baseRate) : undefined
     };
     
     payload.serviceDetails = serviceDetails;
@@ -326,6 +372,7 @@ export const Profile = () => {
     } else {
       payload.employeeCount = formData.employeeCount ? parseInt(formData.employeeCount, 10) : 0;
       payload.foundedYear = formData.foundedYear ? parseInt(formData.foundedYear, 10) : 2020;
+      delete payload.baseRate;
     }
     
     delete payload.selectedServices;
@@ -372,7 +419,7 @@ export const Profile = () => {
     ? (profile?.gig_expert_skills || [])
     : (profile?.service_details?.selectedServices || []).map(code => ({ skill_name: SERVICE_LABELS[code] || code }));
   
-  const isIncomplete = profile && (profile.profile_completion ?? 0) <= 70;
+  const isIncomplete = profile && (profile.profile_completion ?? 0) < 90;
 
   return (
     <div className="profile-workspace-view animate-fade-in">
@@ -393,7 +440,7 @@ export const Profile = () => {
             </div>
             
             <p className="text-gray-300 text-[0.88rem] leading-relaxed mb-4 max-w-4xl">
-              Your profile is currently only <strong>{profile.profile_completion ?? 0}%</strong> complete. To gain full access to the GigFactory platform and apply for active gigs or view projects, you must complete at least <strong>70%</strong> of your profile.
+              Your profile is currently only <strong>{profile.profile_completion ?? 0}%</strong> complete. To gain full access to the GigFactory platform and apply for active gigs or view projects, you must complete at least <strong>90%</strong> of your profile.
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
@@ -406,13 +453,13 @@ export const Profile = () => {
               <div className="bg-[#121215] border border-[#23232a] rounded-lg p-3">
                 <h4 className="text-white font-bold text-[0.8rem] mb-1">🤝 Trust & Bid Success</h4>
                 <p className="text-gray-500 text-[0.75rem] leading-snug">
-                  Adding experience, portfolio links, and bio builds client trust, making you 5x more likely to win active proposals.
+                  Adding experience, portfolio links, and bio builds  trust, making you 5x more likely to get active proposals.
                 </p>
               </div>
               <div className="bg-[#121215] border border-[#23232a] rounded-lg p-3">
                 <h4 className="text-white font-bold text-[0.8rem] mb-1">📋 Legal Compliance</h4>
                 <p className="text-gray-500 text-[0.75rem] leading-snug">
-                  Verified documents (such as PAN cards and resumes) are mandatory to qualify for legal contracts and payout processing.
+                  documents (such as PAN cards and resumes) are mandatory to qualify for legal contracts and payout processing.
                 </p>
               </div>
             </div>
@@ -451,34 +498,123 @@ export const Profile = () => {
         employeeCount={profile?.employee_count}
       />
 
-      <div className="profile-details-split-grid">
-        <div className="profile-details-left-pane">
+      {/* Section-wise detailed profile cards matching mockup in a Pinterest-like balanced 2-column grid */}
+      <div className="profile-sections-grid">
+        {/* Left Column */}
+        <div className="profile-grid-column">
+          {/* Card 1: ABOUT ME / AGENCY DESCRIPTION */}
           <ProfileAbout
             isGigExpert={isGigExpert}
             bio={profile?.bio}
             description={profile?.description}
           />
 
+          {/* Card 2: EXPERIENCE / TEAM STRUCTURE / PROJECTS */}
           {isGigExpert ? (
-            <WorkHistory workHistory={profile?.work_history} />
+            <WorkHistory 
+              workHistory={profile?.work_history} 
+              platformProjects={profile?.platform_projects} 
+            />
           ) : (
-            <TeamStructure teamMembers={profile?.team_members || []} employeeCount={profile?.employee_count} />
+            <>
+              <TeamStructure teamMembers={profile?.team_members || []} employeeCount={profile?.employee_count} />
+              <WorkHistory 
+                workHistory={null} 
+                platformProjects={profile?.platform_projects} 
+              />
+            </>
           )}
+
+          {/* Card 3: PERSONAL & CONTACT */}
+          <div className="profile-section-card">
+            <h3 className="profile-section-card-title">Personal & Contact</h3>
+            <div className="profile-section-row">
+              <span className="profile-section-label">Email:</span>
+              <span className="profile-section-value">{emailVal || 'N/A'}</span>
+            </div>
+            <div className="profile-section-row">
+              <span className="profile-section-label">Mobile:</span>
+              <span className="profile-section-value">{phoneVal || 'N/A'}</span>
+            </div>
+            <div className="profile-section-row">
+              <span className="profile-section-label">Designation:</span>
+              <span className="profile-section-value">
+                {isGigExpert ? (profile?.title || 'N/A') : (profile?.designation || 'N/A')}
+              </span>
+            </div>
+            <div className="profile-section-row">
+              <span className="profile-section-label">Location:</span>
+              <span className="profile-section-value">{locationVal || 'Not Specified'}</span>
+            </div>
+            {profile?.linkedin_url && (
+              <div className="profile-section-row">
+                <span className="profile-section-label">LinkedIn:</span>
+                <span className="profile-section-value">
+                  <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer">View Profile</a>
+                </span>
+              </div>
+            )}
+            {(!isGigExpert && profile?.website) && (
+              <div className="profile-section-row">
+                <span className="profile-section-label">Website:</span>
+                <span className="profile-section-value">
+                  <a href={profile.website} target="_blank" rel="noopener noreferrer">View Website</a>
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Card 4: LEGAL & IDENTIFICATION */}
+          <div className="profile-section-card">
+            <h3 className="profile-section-card-title">Legal & Identification</h3>
+            {isGigExpert ? (
+              <>
+                <div className="profile-section-row">
+                  <span className="profile-section-label">Registered Name:</span>
+                  <span className="profile-section-value">{profile?.legal_name_pan || 'N/A'}</span>
+                </div>
+               
+                <div className="profile-section-row">
+                  <span className="profile-section-label">Personal PAN:</span>
+                  <span className="profile-section-value uppercase">{profile?.personal_pan || 'N/A'}</span>
+                </div>
+              
+               
+              </>
+            ) : (
+              <>
+                <div className="profile-section-row">
+                  <span className="profile-section-label">Registered Name:</span>
+                  <span className="profile-section-value">{profile?.agency_name || 'N/A'}</span>
+                </div>
+                <div className="profile-section-row">
+                  <span className="profile-section-label">Auth. Person:</span>
+                  <span className="profile-section-value">{profile?.user?.full_name || 'N/A'}</span>
+                </div>
+                <div className="profile-section-row">
+                  <span className="profile-section-label">Company PAN:</span>
+                  <span className="profile-section-value uppercase">{profile?.company_pan || 'N/A'}</span>
+                </div>
+                <div className="profile-section-row">
+                  <span className="profile-section-label">GSTIN:</span>
+                  <span className="profile-section-value uppercase">{profile?.gst_number || 'N/A'}</span>
+                </div>
+                <div className="profile-section-row">
+                  <span className="profile-section-label">CIN:</span>
+                  <span className="profile-section-value uppercase">{profile?.cin || 'N/A'}</span>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
-        <div className="profile-details-right-pane">
-          <CapabilityCloud
-            isGigExpert={isGigExpert}
-            skills={skills}
-          />
-
-          <ServiceSpecs serviceDetails={profile?.service_details} />
-
+        {/* Right Column */}
+        <div className="profile-grid-column">
+          {/* Card 1: PROFILE DOCUMENTS */}
           <DocumentsList 
-         
             isGigExpert={isGigExpert}
-            resumeUrl={profile?.resume_url}
-            portfolioPdfUrl={profile?.portfolio_pdf_url}
+            resumeUrl={profile?.resume_url || profile?.portfolio_url}
+            portfolioPdfUrl={profile?.portfolio_pdf_url || profile?.portfolio_pdf_url}
             verifications={profile?.verifications}
             documents={documents}
             onUpload={handleUploadDocument}
@@ -486,6 +622,74 @@ export const Profile = () => {
             onDelete={handleDeleteDocument}
             isAdmin={false}
           />
+          
+ 
+          {/* Card 2: SERVICES & CAPABILITY */}
+          <div className="profile-section-card">
+            <h3 className="profile-section-card-title">Services & Capability</h3>
+            <div className="flex flex-wrap gap-[6px] mb-[12px]">
+              {(profile?.service_details?.selectedServices || []).length > 0 ? (
+                profile.service_details.selectedServices.map(srv => (
+                  <span key={srv} className="bg-[#1e293b] text-[#38bdf8] text-[0.72rem] font-semibold px-[8px] py-[3px] rounded-[4px]">
+                    {SERVICE_LABELS[srv] || srv}
+                  </span>
+                ))
+              ) : (
+                <span className="text-gray-500 text-[0.8rem]">No services selected.</span>
+              )}
+            </div>
+           
+          </div>
+
+          {/* Card 3: COMMERCIAL RATES */}
+          <div className="profile-section-card">
+            <h3 className="profile-section-card-title">Commercial Rates</h3>
+            <div className="profile-section-row">
+              <span className="profile-section-label">Base Rate:</span>
+              <span className="profile-section-value font-bold text-[#b5ff14]">
+                {isGigExpert 
+                  ? (profile?.hourly_rate ? `INR ${profile.hourly_rate}` : 'Not Specified')
+                  : (profile?.commercial_basis ? 'Project/Contract rate' : 'N/A')}
+              </span>
+            </div>
+            <div className="profile-section-row">
+              <span className="profile-section-label">Billing Basis:</span>
+              <span className="profile-section-value">
+                {isGigExpert ? 'Hourly' : 'Project-based'}
+              </span>
+            </div>
+            <div className="profile-section-row">
+              <span className="profile-section-label">Commercial Basis:</span>
+              <span className="profile-section-value">
+                {profile?.commercial_basis || (isGigExpert ? 'Hourly Rate' : 'N/A')}
+              </span>
+            </div>
+          </div>
+
+          {/* Card 4: AVAILABILITY & SIGN-OFF */}
+          <div className="profile-section-card">
+            <h3 className="profile-section-card-title">Availability & Sign-Off</h3>
+            <div className="profile-section-row">
+              <span className="profile-section-label">Availability:</span>
+              <span className="profile-section-value">
+                {isGigExpert 
+                  ? (profile?.availability === 'AVAILABLE' ? 'Immediate / Full-time' : profile?.availability || 'Project basis') 
+                  : 'Project basis'}
+              </span>
+            </div>
+            <div className="profile-section-row">
+              <span className="profile-section-label">Notice Period:</span>
+              <span className="profile-section-value">{profile?.notice_period || 'N/A'}</span>
+            </div>
+            <div className="profile-section-row">
+              <span className="profile-section-label">Team Size:</span>
+              <span className="profile-section-value">
+                {isGigExpert ? 'Individual / 1 member' : `${profile?.employee_count || 0} employees`}
+              </span>
+            </div>
+            
+           
+          </div>
         </div>
       </div>
 
@@ -506,6 +710,10 @@ export const Profile = () => {
           handleServiceToggle={handleServiceToggle}
           handleSoftwareToggle={handleSoftwareToggle}
           handleNestedChange={handleNestedChange}
+          portfolioPdfFile={portfolioPdfFile}
+          setPortfolioPdfFile={setPortfolioPdfFile}
+          uploadedPdfName={uploadedPdfName}
+          setUploadedPdfName={setUploadedPdfName}
         />
       )}
     </div>

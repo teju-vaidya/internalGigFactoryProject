@@ -24,6 +24,8 @@ export const profileGigExpertSchema = yup.object().shape({
     .min(0, 'Hourly rate cannot be negative')
     .required('Hourly rate is required'),
   bio: yup.string().nullable(),
+  city: yup.string().nullable(),
+  country: yup.string().nullable(),
 
   // Services
   selectedServices: yup.array().min(1, 'Please select at least one service'),
@@ -66,6 +68,11 @@ export const profileAgencySchema = yup.object().shape({
   // Commercials & Links
   commercialBasis: yup.string().required('Commercial basis is required'),
   noticePeriod: yup.string().required('Notice period is required'),
+  baseRate: yup.number()
+    .transform((value, originalValue) => originalValue === '' ? null : value)
+    .typeError('Base rate must be a number')
+    .min(0, 'Base rate cannot be negative')
+    .nullable(),
   website: optionalUrl(),
   linkedinUrl: optionalUrl(),
   portfolioPdfUrl: yup.string().nullable(),

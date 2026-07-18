@@ -9,6 +9,32 @@ import { stripHtml } from '../../utils/text';
 const fmtDate = (d) =>
   d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
 
+const getMatchReasons = (project, query) => {
+  if (!query || !query.trim()) return [];
+  const q = query.trim().toLowerCase();
+  const reasons = [];
+
+  const title = project.title?.toLowerCase() || '';
+  const description = (project.description || '').toLowerCase();
+  const category = project.category?.toLowerCase() || '';
+  const projectType = project.project_type?.toLowerCase() || '';
+  const priority = project.priority?.toLowerCase() || '';
+  const skills = project.project_skills?.map(s => s.skill_name?.toLowerCase() || '') || [];
+  const tags = project.project_tags?.map(t => t.tag_name?.toLowerCase() || '') || [];
+  const budgetStr = project.budget ? `₹${Number(project.budget).toLocaleString('en-IN')}` : '';
+
+  if (title.includes(q)) reasons.push('Title Match');
+  if (description.includes(q)) reasons.push('Description Match');
+  if (category.includes(q)) reasons.push('Category Match');
+  if (projectType.includes(q)) reasons.push('Type Match');
+  if (priority.includes(q)) reasons.push('Priority Match');
+  if (skills.some(s => s.includes(q))) reasons.push('Skill Match');
+  if (tags.some(t => t.includes(q))) reasons.push('Deliverable Match');
+  if (budgetStr.toLowerCase().includes(q)) reasons.push('Budget Match');
+
+  return reasons;
+};
+
 export const ProjectCard = ({ 
   project, 
   onEdit, 
@@ -17,16 +43,33 @@ export const ProjectCard = ({
   onTrackProgress, 
   onMilestones, 
   onApplications, 
-  onSimApply 
+  onSimApply,
+  searchQuery 
 }) => {
   const [showMenu, setShowMenu] = useState(false);
   const assignedUser = project.assignments?.[0]?.assigned_to;
   const avatarSeed = encodeURIComponent(assignedUser?.full_name || 'Unassigned');
   
   const isNewProject = project.status === 'open' || project.status === 'NOT STARTED';
+  const matchReasons = getMatchReasons(project, searchQuery);
 
   return (
-    <div className="bg-[#121215] border border-[#23232a] rounded-[10px] p-[20px] flex flex-col gap-[14px] relative cursor-pointer transition-all duration-200 hover:-translate-y-[2px] hover:border-[#70d64d]">
+    <div className="group bg-[#121215] border border-[#23232a] rounded-[10px] p-[20px] flex flex-col gap-[14px] relative cursor-pointer transition-all duration-200 hover:-translate-y-[2px] hover:border-[#70d64d]">
+      
+      {/* Match Reason Overlay on Hover */}
+      {searchQuery && matchReasons.length > 0 && (
+        <div className="absolute inset-0 bg-[#0c0c0e]/95 backdrop-blur-sm rounded-[10px] p-[20px] flex flex-col justify-center items-center gap-[10px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 text-center">
+          <span className="text-gray-500 text-[0.7rem] uppercase tracking-wider font-bold">Query Match Details</span>
+          <div className="flex flex-wrap gap-[6px] justify-center max-w-full">
+            {matchReasons.map(r => (
+              <span key={r} className="bg-[#70d64d]/10 text-[#70d64d] border border-[#70d64d]/30 text-[0.72rem] font-semibold px-[10px] py-[4px] rounded-[6px]">
+                {r}
+              </span>
+            ))}
+          </div>
+          <span className="text-gray-500 text-[0.68rem] mt-[10px]">Click card to view project</span>
+        </div>
+      )}
       
       {/* Top Status Badge, Priority & 3-Dot Options Dropdown */}
       <div className="flex justify-between items-center">

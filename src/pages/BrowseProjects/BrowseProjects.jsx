@@ -92,6 +92,37 @@ export default function BrowseProjects() {
     setSortBy('newest');
   };
 
+  // True when any filter/search is active (so empty state can decide what to show)
+  const hasActiveFilters = !!dSearch || !!selectedCategory || sortBy !== 'newest';
+
+
+  const getProjectMatchReasons = (project, query) => {
+    if (!query || !query.trim()) return [];
+    const q = query.trim().toLowerCase();
+    const reasons = [];
+
+    const title = project.title?.toLowerCase() || '';
+    const description = (project.description || '').toLowerCase();
+    const category = project.category?.toLowerCase() || '';
+    const projectType = project.project_type?.toLowerCase() || '';
+    const priority = project.priority?.toLowerCase() || '';
+    const skills = project.project_skills?.map(s => s.skill_name?.toLowerCase() || '') || [];
+    const tags = project.project_tags?.map(t => t.tag_name?.toLowerCase() || '') || [];
+    const budgetStr = project.budget ? `₹${Number(project.budget).toLocaleString('en-IN')}` : '';
+
+    if (title.includes(q)) reasons.push('Title Match');
+    if (description.includes(q)) reasons.push('Description Match');
+    if (category.includes(q)) reasons.push('Category Match');
+    if (projectType.includes(q)) reasons.push('Type Match');
+    if (priority.includes(q)) reasons.push('Priority Match');
+    if (skills.some(s => s.includes(q))) reasons.push('Skill Match');
+    if (tags.some(t => t.includes(q))) reasons.push('Deliverable Match');
+    if (budgetStr.toLowerCase().includes(q)) reasons.push('Budget Match');
+
+    return reasons;
+  };
+
+
   return (
     <div className=" mx-auto flex flex-col gap-6">
       
@@ -120,7 +151,7 @@ export default function BrowseProjects() {
           <Search size={14} className="absolute left-[12px] top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
           <input 
             type="text" 
-            placeholder="Search by title, description, skills..." 
+            placeholder="Search by title, description, skills, deliverables, category, type, priority..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full bg-[#0c0c0e] border border-[#23232a] text-white rounded-[6px] text-[0.85rem] pl-[36px] pr-[12px] py-[9px] outline-none box-border focus:border-[#70d64d] focus:ring-1 focus:ring-[#70d64d]/10 transition-all duration-200"
@@ -198,14 +229,25 @@ export default function BrowseProjects() {
             <div className="w-16 h-16 bg-[#0c0c0e] border border-[#23232a] rounded-full flex items-center justify-center text-gray-500 mb-4">
               <Briefcase size={28} />
             </div>
-            <h3 className="text-lg font-bold text-white mb-2">No Projects Found</h3>
-            <p className="text-gray-500 text-sm max-w-sm mb-5 leading-relaxed">We couldn't find any open projects matching your search criteria.</p>
-            <button 
-              onClick={handleClearFilters}
-              className="bg-transparent border border-[#70d64d] text-[#70d64d] hover:bg-[#70d64d]/5 px-[14px] py-[7px] rounded-[6px] text-xs font-semibold transition-all duration-200"
-            >
-              Clear Search & Filters
-            </button>
+            {hasActiveFilters ? (
+              <>
+                <h3 className="text-lg font-bold text-white mb-2">No Projects Found</h3>
+                <p className="text-gray-500 text-sm max-w-sm mb-5 leading-relaxed">We couldn't find any open projects matching your search criteria.</p>
+                <button 
+                  onClick={handleClearFilters}
+                  className="bg-transparent border border-[#70d64d] text-[#70d64d] hover:bg-[#70d64d]/5 px-[14px] py-[7px] rounded-[6px] text-xs font-semibold transition-all duration-200"
+                >
+                  Clear Search & Filters
+                </button>
+              </>
+            ) : (
+              <>
+                <h3 className="text-lg font-bold text-white mb-2">No Open Projects Right Now</h3>
+                <p className="text-gray-500 text-sm max-w-sm leading-relaxed">
+                  We're curating exciting new projects for you. Check back soon — new opportunities will be added shortly! 🚀
+                </p>
+              </>
+            )}
           </div>
         ) : (
           // Stretched long cards list
@@ -230,6 +272,8 @@ export default function BrowseProjects() {
               const formattedDeadline = project.end_date 
                 ? new Date(project.end_date).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })
                 : 'TBD';
+
+              const matchReasons = getProjectMatchReasons(project, dSearch);
 
               return (
                 <article 
@@ -259,11 +303,35 @@ export default function BrowseProjects() {
                       </div>
                     </div>
                     
-                    {project.category && (
-                      <div className="bg-[#0c0c0e] text-[#a1a1aa] border border-[#23232a] text-[10px] uppercase font-extrabold tracking-widest px-3 py-1.5 rounded-[4px] shrink-0 h-fit w-fit">
-                        {project.category}
-                      </div>
-                    )}
+                    <div className="flex items-center gap-[8px] shrink-0 h-fit w-fit">
+                      {dSearch && matchReasons.length > 0 && (
+                        <div className="relative group/tooltip shrink-0">
+                          <div className="bg-[#70d64d]/10 text-[#70d64d] border border-[#70d64d]/30 text-[10px] uppercase font-extrabold tracking-wider px-3 py-1.5 rounded-[4px] cursor-help flex items-center gap-[4px] hover:bg-[#70d64d]/20 transition-all duration-150">
+                            <span>🔍 Match Details</span>
+                          </div>
+                          {/* Tooltip Content */}
+                          <div className="absolute right-0 top-full mt-2 hidden group-hover/tooltip:flex flex-col items-end pointer-events-none z-[9999] min-w-[200px]">
+                            <div className="w-2.5 h-2.5 bg-[#18181b] border-l border-t border-[#2d2d30] rotate-45 translate-y-[5px] mr-6" />
+                            <div className="bg-[#18181b] border border-[#2d2d30] text-gray-200 p-3 rounded-[6px] shadow-[0_4px_20px_rgba(0,0,0,0.6)] flex flex-col gap-2 relative z-10">
+                              <span className="text-gray-400 text-[10px] uppercase tracking-wider font-bold block text-left">Query Match Details</span>
+                              <div className="flex flex-wrap gap-[6px] justify-start">
+                                {matchReasons.map(r => (
+                                  <span key={r} className="bg-[#70d64d]/10 text-[#70d64d] border border-[#70d64d]/30 text-[0.72rem] font-semibold px-[8px] py-[3px] rounded-[4px]">
+                                    {r}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {project.category && (
+                        <div className="bg-[#0c0c0e] text-[#a1a1aa] border border-[#23232a] text-[10px] uppercase font-extrabold tracking-widest px-3 py-1.5 rounded-[4px] shrink-0 h-fit w-fit">
+                          {project.category}
+                        </div>
+                      )}
+                    </div>
                   </header>
 
                   {/* Description Paragraph */}

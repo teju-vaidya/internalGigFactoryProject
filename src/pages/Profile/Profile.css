@@ -783,3 +783,172 @@ body.modal-open {
     transform: translateY(0);
   }
 }
+
+/* --- Section-wise Profile Grid Layout Styles --- */
+.profile-sections-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 992px) {
+  .profile-sections-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+.profile-grid-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.profile-section-card {
+  background-color: #121215;
+  border: 1px solid #23232a;
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-section-card-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #b5ff14; /* theme neon green */
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-top: 0;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #23232a;
+}
+
+.profile-section-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #1a1a22;
+  font-size: 0.85rem;
+}
+
+.profile-section-row:last-child {
+  border-bottom: none;
+}
+
+.profile-section-label {
+  font-weight: 700;
+  color: #8a8f98;
+}
+
+.profile-section-value {
+  color: #fff;
+  text-align: right;
+  word-break: break-word;
+  max-width: 60%;
+}
+
+.profile-section-value a {
+  color: #b5ff14;
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.15s;
+}
+
+.profile-section-value a:hover {
+  text-decoration: underline;
+  opacity: 0.9;
+}
+
+/* Attempts & History card details */
+.attempts-stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.attempts-stat-box {
+  background-color: #0c0c0e;
+  border: 1px solid #23232a;
+  padding: 12px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.attempts-stat-label {
+  font-size: 0.65rem;
+  color: #6c727f;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: block;
+}
+
+.attempts-stat-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  display: block;
+  margin-top: 4px;
+}
+
+.attempts-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 4px;
+  text-align: left;
+}
+
+/* Scrollbar styling */
+.attempts-history-list::-webkit-scrollbar {
+  width: 4px;
+}
+.attempts-history-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.attempts-history-list::-webkit-scrollbar-thumb {
+  background: #23232a;
+  border-radius: 2px;
+}
+.attempts-history-list::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+.attempts-history-item {
+  border-left-width: 2px;
+  border-left-style: solid;
+  padding-left: 12px;
+  font-size: 0.8rem;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.attempts-history-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.attempts-history-action {
+  font-weight: 700;
+}
+
+.attempts-history-date {
+  color: #6c727f;
+  font-size: 0.7rem;
+}
+
+.attempts-history-desc {
+  color: #d1d5db;
+  margin-top: 2px;
+  line-height: 1.3;
+}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { RichTextEditor } from '../AdminShared';
+import { toast } from 'react-toastify';
 
 export default function MilestoneModal({ milestone = null, onClose, onSave, projectBudget = 0, existingMilestones = [] }) {
   const [title, setTitle] = useState('');
@@ -11,6 +12,13 @@ export default function MilestoneModal({ milestone = null, onClose, onSave, proj
   const [weightPercentage, setWeightPercentage] = useState('');
   const [status, setStatus] = useState('pending');
 
+  const otherMilestones = milestone 
+    ? (existingMilestones || []).filter(m => m.id !== milestone.id) 
+    : (existingMilestones || []);
+  const otherWeightsSum = otherMilestones.reduce((sum, m) => sum + (Number(m.weight_percentage) || 0), 0);
+  const remainingWeight = Math.max(0, 100 - otherWeightsSum);
+  const weightVal = parseFloat(weightPercentage) || 0;
+
   useEffect(() => {
     if (milestone) {
       setTitle(milestone.title || '');
@@ -20,10 +28,12 @@ export default function MilestoneModal({ milestone = null, onClose, onSave, proj
       setAmount(milestone.budget || milestone.amount || '');
       setWeightPercentage(milestone.weight_percentage || '');
       setStatus(milestone.status || 'pending');
+    } else {
+      const otherSum = (existingMilestones || []).reduce((sum, m) => sum + (Number(m.weight_percentage) || 0), 0);
+      const remaining = Math.max(0, 100 - otherSum);
+      setWeightPercentage(remaining > 0 ? String(remaining) : '0');
     }
-  }, [milestone]);
-
-
+  }, [milestone, existingMilestones]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -34,7 +44,7 @@ export default function MilestoneModal({ milestone = null, onClose, onSave, proj
       due_date: dueDate || null,
       budget: amount ? Number(amount) : null,
       amount: amount ? Number(amount) : null,
-      weight_percentage: weightPercentage ? Number(weightPercentage) : null,
+      weight_percentage: weightVal,
       status,
     };
     onSave(payload);
@@ -101,8 +111,16 @@ export default function MilestoneModal({ milestone = null, onClose, onSave, proj
                   onChange={(e) => setWeightPercentage(e.target.value)} 
                   className={inputClass} 
                   placeholder="e.g. 25"
-                  required 
+                  required
                 />
+                <p className="text-gray-500 text-[0.7rem] mt-1">
+                  Other weights: {otherWeightsSum.toFixed(1)}%. Available: {remainingWeight.toFixed(1)}%.
+                </p>
+                {weightVal > 0 && otherWeightsSum + weightVal > 100.01 && (
+                  <p className="text-amber-400 text-[0.72rem] leading-snug mt-1.5 font-medium">
+                    ⚠️ Saving will automatically adjust (scale down) other milestones proportionally from {otherWeightsSum.toFixed(1)}% to {(100 - weightVal).toFixed(1)}% to keep total at 100%.
+                  </p>
+                )}
               </div>
             </div>
 

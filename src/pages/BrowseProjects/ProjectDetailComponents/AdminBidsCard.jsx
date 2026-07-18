@@ -103,9 +103,9 @@ export default function AdminBidsCard({
                     </span>
                   )}
                   {app.attachment_url && (
-                    <span className="flex items-center gap-1 text-[#70d64d]">
+                    <a href={app.attachment_url} target="__blank" className="flex items-center gap-1 text-[#70d64d]">
                       <Paperclip size={12} /> Attachment
-                    </span>
+                    </a>
                   )}
                 </div>
               )}

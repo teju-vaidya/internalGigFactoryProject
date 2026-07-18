@@ -215,6 +215,11 @@ export default function ProjectDetail() {
     setIsApplyOpen(true);
   };
 
+  const handleEditTrigger = () => {
+    setIsApplyOpen(true);
+  };
+
+
   return (
     <div className="flex flex-col gap-6 pb-20 lg:pb-0">
       {/* Back button */}
@@ -289,6 +294,7 @@ export default function ProjectDetail() {
             myApplication={myApplication}
             isProjectCompleted={isProjectCompleted}
             handleApplyTrigger={handleApplyTrigger}
+            handleEditTrigger={myApplication?.status === 'applied' ? handleEditTrigger : undefined}
           />
         </div>
       </div>
@@ -299,6 +305,7 @@ export default function ProjectDetail() {
           onClose={() => setIsApplyOpen(false)}
           defaultRole={selectedRole}
           onApplied={refetch}
+          existingApplication={myApplication?.status === 'applied' ? myApplication : undefined}
         />
       )}
 

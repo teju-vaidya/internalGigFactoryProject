@@ -1,5 +1,5 @@
 import React from "react";
-import { CheckCircle, Wallet } from "lucide-react";
+import { CheckCircle, Wallet, Pencil } from "lucide-react";
 
 const ProgressBar = ({ value, label }) => (
   <div className="space-y-1.5">
@@ -24,6 +24,7 @@ export default function ProjectSidebar({
   myApplication,
   isProjectCompleted,
   handleApplyTrigger,
+  handleEditTrigger,
 }) {
   return (
     <div className="bg-[#121215] border border-[#23232a] rounded-[10px] p-6 shadow-lg">
@@ -137,6 +138,7 @@ export default function ProjectSidebar({
                   : myApplication.status || "applied"}
               </span>
             </div>
+            
           </div>
           {myApplication.proposal && (
             <div className="border-t border-[#23232a] pt-4 mt-3 space-y-3">
@@ -182,6 +184,16 @@ export default function ProjectSidebar({
             You have successfully submitted your execution strategy. The admin
             will review it and notify you via email when a decision is made.
           </p>
+
+          {/* Edit Proposal button — only visible while status is 'applied' */}
+          {myApplication.status === 'applied' && handleEditTrigger && (
+            <button
+              onClick={handleEditTrigger}
+              className="w-full mt-2 flex items-center justify-center gap-1.5 bg-transparent border border-[#23232a] hover:border-[#70d64d]/50 hover:bg-[#70d64d]/5 text-gray-400 hover:text-[#70d64d] font-bold py-2.5 rounded-[6px] text-xs transition-all duration-150 cursor-pointer"
+            >
+              <Pencil size={12} /> Edit Proposal
+            </button>
+          )}
         </div>
       ) : isProjectCompleted ? (
         <div className="space-y-4">

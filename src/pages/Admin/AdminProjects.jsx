@@ -9,6 +9,8 @@ import NewProjectModal from '../../components/Admin/NewProjectModal';
 import EditProjectModal from '../../components/Admin/EditProjectModal';
 import ConfirmDialog from '../../components/Admin/ConfirmDialog';
 import { useNavigate } from 'react-router-dom';
+// import { deleteProject, getProjects, saveProjects } from '../../data/projectDataStore';
+import { toast } from 'react-toastify';
 
 export default function AdminProjects() {
   const navigate = useNavigate();
@@ -61,6 +63,7 @@ export default function AdminProjects() {
   const [isEditProjectModalOpen, setIsEditProjectModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [activeProjectForMilestones, setActiveProjectForMilestones] = useState(null);
+    // const [getAllProject, setGetAllProjects] = useState([]);
 
   // Debounce search term
   useEffect(() => {
@@ -92,6 +95,9 @@ export default function AdminProjects() {
     setPage(1);
   }, [dSearch, selectedStatus, sortBy, limit]);
 
+
+  
+   
   // React Query backend projects call with pagination and sorting
   const { data, isLoading, refetch, isFetching } = useQuery({
     queryKey: ['admin-projects', page, limit, dSearch, selectedStatus, sortBy],
@@ -128,14 +134,58 @@ export default function AdminProjects() {
     setEditingProject(null);
   };
 
-  const handleDelete = (projectId) => {
-    showConfirm({
-      title: 'Action Not Allowed',
-      message: 'Project deletion API is not implemented on the backend.',
-      type: 'alert',
-      variant: 'warning',
-    });
-  };
+  
+ const handleDelete = (projectId) => {
+  const project = projects.find((p) => p.id === projectId);
+
+  if (!project) return;
+
+  showConfirm({
+    title: 'Delete Project',
+    message: 'Are you sure you want to delete this project?',
+    variant: 'danger',
+
+    onConfirm: async () => {
+      try {
+        await api.delete(`/projects/${projectId}`);
+
+        toast.success("Project deleted successfully");
+
+        await queryClient.invalidateQueries({
+          queryKey: ['admin-projects']
+        });
+
+      } catch (error) {
+        console.error(error);
+
+        toast.error(
+          error.response?.data?.message || "Unable to delete project"
+        );
+      }
+    }
+  });
+};
+
+  // const handleDelete = (projectId) => {
+  //   const project = projects.find((p) => p.id === projectId);
+  //   if (!project) return;
+  //     showConfirm({
+  //         title: 'Delete Project',
+  //         message: 'Are you sure you want to delete this project?',
+  //         variant: 'danger',
+  //         onConfirm: () => {
+  //           deleteProject(project.id);
+  //           toast.success('Project removed');
+  //           refresh();
+  //         }
+  //       });
+  //   // showConfirm({
+  //   //   title: 'Action Not Allowed',
+  //   //   message: 'Project deletion API is not implemented on the backend.',
+  //   //   type: 'alert',
+  //   //   variant: 'warning',
+  //   // });
+  // };
 
   const handleViewDetails = (projectId) => {
     navigate(`/admin/projects/${projectId}`);
@@ -211,7 +261,7 @@ export default function AdminProjects() {
           <Search size={14} className="absolute left-[12px] top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
           <input
             type="text"
-            placeholder="Search by title, description..."
+            placeholder="Search by title, description, skills, deliverables, category, type, priority..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             className="w-full bg-[#0c0c0e] border border-[#23232a] rounded-[6px] text-white text-[0.85rem] pl-[36px] pr-[12px] py-[9px] outline-none box-border"
@@ -305,6 +355,7 @@ export default function AdminProjects() {
         onMilestones={handleOpenMilestones}
         onApplications={handleOpenApplications}
         onSimApply={() => {}}
+        searchQuery={dSearch}
       />
 
       {/* Pagination Footer */}

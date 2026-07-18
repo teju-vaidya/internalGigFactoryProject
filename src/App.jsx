@@ -51,30 +51,8 @@ import AdminProjects from './pages/Admin/AdminProjects.jsx';
 const PrivateRoute = ({ children }) => {
   const token = useAuthStore((state) => state.token);
   const user = useAuthStore((state) => state.user);
-  const profile = useAuthStore((state) => state.profile);
-  const profileError = useAuthStore((state) => state.profileError);
-  const location = useLocation();
 
   if (!token || !user) return <Navigate to="/" replace />;
-
-  // Wait for profile to load for non-admin users
-  if (user.role !== 'admin' && !profile && !profileError) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-[#0c0c0e]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#70d64d]"></div>
-          <span className="text-gray-400 text-sm">Verifying profile completion...</span>
-        </div>
-      </div>
-    );
-  }
-
-  // Enforce redirection to profile page if profile completion is <= 70%
-  if (user.role !== 'admin' && profile && (profile.profile_completion ?? 0) <= 70) {
-    if (location.pathname !== '/profile') {
-      return <Navigate to="/profile" replace />;
-    }
-  }
 
   return children;
 };
@@ -282,7 +260,7 @@ function App() {
         {/* ── Catch-all ── */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <ToastContainer position="bottom-right" theme="dark" />
+      <ToastContainer position="bottom-right" theme="dark" style={{ zIndex: 99999 }} />
     </BrowserRouter>
   );
 }

@@ -24,7 +24,54 @@ function AgencyLogo({ name, logo, size = 42 }) {
   );
 }
 
-export const AgencyCard = ({ agencies, isLoading, onSelectAgency, status }) => {
+const getMatchReasons = (a, query) => {
+  if (!query || !query.trim()) return [];
+  const q = query.trim().toLowerCase();
+  const reasons = [];
+
+  const contactName = a.full_name?.toLowerCase() || '';
+  const email = a.email?.toLowerCase() || '';
+  const mobile = a.mobile || '';
+  const agencyName = a.agency_profile?.agency_name?.toLowerCase() || '';
+  const industry = a.agency_profile?.industry?.toLowerCase() || '';
+  const description = a.agency_profile?.description?.toLowerCase() || '';
+  const teamMembers = a.agency_profile?.team_members || [];
+
+  const SERVICE_LABELS = {
+    BIM: 'bim & 2d drafting',
+    Audit: 'as-built audit',
+    Peer: 'peer review',
+    BOQ: 'boq creation',
+    Viz: '3d visualisation',
+  };
+  const selectedServices = a.agency_profile?.service_details?.selectedServices || [];
+  const servicesTexts = selectedServices.map(srv => {
+    const code = srv?.toLowerCase() || '';
+    const label = SERVICE_LABELS[srv]?.toLowerCase() || '';
+    return [code, label];
+  }).flat();
+
+  if (agencyName.includes(q)) reasons.push('Agency Name Match');
+  if (contactName.includes(q)) reasons.push('POC Name Match');
+  if (email.includes(q)) reasons.push('Email Match');
+  if (mobile.includes(q)) reasons.push('Mobile Match');
+  if (industry.includes(q)) reasons.push('Industry Match');
+  if (description.includes(q)) reasons.push('Bio Match');
+  if (servicesTexts.some(s => s.includes(q))) reasons.push('Capability Match');
+
+  const teamMatches = teamMembers.some(tm => {
+    const tmName = tm.full_name?.toLowerCase() || '';
+    const tmEmail = tm.email?.toLowerCase() || '';
+    const tmDesig = tm.designation?.toLowerCase() || '';
+    const tmMob = tm.mobile || '';
+    return tmName.includes(q) || tmEmail.includes(q) || tmDesig.includes(q) || tmMob.includes(q);
+  });
+  if (teamMatches) reasons.push('Team Member Match');
+
+  return reasons;
+};
+
+export const AgencyCard = ({ agencies, isLoading, onSelectAgency, status, searchQuery }) => {
   if (isLoading) {
     return (
       <div className="grid grid-cols-[repeat(auto-fill,minmax(290px,1fr))] gap-[16px]">
@@ -59,16 +106,32 @@ export const AgencyCard = ({ agencies, isLoading, onSelectAgency, status }) => {
     <div className="grid grid-cols-[repeat(auto-fill,minmax(290px,1fr))] gap-[16px]">
       {agencies.map(a => {
         const ap = a.agency_profile;
+        const matchReasons = getMatchReasons(a, searchQuery);
         return (
           <div
             key={a.id}
             onClick={() => onSelectAgency(a)}
-            className="bg-[#121215] border border-[#23232a] rounded-[10px] p-[20px] flex flex-col gap-[14px] relative cursor-pointer transition-all duration-200 hover:-translate-y-[2px] hover:border-[#70d64d]"
+            className="group bg-[#121215] border border-[#23232a] rounded-[10px] p-[20px] flex flex-col gap-[14px] relative cursor-pointer transition-all duration-200 hover:-translate-y-[2px] hover:border-[#70d64d]"
           >
             {/* Status Badge top right */}
             <div className="absolute top-[20px] right-[20px]">
               <StatusBadge status={a.account_status} />
             </div>
+
+            {/* Match Reason Overlay on Hover */}
+            {searchQuery && matchReasons.length > 0 && (
+              <div className="absolute inset-0 bg-[#0c0c0e]/95 backdrop-blur-sm rounded-[10px] p-[20px] flex flex-col justify-center items-center gap-[10px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 text-center">
+                <span className="text-gray-500 text-[0.7rem] uppercase tracking-wider font-bold">Query Match Details</span>
+                <div className="flex flex-wrap gap-[6px] justify-center max-w-full">
+                  {matchReasons.map(r => (
+                    <span key={r} className="bg-[#70d64d]/10 text-[#70d64d] border border-[#70d64d]/30 text-[0.72rem] font-semibold px-[10px] py-[4px] rounded-[6px]">
+                      {r}
+                    </span>
+                  ))}
+                </div>
+                <span className="text-gray-500 text-[0.68rem] mt-[10px]">Click card to view profile</span>
+              </div>
+            )}
 
             {/* Profile header */}
             <div className="flex items-center gap-[12px]">

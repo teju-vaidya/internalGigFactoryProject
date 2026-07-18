@@ -163,7 +163,7 @@ export const AdminUserProfile = () => {
     );
   }
 
-  const { user, assignedProjects = [], applications = [], paymentTracking = [], milestonePayments = [] } = data;
+  const { user, assignedProjects = [], applications = [], paymentTracking = [], milestonePayments = [], registrationTracker = null, registrationHistory = [], profileDocuments = [] } = data;
   const isGigExpert = user.role === "gig_expert";
   const fp = user.gig_expert_profile || {};
   const ap = user.agency_profile || {};
@@ -276,7 +276,7 @@ export const AdminUserProfile = () => {
 
           <ProfileStats
             isGigExpert={isGigExpert}
-            totalProjects={isGigExpert ? fp.total_projects : ap.total_projects}
+            totalProjects={assignedProjects.length}
             hourlyRate={isGigExpert ? fp.hourly_rate : undefined}
             commercialBasis={
               isGigExpert ? fp.commercial_basis : ap.commercial_basis
@@ -284,25 +284,209 @@ export const AdminUserProfile = () => {
             employeeCount={isGigExpert ? undefined : ap.employee_count}
           />
 
-          <div className="profile-details-split-grid mt-5">
-            <div className="profile-details-left-pane">
+          {/* Section-wise detailed profile cards matching mockup in a Pinterest-like balanced 2-column grid */}
+          <div className="profile-sections-grid mt-5">
+            {/* Left Column */}
+            <div className="profile-grid-column">
+              {/* Card 1: ABOUT ME / AGENCY DESCRIPTION */}
               <ProfileAbout
                 isGigExpert={isGigExpert}
                 bio={isGigExpert ? fp.bio : undefined}
                 description={isGigExpert ? undefined : ap.description}
               />
 
+              {/* Card 2: EXPERIENCE / TEAM STRUCTURE / PROJECTS */}
               {isGigExpert ? (
-                <WorkHistory workHistory={user.work_history || []} />
-              ) : (
-                <TeamStructure
-                  teamMembers={ap.team_members || []}
-                  employeeCount={ap.employee_count}
+                <WorkHistory 
+                  workHistory={fp.work_history || []} 
+                  platformProjects={(assignedProjects || []).filter(p => ['completed', 'active', 'assigned'].includes(p.status))}
                 />
+              ) : (
+                <>
+                  <TeamStructure
+                    teamMembers={ap.team_members || []}
+                    employeeCount={ap.employee_count}
+                  />
+                  <WorkHistory 
+                    workHistory={null} 
+                    platformProjects={(assignedProjects || []).filter(p => ['completed', 'active', 'assigned'].includes(p.status))}
+                  />
+                </>
               )}
 
-              {/* Account Suspension Panel */}
-              <div className="bg-[#1c0c0e] border border-[#ef4444]/20 rounded-lg p-[18px] mt-5 ">
+              {/* Card 3: PERSONAL & CONTACT */}
+              <div className="profile-section-card">
+                <h3 className="profile-section-card-title">Personal & Contact</h3>
+                <div className="profile-section-row">
+                  <span className="profile-section-label">Email:</span>
+                  <span className="profile-section-value">{emailVal || 'N/A'}</span>
+                </div>
+                <div className="profile-section-row">
+                  <span className="profile-section-label">Mobile:</span>
+                  <span className="profile-section-value">{phoneVal || 'N/A'}</span>
+                </div>
+                <div className="profile-section-row">
+                  <span className="profile-section-label">Designation:</span>
+                  <span className="profile-section-value">
+                    {isGigExpert ? (fp.title || 'N/A') : (ap.designation || 'N/A')}
+                  </span>
+                </div>
+                <div className="profile-section-row">
+                  <span className="profile-section-label">Location:</span>
+                  <span className="profile-section-value">{locationVal || 'Not Specified'}</span>
+                </div>
+                {isGigExpert ? (
+                  fp.linkedin_url && (
+                    <div className="profile-section-row">
+                      <span className="profile-section-label">LinkedIn:</span>
+                      <span className="profile-section-value">
+                        <a href={fp.linkedin_url} target="_blank" rel="noopener noreferrer">View Profile</a>
+                      </span>
+                    </div>
+                  )
+                ) : (
+                  ap.linkedin_url && (
+                    <div className="profile-section-row">
+                      <span className="profile-section-label">LinkedIn:</span>
+                      <span className="profile-section-value">
+                        <a href={ap.linkedin_url} target="_blank" rel="noopener noreferrer">View Profile</a>
+                      </span>
+                    </div>
+                  )
+                )}
+                {!isGigExpert && ap.website && (
+                  <div className="profile-section-row">
+                    <span className="profile-section-label">Website:</span>
+                    <span className="profile-section-value">
+                      <a href={ap.website} target="_blank" rel="noopener noreferrer">View Website</a>
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Card 4: LEGAL & IDENTIFICATION */}
+              <div className="profile-section-card">
+                <h3 className="profile-section-card-title">Legal & Identification</h3>
+                {isGigExpert ? (
+                  <>
+                    <div className="profile-section-row">
+                      <span className="profile-section-label">Registered Name:</span>
+                      <span className="profile-section-value">{fp.legal_name_pan || 'N/A'}</span>
+                    </div>
+                   
+                    <div className="profile-section-row">
+                      <span className="profile-section-label">Personal PAN:</span>
+                      <span className="profile-section-value uppercase">{fp.personal_pan || 'N/A'}</span>
+                    </div>
+             
+                  </>
+                ) : (
+                  <>
+                    <div className="profile-section-row">
+                      <span className="profile-section-label">Registered Name:</span>
+                      <span className="profile-section-value">{ap.agency_name || 'N/A'}</span>
+                    </div>
+                    <div className="profile-section-row">
+                      <span className="profile-section-label">Auth. Person:</span>
+                      <span className="profile-section-value">{user.full_name || 'N/A'}</span>
+                    </div>
+                    <div className="profile-section-row">
+                      <span className="profile-section-label">Company PAN:</span>
+                      <span className="profile-section-value uppercase">{ap.company_pan || 'N/A'}</span>
+                    </div>
+                    <div className="profile-section-row">
+                      <span className="profile-section-label">GSTIN:</span>
+                      <span className="profile-section-value uppercase">{ap.gst_number || 'N/A'}</span>
+                    </div>
+                    <div className="profile-section-row">
+                      <span className="profile-section-label">CIN:</span>
+                      <span className="profile-section-value uppercase">{ap.cin || 'N/A'}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Right Column */}
+            <div className="profile-grid-column">
+
+              {/* Card 1: PROFILE DOCUMENTS */}
+              <DocumentsList   role={user.role}
+                isGigExpert={isGigExpert}
+                resumeUrl={fp.resume_url||fp.portfolio_url }
+                portfolioPdfUrl={fp.portfolio_pdf_url || ap.portfolio_pdf_url}
+                verifications={user.verifications}
+                documents={profileDocuments}
+                isAdmin={true}
+              />
+
+              {/* Card 2: SERVICES & CAPABILITY */}
+              <div className="profile-section-card">
+                <h3 className="profile-section-card-title">Services & Capability</h3>
+                <div className="flex flex-wrap gap-[6px] mb-[12px]">
+                  {((isGigExpert ? fp.service_details?.selectedServices : ap.service_details?.selectedServices) || []).length > 0 ? (
+                    ((isGigExpert ? fp.service_details?.selectedServices : ap.service_details?.selectedServices) || []).map(srv => (
+                      <span key={srv} className="bg-[#1e293b] text-[#38bdf8] text-[0.72rem] font-semibold px-[8px] py-[3px] rounded-[4px]">
+                        {SERVICE_LABELS[srv] || srv}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-gray-500 text-[0.8rem]">No services selected.</span>
+                  )}
+                </div>
+              
+              </div>
+              <div className="profile-section-card">
+                <h3 className="profile-section-card-title">Commercial Rates</h3>
+                <div className="profile-section-row">
+                  <span className="profile-section-label">Base Rate:</span>
+                  <span className="profile-section-value font-bold text-[#b5ff14]">
+                    {isGigExpert 
+                      ? (fp.hourly_rate ? `INR ${fp.hourly_rate}` : 'Not Specified')
+                      : ((isGigExpert ? fp.commercial_basis : ap.commercial_basis) ? 'Project/Contract rate' : 'N/A')}
+                  </span>
+                </div>
+                <div className="profile-section-row">
+                  <span className="profile-section-label">Billing Basis:</span>
+                  <span className="profile-section-value">
+                    {isGigExpert ? 'Hourly' : 'Project-based'}
+                  </span>
+                </div>
+                <div className="profile-section-row">
+                  <span className="profile-section-label">Commercial Basis:</span>
+                  <span className="profile-section-value">
+                    {(isGigExpert ? fp.commercial_basis : ap.commercial_basis) || (isGigExpert ? 'Hourly Rate' : 'N/A')}
+                  </span>
+                </div>
+              </div>
+
+              {/* Card 4: AVAILABILITY & SIGN-OFF */}
+              <div className="profile-section-card">
+                <h3 className="profile-section-card-title">Availability & Sign-Off</h3>
+                <div className="profile-section-row">
+                  <span className="profile-section-label">Availability:</span>
+                  <span className="profile-section-value">
+                    {isGigExpert 
+                      ? (fp.availability === 'AVAILABLE' ? 'Immediate / Full-time' : fp.availability || 'Project basis') 
+                      : 'Project basis'}
+                  </span>
+                </div>
+                <div className="profile-section-row">
+                  <span className="profile-section-label">Notice Period:</span>
+                  <span className="profile-section-value">{isGigExpert ? fp.notice_period : ap.notice_period || 'N/A'}</span>
+                </div>
+                <div className="profile-section-row">
+                  <span className="profile-section-label">Team Size:</span>
+                  <span className="profile-section-value">
+                    {isGigExpert ? 'Individual / 1 member' : `${ap.employee_count || 0} employees`}
+                  </span>
+                </div>
+              
+               
+              </div>
+
+              {/* Card 5: Account Suspension Panel */}
+              <div className="bg-[#1c0c0e] border border-[#ef4444]/20 rounded-lg p-[18px]">
                 <h4 className="text-[0.72rem] font-extrabold uppercase tracking-[0.6px] text-[#ef4444] mb-3.5 pb-1.5 border-b border-[#ef4444]/10 m-0">
                   Account Management (Admin Controls)
                 </h4>
@@ -371,25 +555,6 @@ export const AdminUserProfile = () => {
                   </div>
                 )}
               </div>
-            </div>
-
-            <div className="profile-details-right-pane">
-              <CapabilityCloud isGigExpert={isGigExpert} skills={skills} />
-
-              <ServiceSpecs
-                serviceDetails={
-                  isGigExpert ? fp.service_details : ap.service_details
-                }
-              />
-
-              <DocumentsList   role={user.role}
-                isGigExpert={isGigExpert}
-                resumeUrl={isGigExpert ? fp.resume_url : undefined}
-                portfolioPdfUrl={isGigExpert ? fp.portfolio_pdf_url : ap.portfolio_pdf_url}
-                verifications={user.verifications}
-                documents={data?.profileDocuments || []}
-                isAdmin={true}
-              />
             </div>
           </div>
         </div>

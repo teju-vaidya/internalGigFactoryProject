@@ -72,7 +72,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
   const [errors, setErrors] = useState({});
   const [warnings, setWarnings] = useState({});
   const [submitting, setSubmitting] = useState(false);
-  
+
   const portfolioPdfInputRef = useRef(null);
   const [portfolioPdfFile, setPortfolioPdfFile] = useState(null);
   const [uploadedPdfName, setUploadedPdfName] = useState('');
@@ -180,6 +180,34 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
           console.warn('Availability check failed:', apiErr);
         }
       }
+
+      // if (name === 'companyPan' && value) {
+      //   try {
+      //     const check = await api.post('/auth/check-availability', {
+      //       companyPan: value.toUpperCase(),
+      //       currentEmail: currentFormData.email
+      //     });
+
+      //     if (!check.available) {
+      //       setErrors((prev) => ({
+      //         ...prev,
+      //         companyPan: check.message,
+      //       }));
+      //       return;
+      //     }
+
+      //     // Clear error if PAN is available
+      //     setErrors((prev) => {
+      //       const next = { ...prev };
+      //       delete next.companyPan;
+      //       return next;
+      //     });
+
+      //   } catch (apiErr) {
+      //     console.warn('Company PAN availability check failed:', apiErr);
+      //   }
+      // }
+
 
       setErrors((prev) => {
         if (!prev[name]) return prev;
@@ -436,7 +464,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
 
       const response = await api.postFile('/auth/register', regFormData);
       toast.success(response.message || 'Registration request submitted successfully!');
-      
+
       if (onSubmitSuccess) {
         onSubmitSuccess(response);
       }
@@ -467,7 +495,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
   return (
     <div className="register-modal-overlay">
       <div className="register-card wizard register-modal-card">
-        
+
         {/* Close Button */}
         <button type="button" className="register-modal-close" onClick={onClose} aria-label="Close">
           <X size={16} />
@@ -479,20 +507,20 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
         </div>
 
         {/* Header */}
-        <h1 className="register-title">{reapplyData ? 'EDIT & REAPPLY APPLICATION' : 'CREATE AN ACCOUNT'}</h1> 
+        <h1 className="register-title">{reapplyData ? 'EDIT & REAPPLY APPLICATION' : 'CREATE AN ACCOUNT'}</h1>
         <p className="register-subtitle">
-          {reapplyData 
+          {reapplyData
             ? "We've loaded your previous application details. Please review, edit, and submit again."
             : "Join GigFactory and unlock opportunities"
           }
-        </p> 
+        </p>
 
         <hr className="divider-line" />
 
         {/* Role Selection Tabs */}
         {!reapplyData && (
           <div className="role-tab-container">
-            <button 
+            <button
               type="button"
               className={`role-tab-btn ${role === 'gig_expert' ? 'active' : ''}`}
               onClick={() => {
@@ -502,7 +530,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
             >
               <User size={16} /> Gig Expert
             </button>
-            <button 
+            <button
               type="button"
               className={`role-tab-btn ${role === 'agency' ? 'active' : ''}`}
               onClick={() => {
@@ -517,7 +545,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
 
         {/* Unified Scrollable Form */}
         <form onSubmit={handleSubmit} className="register-form">
-          
+
           {/* SECTION 1: PROFILE DETAILS */}
           <div className="register-form-section">
             <h3 className="register-section-title">1. Profile Details</h3>
@@ -526,15 +554,13 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                 <label htmlFor="fullName">{role === 'gig_expert' ? 'Full Name *' : 'Name of Authorised Person *'}</label>
                 <div className="input-wrapper">
                   <span className="input-icon"><User size={18} /></span>
-                  <input 
-                    type="text" 
+                  <input type="text"
                     id="fullName"
                     name={role === 'gig_expert' ? 'fullName' : 'authPersonName'}
                     value={role === 'gig_expert' ? formData.fullName : formData.authPersonName}
                     placeholder={role === 'gig_expert' ? 'Your professional name' : 'Submitting representative'}
                     onChange={handleInputChange}
-                    onBlur={(e) => validateField(e.target.name, e.target.value)}
-                  />
+                    onBlur={(e) => validateField(e.target.name, e.target.value)} />
                 </div>
                 {errors[role === 'gig_expert' ? 'fullName' : 'authPersonName'] && (
                   <span className="validation-error">{errors[role === 'gig_expert' ? 'fullName' : 'authPersonName']}</span>
@@ -545,8 +571,8 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                 <label htmlFor="designation">Designation / Role *</label>
                 <div className="input-wrapper">
                   <span className="input-icon"><User size={18} /></span>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     id="designation"
                     name="designation"
                     value={formData.designation}
@@ -562,8 +588,8 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                 <label htmlFor="email">Email Address *</label>
                 <div className="input-wrapper">
                   <span className="input-icon"><Mail size={18} /></span>
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     id="email"
                     name="email"
                     value={formData.email}
@@ -581,8 +607,8 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                 <label htmlFor="mobile">Mobile Number *</label>
                 <div className="input-wrapper">
                   <span className="input-icon"><Phone size={18} /></span>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     id="mobile"
                     name="mobile"
                     value={formData.mobile}
@@ -599,8 +625,8 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                 <label htmlFor="location">{role === 'gig_expert' ? 'Current Location *' : 'Company Headquarters *'}</label>
                 <div className="input-wrapper">
                   <span className="input-icon"><Building2 size={18} /></span>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     id="location"
                     name={role === 'gig_expert' ? 'location' : 'headquarters'}
                     value={role === 'gig_expert' ? formData.location : formData.headquarters}
@@ -614,8 +640,8 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                 {showLocations && filteredLocations.length > 0 && (
                   <ul className="suggestions-list">
                     {filteredLocations.map((city, index) => (
-                      <li 
-                        key={city} 
+                      <li
+                        key={city}
                         className={`suggestion-item ${index === activeSuggestionIndex ? 'highlighted' : ''}`}
                         onMouseDown={() => handleSelectLocation(role === 'gig_expert' ? 'location' : 'headquarters', city)}
                       >
@@ -633,8 +659,8 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                 <label htmlFor="linkedinUrl">LinkedIn URL</label>
                 <div className="input-wrapper">
                   <span className="input-icon"><Building2 size={18} /></span>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     id="linkedinUrl"
                     name="linkedinUrl"
                     value={formData.linkedinUrl}
@@ -651,8 +677,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                   <label htmlFor="website">Company Website</label>
                   <div className="input-wrapper">
                     <span className="input-icon"><Building2 size={18} /></span>
-                    <input 
-                      type="text" 
+                    <input type="text"
                       id="website"
                       name="website"
                       value={formData.website}
@@ -677,8 +702,8 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                     <label htmlFor="legalNamePan">Legal Name (as per PAN) *</label>
                     <div className="input-wrapper">
                       <span className="input-icon"><User size={18} /></span>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         id="legalNamePan"
                         name="legalNamePan"
                         value={formData.legalNamePan}
@@ -694,8 +719,8 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                     <label htmlFor="personalPan">Personal PAN Card Number *</label>
                     <div className="input-wrapper">
                       <span className="input-icon"><FileText size={18} /></span>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         id="personalPan"
                         name="personalPan"
                         value={formData.personalPan}
@@ -713,8 +738,8 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                     <label htmlFor="registeredName">Registered Company Name *</label>
                     <div className="input-wrapper">
                       <span className="input-icon"><Building2 size={18} /></span>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         id="registeredName"
                         name="registeredName"
                         value={formData.registeredName}
@@ -730,8 +755,8 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                     <label htmlFor="companyPan">Company PAN *</label>
                     <div className="input-wrapper">
                       <span className="input-icon"><FileText size={18} /></span>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         id="companyPan"
                         name="companyPan"
                         value={formData.companyPan}
@@ -747,8 +772,8 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                     <label htmlFor="gstNumber">GST Number (GSTIN)</label>
                     <div className="input-wrapper">
                       <span className="input-icon"><FileText size={18} /></span>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         id="gstNumber"
                         name="gstNumber"
                         value={formData.gstNumber}
@@ -764,8 +789,8 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                     <label htmlFor="cin">CIN</label>
                     <div className="input-wrapper">
                       <span className="input-icon"><FileText size={18} /></span>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         id="cin"
                         name="cin"
                         value={formData.cin}
@@ -791,8 +816,8 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
               {servicesList.map((service) => {
                 const isActive = formData.selectedServices.includes(service.id);
                 return (
-                  <div 
-                    key={service.id} 
+                  <div
+                    key={service.id}
                     className={`service-card ${isActive ? 'active' : ''}`}
                     onClick={() => handleServiceToggle(service.id)}
                   >
@@ -819,8 +844,8 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                       {['Revit', 'AutoCAD', 'Navisworks', 'Tekla', 'Civil 3D'].map((sw) => {
                         const isSel = formData.bimDetails.softwareStack.includes(sw);
                         return (
-                          <div 
-                            key={sw} 
+                          <div
+                            key={sw}
                             className={`software-chip ${isSel ? 'active' : ''}`}
                             onClick={() => handleSoftwareToggle(sw)}
                           >
@@ -833,7 +858,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                   <div className="form-grid-2">
                     <div className="input-group">
                       <label>MAX LOD CAPABILITY</label>
-                      <select 
+                      <select
                         className="w-full p-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-md text-[var(--text-main)] outline-none"
                         value={formData.bimDetails.maxLod}
                         onChange={(e) => handleNestedChange('bimDetails', 'maxLod', e.target.value)}
@@ -848,7 +873,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                     <div className="input-group">
                       <label>CDE EXPERIENCE</label>
                       <div className="input-wrapper">
-                        <input 
+                        <input
                           type="text"
                           placeholder="e.g., BIM 360, ACC, ProjectWise"
                           value={formData.bimDetails.cdeExperience}
@@ -868,7 +893,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                     <div className="input-group">
                       <label>EQUIPMENT OWNED</label>
                       <div className="input-wrapper">
-                        <input 
+                        <input
                           type="text"
                           placeholder="e.g., Laser Scanner, Total Station, Drone"
                           value={formData.auditDetails.equipmentOwned}
@@ -879,7 +904,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                     </div>
                     <div className="input-group">
                       <label>SERVICE RADIUS</label>
-                      <select 
+                      <select
                         className="w-full p-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-md text-[var(--text-main)] outline-none"
                         value={formData.auditDetails.serviceRadius}
                         onChange={(e) => handleNestedChange('auditDetails', 'serviceRadius', e.target.value)}
@@ -902,7 +927,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                     <div className="input-group">
                       <label>{role === 'gig_expert' ? 'TOTAL YEARS OF EXPERIENCE *' : 'TOTAL TEAM EXPERIENCE *'}</label>
                       <div className="input-wrapper">
-                        <input 
+                        <input
                           type="text"
                           placeholder="e.g., 5, 8"
                           value={formData.peerReviewDetails.teamExperience}
@@ -913,7 +938,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                     </div>
                     <div className="input-group">
                       <label>SPECIALISATION</label>
-                      <select 
+                      <select
                         className="w-full p-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-md text-[var(--text-main)] outline-none"
                         value={formData.peerReviewDetails.specialisation}
                         onChange={(e) => handleNestedChange('peerReviewDetails', 'specialisation', e.target.value)}
@@ -935,7 +960,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                   <div className="form-grid-2">
                     <div className="input-group">
                       <label>MEASUREMENT STANDARDS</label>
-                      <select 
+                      <select
                         className="w-full p-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-md text-[var(--text-main)] outline-none"
                         value={formData.boqDetails.measurementStandards}
                         onChange={(e) => handleNestedChange('boqDetails', 'measurementStandards', e.target.value)}
@@ -950,7 +975,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                     <div className="input-group">
                       <label>ESTIMATION SOFTWARE</label>
                       <div className="input-wrapper">
-                        <input 
+                        <input
                           type="text"
                           placeholder="e.g., CostX, PlanSwift, Excel"
                           value={formData.boqDetails.estimationSoftware}
@@ -969,7 +994,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                   <div className="input-group mb-[15px]">
                     <label>RENDERING ENGINE(S)</label>
                     <div className="input-wrapper">
-                      <input 
+                      <input
                         type="text"
                         placeholder="e.g., V-Ray, Corona, Lumion, Unreal Engine"
                         value={formData.vizDetails.renderingEngines}
@@ -981,7 +1006,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                   <div className="form-grid-2">
                     <div className="input-group">
                       <label>HARDWARE CAPACITY</label>
-                      <select 
+                      <select
                         className="w-full p-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-md text-[var(--text-main)] outline-none"
                         value={formData.vizDetails.hardwareCapacity}
                         onChange={(e) => handleNestedChange('vizDetails', 'hardwareCapacity', e.target.value)}
@@ -994,7 +1019,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                     </div>
                     <div className="input-group">
                       <label>ANIMATION CAPABILITY</label>
-                      <select 
+                      <select
                         className="w-full p-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-md text-[var(--text-main)] outline-none"
                         value={formData.vizDetails.animationCapability}
                         onChange={(e) => handleNestedChange('vizDetails', 'animationCapability', e.target.value)}
@@ -1017,8 +1042,8 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                 <label htmlFor="portfolioUrl">Portfolio / Work Samples URL</label>
                 <div className="input-wrapper">
                   <span className="input-icon"><FileText size={18} /></span>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     id="portfolioUrl"
                     name="portfolioUrl"
                     value={formData.portfolioUrl}
@@ -1034,15 +1059,15 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
               <div className="input-group col-span-2">
                 <label>OR UPLOAD PORTFOLIO (PDF)</label>
                 <div className="flex items-center gap-3 bg-[#0c0c0e] border border-[#232328] rounded-md p-3 relative">
-                  <input 
+                  <input
                     type="file"
                     ref={portfolioPdfInputRef}
                     onChange={handlePortfolioPdfChange}
                     accept=".pdf"
                     className="hidden"
                   />
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={() => portfolioPdfInputRef.current && portfolioPdfInputRef.current.click()}
                     style={{ backgroundColor: 'var(--accent-lime)', color: '#000' }}
                     className="py-2 px-4 rounded font-bold text-sm hover:opacity-90 transition-opacity flex-shrink-0"
@@ -1073,7 +1098,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
 
               <div className="input-group">
                 <label htmlFor="commercialBasis">Standard Commercial Basis *</label>
-                <select 
+                <select
                   id="commercialBasis"
                   name="commercialBasis"
                   className="w-full p-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-md text-[var(--text-main)] outline-none"
@@ -1094,8 +1119,8 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                 <label htmlFor="baseRate">Base Rate (INR / Unit) *</label>
                 <div className="input-wrapper">
                   <span className="input-icon"><FileText size={18} /></span>
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     id="baseRate"
                     name="baseRate"
                     value={formData.baseRate}
@@ -1109,7 +1134,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
 
               <div className="input-group">
                 <label htmlFor="noticePeriod">Notice Period / Lead Time *</label>
-                <select 
+                <select
                   id="noticePeriod"
                   name="noticePeriod"
                   className="w-full p-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-md text-[var(--text-main)] outline-none"
@@ -1129,7 +1154,7 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
               {role === 'gig_expert' ? (
                 <div className="input-group">
                   <label htmlFor="availability">Availability *</label>
-                  <select 
+                  <select
                     id="availability"
                     name="availability"
                     className="w-full p-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-md text-[var(--text-main)] outline-none"
@@ -1149,8 +1174,8 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                   <label htmlFor="teamSize">Team Size *</label>
                   <div className="input-wrapper">
                     <span className="input-icon"><User size={18} /></span>
-                    <input 
-                      type="number" 
+                    <input
+                      type="number"
                       id="teamSize"
                       name="teamSize"
                       value={formData.teamSize}
@@ -1168,10 +1193,10 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
           {/* SECTION 5: DECLARATION */}
           <div className="register-form-section">
             <h3 className="register-section-title">5. Declaration &amp; Signature</h3>
-            
+
             <div className="declaration-box">
               <label htmlFor="declarationAccepted" className="declaration-checkbox-wrapper">
-                <input 
+                <input
                   type="checkbox"
                   id="declarationAccepted"
                   name="declarationAccepted"
@@ -1191,8 +1216,8 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                 <label htmlFor="signatureName">Signature *</label>
                 <div className="input-wrapper">
                   <span className="input-icon"><User size={18} /></span>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     id="signatureName"
                     name="signatureName"
                     value={formData.signatureName}
@@ -1208,9 +1233,9 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
                 <label>Submission Date</label>
                 <div className="input-wrapper">
                   <span className="input-icon"><FileText size={18} /></span>
-                  <input 
-                    type="text" 
-                    value={new Date().toISOString().split('T')[0]} 
+                  <input
+                    type="text"
+                    value={new Date().toISOString().split('T')[0]}
                     disabled
                   />
                 </div>
@@ -1223,9 +1248,9 @@ const RegisterModal = ({ isOpen, onClose, reapplyData = null, email = '', onSubm
             <button type="button" className="wizard-back-btn" onClick={onClose}>
               Cancel
             </button>
-            <button 
-              type="submit" 
-              className="register-submit-btn w-auto py-3 px-6" 
+            <button
+              type="submit"
+              className="register-submit-btn w-auto py-3 px-6"
               disabled={submitting}
             >
               {submitting ? 'Submitting Application...' : (reapplyData ? 'Resubmit Application' : 'Submit Application')}

@@ -21,7 +21,7 @@
 .sidebar-brand-img {
   width: 100%;
   max-width: 180px;   /* Fits comfortably inside your 250px wide sidebar block */
-  height: auto;        /* Preserves the original layout aspect ratios perfectly */
+  height: auto;       /* Preserves the original layout aspect ratios perfectly */
   object-fit: contain;
   display: block;
 }
