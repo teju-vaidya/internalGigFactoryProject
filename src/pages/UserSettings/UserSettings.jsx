@@ -327,9 +327,8 @@ export default function UserSettings() {
                   }}
                   onChange={(e) => {
                     const value = e.target.value.replace(/\D/g, "").slice(0, 10);
-                    handleAccountChange("mobile", value);
+                    setAccount((s) => ({ ...s, mobile: value }));
                   }}
-                  onBlur={(e) => validateField("mobile", e.target.value)}
                 />
 
               </FormRow>

@@ -3,6 +3,8 @@ import { Bell, User, X } from 'lucide-react';
 import './Navbar.css';
 import gigfactoryLogo from '../../assets/logo.png'; 
 
+const profilePhotoImg = "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah";
+
 
 export const Navbar = ({ role, currentView, onViewChange }) => {
   const [isPhotoOpen, setIsPhotoOpen] = useState(false);
