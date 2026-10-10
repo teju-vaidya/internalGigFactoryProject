@@ -43,6 +43,7 @@ import {
   ArrowLeft,
   Calendar,
   Mail,
+  UserCheck,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "../../store/useAuthStore";
@@ -59,6 +60,7 @@ const NAV_CONFIG = {
     { label: "Reg. Requests", icon: FileSearch, to: "/admin/requests" },
     { label: "Gig Experts", icon: Users, to: "/admin/gigExperts" },
     { label: "Agencies", icon: Building2, to: "/admin/agencies" },
+    { label: "Full-Time Requests", icon: UserCheck, to: "/admin/fulltime-requests" },
     { label: "Projects", icon: Briefcase, to: "/admin/projects" },
     { label: "Analytics", icon: BarChart3, to: "/admin/analytics" },
     { label: "Logs & Activity", icon: FileText, to: "/admin/activities" },

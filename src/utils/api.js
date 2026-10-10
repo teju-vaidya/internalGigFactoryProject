@@ -113,6 +113,8 @@ export const api = {
     request(endpoint, { method: "PUT", body, ...options }),
   delete: (endpoint, options) =>
     request(endpoint, { method: "DELETE", ...options }),
+  patch: (endpoint, body, options) =>
+    request(endpoint, { method: "PATCH", body, ...options }),
   path: (endpoint, body, options) =>
     request(endpoint, { method: "PATCH", body, ...options }),
   postFile: (endpoint, formData) => uploadFile(endpoint, formData),

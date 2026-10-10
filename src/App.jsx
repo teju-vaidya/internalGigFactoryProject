@@ -32,6 +32,7 @@ import AdminOverview from './pages/Admin/AdminOverview.jsx';
 import RegistrationRequests from './pages/Admin/RegistrationRequests.jsx';
 import AdminGigExperts from './pages/Admin/AdminGigExperts.jsx';
 import AdminAgencies from './pages/Admin/AdminAgencies.jsx';
+import AdminFulltimeRequests from './pages/Admin/AdminFulltimeRequests.jsx';
 import AdminUserProfile from './pages/Admin/AdminUserProfile.jsx';
 import AdminSettings from './pages/Admin/AdminSettings.jsx';
 import AdminAnalytics from './pages/Admin/AdminAnalytics.jsx';
@@ -160,6 +161,11 @@ function App() {
         <Route path="/admin/agencies" element={
           <AdminRoute title="Agencies">
             <AdminAgencies />
+          </AdminRoute>
+        } />
+        <Route path="/admin/fulltime-requests" element={
+          <AdminRoute title="Full-Time Requests">
+            <AdminFulltimeRequests />
           </AdminRoute>
         } />
 

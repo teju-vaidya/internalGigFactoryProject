@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   Users, Building2, FileSearch, CheckCircle2,
   TrendingUp, ArrowRight, Clock, UserCheck, Bell, X,
-  ChevronDown, ChevronUp
+  ChevronDown, ChevronUp, Users2,
+  User
 } from 'lucide-react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
@@ -317,7 +318,8 @@ export default function AdminOverview() {
         <div className="flex flex-col gap-[12px]">
           <h2 className="text-white text-[1rem] font-extrabold m-0 mb-[4px]">Quick Access</h2>
           <QuickLink icon={FileSearch} label="Reg. Requests" desc="Review & approve applications" to="/admin/requests" color="#f59e0b" />
-          <QuickLink icon={Users} label="Gig Experts" desc="Manage gigExpert accounts" to="/admin/gigExperts" color="#38bdf8" />
+          <QuickLink icon={Users2} label="Full-Time Careers" desc="Review & approve applications" to="/admin/fulltime-requests" color="#2563eb" />
+          <QuickLink icon={User} label="Gig Experts" desc="Manage gigExpert accounts" to="/admin/gigExperts" color="#38bdf8" />
           <QuickLink icon={Building2} label="Agencies" desc="Manage agency accounts" to="/admin/agencies" color="#c084fc" />
           <QuickLink icon={TrendingUp} label="Analytics" desc="Platform performance metrics" to="/admin/analytics" color="#70d64d" />
 
