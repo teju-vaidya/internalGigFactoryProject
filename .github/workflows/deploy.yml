@@ -1,0 +1,51 @@
+name: Deploy Frontend to cPanel
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  deploy:
+    name: Build & Deploy Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Create Production .env
+        run: |
+          echo "VITE_API_URL=${{ secrets.VITE_API_URL || 'https://portalbackend.gigfactory.in/api' }}" > .env
+          echo "VITE_SOCKET_URL=${{ secrets.VITE_SOCKET_URL || 'https://portalbackend.gigfactory.in' }}" >> .env
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Application
+        run: npm run build
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_HOST || '66.116.241.112' }}" >> ~/.ssh/known_hosts
+
+      - name: Test SSH Connection
+        run: |
+          ssh -p "${{ secrets.SSH_PORT || 22 }}" \
+            "${{ secrets.SSH_USER || 'gigfactory' }}@${{ secrets.SSH_HOST || '66.116.241.112' }}" \
+            "echo 'Successfully connected to cPanel server' && pwd"
+
+      - name: Sync Build to Server
+        run: |
+          rsync -avz --delete \
+            -e "ssh -p ${{ secrets.SSH_PORT || 22 }}" \
+            dist/ \
+            "${{ secrets.SSH_USER || 'gigfactory' }}@${{ secrets.SSH_HOST || '66.116.241.112' }}:/home/gigfactory/portal_gigfactory_in/portalfrontend/dist/"
