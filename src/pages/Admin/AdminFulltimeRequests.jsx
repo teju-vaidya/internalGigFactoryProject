@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Search, RefreshCw, Filter, SortAsc, LayoutGrid, LayoutList } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../utils/api';
@@ -8,6 +9,7 @@ import { FulltimeRequestCard } from '../../components/Admin/FulltimeRequestCard'
 import { FulltimeRequestModal } from '../../components/Admin/FulltimeRequestModal';
 
 export default function AdminFulltimeRequests() {
+  const location = useLocation();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState(() => localStorage.getItem('fulltime_request_status_filter') || '');
   const [sort, setSort] = useState(() => localStorage.getItem('fulltime_request_sort') || 'newest');
@@ -15,6 +17,7 @@ export default function AdminFulltimeRequests() {
   const [limit, setLimit] = useState(() => Number(localStorage.getItem('admin_fulltime_requests_limit')) || 10);
   const [viewMode, setViewMode] = useState(() => localStorage.getItem('admin_fulltime_view_mode') || 'list');
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [openedParamId, setOpenedParamId] = useState(null);
 
   // Debounced search
   const [dSearch, setDSearch] = useState('');
@@ -57,6 +60,33 @@ export default function AdminFulltimeRequests() {
   const requests = data?.requests || [];
   const total = data?.total || 0;
   const totalPages = data?.totalPages || 1;
+
+  // Deep linking: auto-open request modal when ?id= is present in URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const reqId = params.get('id');
+    if (!reqId || reqId === openedParamId) return;
+
+    if (requests && requests.length > 0) {
+      const match = requests.find((r) => r.id === reqId || String(r.id) === String(reqId));
+      if (match) {
+        setSelectedRequest(match);
+        setOpenedParamId(reqId);
+        return;
+      }
+    }
+
+    // Direct lookup if not found in current page
+    api
+      .get(`/fulltime-requests/${reqId}`)
+      .then((res) => {
+        if (res?.data || res?.request) {
+          setSelectedRequest(res.data || res.request);
+          setOpenedParamId(reqId);
+        }
+      })
+      .catch(() => {});
+  }, [location.search, requests, openedParamId]);
 
   const filterBtnClass =
     'bg-[#0c0c0e] border border-[#23232a] text-gray-500 rounded-[6px] px-[14px] py-[7px] text-[0.8rem] cursor-pointer transition-colors duration-100';

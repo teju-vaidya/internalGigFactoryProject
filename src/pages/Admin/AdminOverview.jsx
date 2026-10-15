@@ -9,6 +9,7 @@ import {
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { api } from '../../utils/api';
+import { RecentFulltimeRequestsWidget } from '../../components/Admin/RecentFulltimeRequestsWidget';
 
 const fmtDate = (d) =>
   d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
@@ -157,6 +158,9 @@ export default function AdminOverview() {
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-5">
 
         <div className="flex flex-col gap-6">
+          {/* Recent Full-Time Career Requests */}
+          <RecentFulltimeRequestsWidget />
+
           {/* Recent registration requests */}
           {recentRequests.length > 0 && (
             <div className="bg-[#121215] border border-[#23232a] rounded-[12px] p-[24px]">
