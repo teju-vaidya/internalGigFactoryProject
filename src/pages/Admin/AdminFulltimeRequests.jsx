@@ -12,6 +12,7 @@ export default function AdminFulltimeRequests() {
   const location = useLocation();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState(() => localStorage.getItem('fulltime_request_status_filter') || '');
+  const [interestedIn, setInterestedIn] = useState('');
   const [sort, setSort] = useState(() => localStorage.getItem('fulltime_request_sort') || 'newest');
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(() => Number(localStorage.getItem('admin_fulltime_requests_limit')) || 10);
@@ -44,14 +45,15 @@ export default function AdminFulltimeRequests() {
 
   useEffect(() => {
     setPage(1);
-  }, [dSearch, status, sort, limit]);
+  }, [dSearch, status, sort, limit, interestedIn]);
 
   const { data, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ['admin-fulltime-requests', page, limit, dSearch, status, sort],
+    queryKey: ['admin-fulltime-requests', page, limit, dSearch, status, sort, interestedIn],
     queryFn: () => {
       const params = new URLSearchParams({ page, limit, sort });
       if (dSearch) params.set('search', dSearch);
       if (status) params.set('status', status);
+      if (interestedIn) params.set('interested_in', interestedIn);
       return api.get(`/fulltime-requests?${params}`);
     },
     keepPreviousData: true,
@@ -146,6 +148,22 @@ export default function AdminFulltimeRequests() {
             </button>
           ))}
         </div>
+
+        {/* Interested In filter */}
+        <select
+          value={interestedIn}
+          onChange={(e) => setInterestedIn(e.target.value)}
+          className={selectClass}
+          title="Filter by Area of Interest"
+        >
+          <option value="">All Areas</option>
+          <option value="BIM / Modelling">BIM / Modelling</option>
+          <option value="Project Planning & control">Project Planning & control</option>
+          <option value="BOQ / Audit">BOQ / Audit</option>
+          <option value="BD & Marketing">BD & Marketing</option>
+          <option value="Auto CAD">Auto CAD</option>
+          <option value="other">Other</option>
+        </select>
 
         {/* Sort */}
         <div className="flex items-center gap-[6px]">

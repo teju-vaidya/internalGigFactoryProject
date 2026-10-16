@@ -105,7 +105,20 @@ export const FulltimeRequestCard = ({ requests, isLoading, onSelectRequest }) =>
               </div>
             </div>
 
-            {/* Cover letter excerpt */}
+            {/* Interested In badge */}
+            {r.interested_in && (
+              <div className="mt-2.5 flex items-center gap-1.5 flex-wrap">
+                <span className="text-[10px] uppercase font-bold tracking-wider text-gray-500">
+                  Interested In:
+                </span>
+                <span className="bg-[#38bdf8]/10 text-[#38bdf8] text-[11px] font-semibold px-2 py-0.5 rounded border border-[#38bdf8]/20">
+                  {r.interested_in}
+                  {r.other_interested_in ? ` (${r.other_interested_in})` : ''}
+                </span>
+              </div>
+            )}
+
+            {/* Cover letter excerpt (for historical applications) */}
             {r.cover_letter && (
               <p className="text-gray-400 text-xs mt-3 line-clamp-2 leading-relaxed">
                 &ldquo;{r.cover_letter}&rdquo;

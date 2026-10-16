@@ -82,9 +82,10 @@ export function RecentFulltimeRequestsWidget() {
                     </span>
                     <span
                       style={{ background: `${roleColor}18`, color: roleColor }}
-                      className="text-[0.62rem] font-bold px-[6px] py-[2px] rounded-[4px] shrink-0"
+                      className="text-[0.62rem] font-bold px-[6px] py-[2px] rounded-[4px] shrink-0 max-w-[150px] truncate"
+                      title={req.interested_in || 'FULL TIME'}
                     >
-                      FULL TIME
+                      {req.interested_in ? req.interested_in.toUpperCase() : 'FULL TIME'}
                     </span>
                   </div>
                   <p className="text-gray-500 text-[0.75rem] m-0 mt-[2px] whitespace-nowrap overflow-hidden text-ellipsis">

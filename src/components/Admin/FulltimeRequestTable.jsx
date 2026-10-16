@@ -48,7 +48,7 @@ export const FulltimeRequestTable = ({ requests, isLoading, onSelectRequest }) =
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="bg-[#0c0c0e]">
-              {['Candidate', 'Contact', 'Portfolio', 'Resume / CV', 'Status', 'Applied Date', 'Action'].map((h) => (
+              {['Candidate', 'Interested In', 'Contact', 'Portfolio', 'Resume / CV', 'Status', 'Applied Date', 'Action'].map((h) => (
                 <th
                   key={h}
                   className="text-gray-500 text-[0.65rem] font-bold px-[16px] py-[14px] border-b border-[#23232a] tracking-[0.6px] whitespace-nowrap uppercase"
@@ -62,7 +62,7 @@ export const FulltimeRequestTable = ({ requests, isLoading, onSelectRequest }) =
             {isLoading ? (
               [...Array(6)].map((_, i) => (
                 <tr key={i}>
-                  {[180, 160, 100, 100, 80, 90, 60].map((w, j) => (
+                  {[180, 140, 160, 100, 100, 80, 90, 60].map((w, j) => (
                     <td key={j} className="p-[16px] border-b border-[#1a1a22]">
                       <div className="skeleton-pulse h-[14px] rounded-[4px]" style={{ width: `${w}px` }} />
                     </td>
@@ -71,7 +71,7 @@ export const FulltimeRequestTable = ({ requests, isLoading, onSelectRequest }) =
               ))
             ) : requests.length === 0 ? (
               <tr>
-                <td colSpan={7} className="text-center p-[48px] text-gray-500 text-sm">
+                <td colSpan={8} className="text-center p-[48px] text-gray-500 text-sm">
                   No full-time career requests found.
                 </td>
               </tr>
@@ -89,9 +89,23 @@ export const FulltimeRequestTable = ({ requests, isLoading, onSelectRequest }) =
                       <div>
                         <p className="text-white font-bold text-[0.88rem] m-0">{r.full_name}</p>
                         <p className="text-gray-500 text-[0.72rem] m-0 mt-[2px]">
-                          {r.cover_letter ? `${r.cover_letter.slice(0, 30)}...` : 'Direct Application'}
+                          {r.phone || 'Candidate'}
                         </p>
                       </div>
+                    </div>
+                  </td>
+
+                  {/* Interested In */}
+                  <td className="p-[16px] border-b border-[#1a1a22] align-middle">
+                    <div className="flex flex-col gap-[2px]">
+                      <span className="text-white font-medium text-[0.8rem] whitespace-nowrap">
+                        {r.interested_in || '—'}
+                      </span>
+                      {r.other_interested_in && (
+                        <span className="text-[#38bdf8] text-[0.72rem] italic">
+                          ({r.other_interested_in})
+                        </span>
+                      )}
                     </div>
                   </td>
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Mail, Phone, Globe, FileText, Calendar, ExternalLink, Trash2, CheckCircle2 } from 'lucide-react';
+import { X, Mail, Phone, Globe, FileText, Calendar, ExternalLink, Trash2, CheckCircle2, Briefcase } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { api } from '../../utils/api';
@@ -91,6 +91,23 @@ export const FulltimeRequestModal = ({ request, onClose }) => {
 
         {/* Content Body */}
         <div className="p-6 space-y-6 overflow-y-auto flex-1 text-sm">
+          {/* Area of Interest */}
+          <div className="bg-[#181820] border border-[#23232a] p-4 rounded-xl space-y-2">
+            <span className="text-[10px] font-bold tracking-wider uppercase text-gray-500">Area of Interest</span>
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="bg-[#22c55e]/10 text-[#4ade80] border border-[#22c55e]/30 px-3 py-1 rounded-lg text-sm font-bold flex items-center gap-2">
+                <Briefcase size={14} />
+                {request.interested_in || 'Not specified'}
+              </span>
+              {request.other_interested_in && (
+                <div className="text-gray-300 text-xs">
+                  <span className="text-gray-500 mr-1.5 font-medium">Specified Interest:</span>
+                  <span className="text-[#38bdf8] font-semibold">{request.other_interested_in}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Contact & Links Info */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="bg-[#181820] border border-[#23232a] p-4 rounded-xl space-y-2.5">
@@ -138,17 +155,15 @@ export const FulltimeRequestModal = ({ request, onClose }) => {
             </div>
           </div>
 
-          {/* Cover Letter */}
-          <div className="bg-[#181820] border border-[#23232a] p-4 rounded-xl space-y-2">
-            <span className="text-[10px] font-bold tracking-wider uppercase text-gray-500">Cover Letter</span>
-            {request.cover_letter ? (
+          {/* Cover Letter (if exists for legacy requests) */}
+          {request.cover_letter && (
+            <div className="bg-[#181820] border border-[#23232a] p-4 rounded-xl space-y-2">
+              <span className="text-[10px] font-bold tracking-wider uppercase text-gray-500">Cover Letter (Legacy)</span>
               <p className="text-gray-300 whitespace-pre-wrap leading-relaxed max-h-40 overflow-y-auto pr-2 text-xs sm:text-sm">
                 {request.cover_letter}
               </p>
-            ) : (
-              <p className="text-gray-500 text-xs italic">No cover letter submitted.</p>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Status & Review Controls */}
           <div className="bg-[#181820] border border-[#23232a] p-4 rounded-xl space-y-4">
